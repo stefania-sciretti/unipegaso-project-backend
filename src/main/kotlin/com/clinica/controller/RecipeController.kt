@@ -2,7 +2,7 @@ package com.clinica.controller
 
 import com.clinica.dto.RecipeRequest
 import com.clinica.dto.RecipeResponse
-import com.clinica.service.RecipeService
+import com.clinica.service.api.RecipeServicePort
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/recipes")
-@Tag(name = "Recipes", description = "Simona's fit recipe collection")
-class RecipeController(private val recipeService: RecipeService) {
+@Tag(name = "Recipes", description = "Fit recipe collection management")
+class RecipeController(private val recipeService: RecipeServicePort) {
 
     @GetMapping
     @Operation(summary = "List all recipes", description = "Optionally filter by category or search by title")

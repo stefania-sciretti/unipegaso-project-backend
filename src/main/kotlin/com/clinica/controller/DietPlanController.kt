@@ -2,7 +2,7 @@ package com.clinica.controller
 
 import com.clinica.dto.DietPlanRequest
 import com.clinica.dto.DietPlanResponse
-import com.clinica.service.DietPlanService
+import com.clinica.service.api.DietPlanServicePort
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/diet-plans")
-@Tag(name = "Diet Plans", description = "Simona's personalized nutrition plans")
-class DietPlanController(private val dietPlanService: DietPlanService) {
+@Tag(name = "Diet Plans", description = "Personalized nutrition plans management")
+class DietPlanController(private val dietPlanService: DietPlanServicePort) {
 
     @GetMapping
     @Operation(summary = "List all diet plans", description = "Optionally filter by clientId")

@@ -6,6 +6,8 @@ import com.clinica.dto.TrainingPlanResponse
 import com.clinica.repository.ClientRepository
 import com.clinica.repository.TrainerRepository
 import com.clinica.repository.TrainingPlanRepository
+import com.clinica.service.api.TrainingPlanServicePort
+import com.clinica.util.orEntityNotFound
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,26 +17,24 @@ class TrainingPlanService(
     private val trainingPlanRepository: TrainingPlanRepository,
     private val clientRepository: ClientRepository,
     private val trainerRepository: TrainerRepository
-) {
+) : TrainingPlanServicePort {
 
     @Transactional(readOnly = true)
-    fun findAll(clientId: Long?): List<TrainingPlanResponse> {
-        val list = if (clientId != null) trainingPlanRepository.findByClientId(clientId)
-                   else trainingPlanRepository.findAll()
-        return list.map { it.toResponse() }
+    override fun findAll(clientId: Long?): List<TrainingPlanResponse> {
+        val plans = if (clientId != null) trainingPlanRepository.findByClientId(clientId)
+                    else trainingPlanRepository.findAll()
+        return plans.map { it.toResponse() }
     }
 
     @Transactional(readOnly = true)
-    fun findById(id: Long): TrainingPlanResponse =
-        trainingPlanRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Training plan not found with id: $id") }
-            .toResponse()
+    override fun findById(id: Long): TrainingPlanResponse =
+        trainingPlanRepository.findById(id).orEntityNotFound("Training plan", id).toResponse()
 
-    fun create(request: TrainingPlanRequest): TrainingPlanResponse {
+    override fun create(request: TrainingPlanRequest): TrainingPlanResponse {
         val client = clientRepository.findById(request.clientId)
-            .orElseThrow { NoSuchElementException("Client not found with id: ${request.clientId}") }
+            .orEntityNotFound("Client", request.clientId)
         val trainer = trainerRepository.findById(request.trainerId)
-            .orElseThrow { NoSuchElementException("Trainer not found with id: ${request.trainerId}") }
+            .orEntityNotFound("Trainer", request.trainerId)
 
         val plan = TrainingPlan(
             client = client,
@@ -48,9 +48,8 @@ class TrainingPlanService(
         return trainingPlanRepository.save(plan).toResponse()
     }
 
-    fun update(id: Long, request: TrainingPlanRequest): TrainingPlanResponse {
-        val plan = trainingPlanRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Training plan not found with id: $id") }
+    override fun update(id: Long, request: TrainingPlanRequest): TrainingPlanResponse {
+        val plan = trainingPlanRepository.findById(id).orEntityNotFound("Training plan", id)
 
         plan.title = request.title
         plan.description = request.description
@@ -61,9 +60,10 @@ class TrainingPlanService(
         return trainingPlanRepository.save(plan).toResponse()
     }
 
-    fun delete(id: Long) {
-        if (!trainingPlanRepository.existsById(id))
+    override fun delete(id: Long) {
+        if (!trainingPlanRepository.existsById(id)) {
             throw NoSuchElementException("Training plan not found with id: $id")
+        }
         trainingPlanRepository.deleteById(id)
     }
 

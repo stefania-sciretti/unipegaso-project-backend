@@ -8,6 +8,7 @@ import com.clinica.dto.AppointmentStatusRequest
 import com.clinica.repository.AppointmentRepository
 import com.clinica.repository.DoctorRepository
 import com.clinica.repository.PatientRepository
+import com.clinica.util.orEntityNotFound
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -23,26 +24,22 @@ class AppointmentService(
     fun findAll(patientId: Long?, doctorId: Long?, status: String?): List<AppointmentResponse> {
         val appointments = when {
             patientId != null -> appointmentRepository.findByPatientId(patientId)
-            doctorId != null -> appointmentRepository.findByDoctorId(doctorId)
-            status != null -> appointmentRepository.findByStatus(
-                AppointmentStatus.valueOf(status.uppercase())
-            )
-            else -> appointmentRepository.findAll()
+            doctorId != null  -> appointmentRepository.findByDoctorId(doctorId)
+            status != null    -> appointmentRepository.findByStatus(AppointmentStatus.valueOf(status.uppercase()))
+            else              -> appointmentRepository.findAll()
         }
         return appointments.map { it.toResponse() }
     }
 
     @Transactional(readOnly = true)
     fun findById(id: Long): AppointmentResponse =
-        appointmentRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Appointment not found with id: $id") }
-            .toResponse()
+        appointmentRepository.findById(id).orEntityNotFound("Appointment", id).toResponse()
 
     fun create(request: AppointmentRequest): AppointmentResponse {
         val patient = patientRepository.findById(request.patientId)
-            .orElseThrow { NoSuchElementException("Patient not found with id: ${request.patientId}") }
+            .orEntityNotFound("Patient", request.patientId)
         val doctor = doctorRepository.findById(request.doctorId)
-            .orElseThrow { NoSuchElementException("Doctor not found with id: ${request.doctorId}") }
+            .orEntityNotFound("Doctor", request.doctorId)
 
         val appointment = Appointment(
             patient = patient,
@@ -55,8 +52,7 @@ class AppointmentService(
     }
 
     fun updateStatus(id: Long, request: AppointmentStatusRequest): AppointmentResponse {
-        val appointment = appointmentRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Appointment not found with id: $id") }
+        val appointment = appointmentRepository.findById(id).orEntityNotFound("Appointment", id)
 
         val newStatus = try {
             AppointmentStatus.valueOf(request.status.uppercase())
@@ -71,8 +67,7 @@ class AppointmentService(
     }
 
     fun delete(id: Long) {
-        val appointment = appointmentRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Appointment not found with id: $id") }
+        val appointment = appointmentRepository.findById(id).orEntityNotFound("Appointment", id)
         appointment.status = AppointmentStatus.CANCELLED
         appointmentRepository.save(appointment)
     }

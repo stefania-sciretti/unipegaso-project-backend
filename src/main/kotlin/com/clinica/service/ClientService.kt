@@ -4,30 +4,30 @@ import com.clinica.domain.Client
 import com.clinica.dto.ClientRequest
 import com.clinica.dto.ClientResponse
 import com.clinica.repository.ClientRepository
+import com.clinica.service.api.ClientServicePort
+import com.clinica.util.orEntityNotFound
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class ClientService(private val clientRepository: ClientRepository) {
+class ClientService(private val clientRepository: ClientRepository) : ClientServicePort {
 
     @Transactional(readOnly = true)
-    fun findAll(): List<ClientResponse> =
+    override fun findAll(): List<ClientResponse> =
         clientRepository.findAll().map { it.toResponse() }
 
     @Transactional(readOnly = true)
-    fun findById(id: Long): ClientResponse =
-        clientRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Client not found with id: $id") }
-            .toResponse()
+    override fun findById(id: Long): ClientResponse =
+        clientRepository.findById(id).orEntityNotFound("Client", id).toResponse()
 
     @Transactional(readOnly = true)
-    fun search(query: String): List<ClientResponse> =
+    override fun search(query: String): List<ClientResponse> =
         clientRepository
             .findByLastNameContainingIgnoreCaseOrFirstNameContainingIgnoreCase(query, query)
             .map { it.toResponse() }
 
-    fun create(request: ClientRequest): ClientResponse {
+    override fun create(request: ClientRequest): ClientResponse {
         if (clientRepository.existsByEmail(request.email)) {
             throw IllegalArgumentException("A client with email '${request.email}' already exists")
         }
@@ -42,9 +42,8 @@ class ClientService(private val clientRepository: ClientRepository) {
         return clientRepository.save(client).toResponse()
     }
 
-    fun update(id: Long, request: ClientRequest): ClientResponse {
-        val client = clientRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Client not found with id: $id") }
+    override fun update(id: Long, request: ClientRequest): ClientResponse {
+        val client = clientRepository.findById(id).orEntityNotFound("Client", id)
 
         client.firstName = request.firstName
         client.lastName = request.lastName
@@ -56,7 +55,7 @@ class ClientService(private val clientRepository: ClientRepository) {
         return clientRepository.save(client).toResponse()
     }
 
-    fun delete(id: Long) {
+    override fun delete(id: Long) {
         if (!clientRepository.existsById(id)) {
             throw NoSuchElementException("Client not found with id: $id")
         }

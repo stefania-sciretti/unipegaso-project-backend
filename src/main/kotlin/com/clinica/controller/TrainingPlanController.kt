@@ -2,7 +2,7 @@ package com.clinica.controller
 
 import com.clinica.dto.TrainingPlanRequest
 import com.clinica.dto.TrainingPlanResponse
-import com.clinica.service.TrainingPlanService
+import com.clinica.service.api.TrainingPlanServicePort
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/training-plans")
-@Tag(name = "Training Plans", description = "Luca's personalized workout plans")
-class TrainingPlanController(private val trainingPlanService: TrainingPlanService) {
+@Tag(name = "Training Plans", description = "Personalized workout plans management")
+class TrainingPlanController(private val trainingPlanService: TrainingPlanServicePort) {
 
     @GetMapping
     @Operation(summary = "List all training plans", description = "Optionally filter by clientId")

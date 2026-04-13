@@ -4,6 +4,7 @@ import com.clinica.domain.Doctor
 import com.clinica.dto.DoctorRequest
 import com.clinica.dto.DoctorResponse
 import com.clinica.repository.DoctorRepository
+import com.clinica.util.orEntityNotFound
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -23,9 +24,7 @@ class DoctorService(private val doctorRepository: DoctorRepository) {
 
     @Transactional(readOnly = true)
     fun findById(id: Long): DoctorResponse =
-        doctorRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Doctor not found with id: $id") }
-            .toResponse()
+        doctorRepository.findById(id).orEntityNotFound("Doctor", id).toResponse()
 
     fun create(request: DoctorRequest): DoctorResponse {
         if (doctorRepository.existsByLicenseNumber(request.licenseNumber)) {
@@ -42,8 +41,7 @@ class DoctorService(private val doctorRepository: DoctorRepository) {
     }
 
     fun update(id: Long, request: DoctorRequest): DoctorResponse {
-        val doctor = doctorRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Doctor not found with id: $id") }
+        val doctor = doctorRepository.findById(id).orEntityNotFound("Doctor", id)
 
         if (doctor.licenseNumber != request.licenseNumber &&
             doctorRepository.existsByLicenseNumber(request.licenseNumber)) {

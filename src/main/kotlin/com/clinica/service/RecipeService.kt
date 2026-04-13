@@ -4,30 +4,30 @@ import com.clinica.domain.Recipe
 import com.clinica.dto.RecipeRequest
 import com.clinica.dto.RecipeResponse
 import com.clinica.repository.RecipeRepository
+import com.clinica.service.api.RecipeServicePort
+import com.clinica.util.orEntityNotFound
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class RecipeService(private val recipeRepository: RecipeRepository) {
+class RecipeService(private val recipeRepository: RecipeRepository) : RecipeServicePort {
 
     @Transactional(readOnly = true)
-    fun findAll(category: String?, search: String?): List<RecipeResponse> {
-        val list = when {
+    override fun findAll(category: String?, search: String?): List<RecipeResponse> {
+        val recipes = when {
             !category.isNullOrBlank() -> recipeRepository.findByCategoryIgnoreCase(category)
-            !search.isNullOrBlank() -> recipeRepository.findByTitleContainingIgnoreCase(search)
-            else -> recipeRepository.findAll()
+            !search.isNullOrBlank()   -> recipeRepository.findByTitleContainingIgnoreCase(search)
+            else                      -> recipeRepository.findAll()
         }
-        return list.map { it.toResponse() }
+        return recipes.map { it.toResponse() }
     }
 
     @Transactional(readOnly = true)
-    fun findById(id: Long): RecipeResponse =
-        recipeRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Recipe not found with id: $id") }
-            .toResponse()
+    override fun findById(id: Long): RecipeResponse =
+        recipeRepository.findById(id).orEntityNotFound("Recipe", id).toResponse()
 
-    fun create(request: RecipeRequest): RecipeResponse {
+    override fun create(request: RecipeRequest): RecipeResponse {
         val recipe = Recipe(
             title = request.title,
             description = request.description,
@@ -39,9 +39,8 @@ class RecipeService(private val recipeRepository: RecipeRepository) {
         return recipeRepository.save(recipe).toResponse()
     }
 
-    fun update(id: Long, request: RecipeRequest): RecipeResponse {
-        val recipe = recipeRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Recipe not found with id: $id") }
+    override fun update(id: Long, request: RecipeRequest): RecipeResponse {
+        val recipe = recipeRepository.findById(id).orEntityNotFound("Recipe", id)
 
         recipe.title = request.title
         recipe.description = request.description
@@ -53,9 +52,10 @@ class RecipeService(private val recipeRepository: RecipeRepository) {
         return recipeRepository.save(recipe).toResponse()
     }
 
-    fun delete(id: Long) {
-        if (!recipeRepository.existsById(id))
+    override fun delete(id: Long) {
+        if (!recipeRepository.existsById(id)) {
             throw NoSuchElementException("Recipe not found with id: $id")
+        }
         recipeRepository.deleteById(id)
     }
 

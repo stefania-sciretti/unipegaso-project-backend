@@ -4,6 +4,7 @@ import com.clinica.domain.Patient
 import com.clinica.dto.PatientRequest
 import com.clinica.dto.PatientResponse
 import com.clinica.repository.PatientRepository
+import com.clinica.util.orEntityNotFound
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,9 +18,7 @@ class PatientService(private val patientRepository: PatientRepository) {
 
     @Transactional(readOnly = true)
     fun findById(id: Long): PatientResponse =
-        patientRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Patient not found with id: $id") }
-            .toResponse()
+        patientRepository.findById(id).orEntityNotFound("Patient", id).toResponse()
 
     @Transactional(readOnly = true)
     fun search(query: String): List<PatientResponse> =
@@ -43,8 +42,7 @@ class PatientService(private val patientRepository: PatientRepository) {
     }
 
     fun update(id: Long, request: PatientRequest): PatientResponse {
-        val patient = patientRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Patient not found with id: $id") }
+        val patient = patientRepository.findById(id).orEntityNotFound("Patient", id)
 
         if (patient.fiscalCode != request.fiscalCode &&
             patientRepository.existsByFiscalCode(request.fiscalCode)) {

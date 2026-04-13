@@ -3,7 +3,7 @@ package com.clinica.controller
 import com.clinica.dto.FitnessAppointmentRequest
 import com.clinica.dto.FitnessAppointmentResponse
 import com.clinica.dto.FitnessAppointmentStatusRequest
-import com.clinica.service.FitnessAppointmentService
+import com.clinica.service.api.FitnessAppointmentServicePort
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/appointments")
 @Tag(name = "Appointments", description = "Fitness appointment booking and management")
-class FitnessAppointmentController(private val appointmentService: FitnessAppointmentService) {
+class FitnessAppointmentController(private val appointmentService: FitnessAppointmentServicePort) {
 
     @GetMapping
     @Operation(summary = "List appointments", description = "Filter by clientId, trainerId or status")

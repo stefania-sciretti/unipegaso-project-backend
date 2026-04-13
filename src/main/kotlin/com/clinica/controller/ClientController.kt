@@ -2,7 +2,7 @@ package com.clinica.controller
 
 import com.clinica.dto.ClientRequest
 import com.clinica.dto.ClientResponse
-import com.clinica.service.ClientService
+import com.clinica.service.api.ClientServicePort
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/clients")
 @Tag(name = "Clients", description = "Fitness center client management")
-class ClientController(private val clientService: ClientService) {
+class ClientController(private val clientService: ClientServicePort) {
 
     @GetMapping
     @Operation(summary = "List all clients", description = "Returns all clients, with optional search by name")

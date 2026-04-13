@@ -1,20 +1,12 @@
 package com.clinica.config
 
+import com.clinica.dto.ErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import java.time.LocalDateTime
-
-data class ErrorResponse(
-    val timestamp: LocalDateTime = LocalDateTime.now(),
-    val status: Int,
-    val error: String,
-    val message: String,
-    val fieldErrors: Map<String, String> = emptyMap()
-)
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
