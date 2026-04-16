@@ -1,7 +1,5 @@
 package com.clinica.util
 
-import java.util.Optional
-
 /**
  * Throws a [NoSuchElementException] with a descriptive message when the [Optional] is empty.
  *

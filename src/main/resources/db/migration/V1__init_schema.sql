@@ -93,4 +93,3 @@ INSERT INTO appointment (patient_id, doctor_id, scheduled_at, visit_type, status
 INSERT INTO report (appointment_id, diagnosis, prescription, doctor_notes) VALUES
     (3, 'Cervical muscle contracture', 'Osteopathic manipulation performed, 3 follow-up sessions recommended', 'Postural exercises twice a day'),
     (5, 'Good baseline fitness, mild core weakness', 'Custom training plan assigned - 3 sessions/week', 'Reassessment in 6 weeks');
-    (5, 'Mild contact dermatitis', 'Topical corticosteroid cream twice daily for 7 days', 'Avoid contact with irritant agents');

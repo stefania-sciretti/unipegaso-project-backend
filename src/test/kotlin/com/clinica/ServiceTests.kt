@@ -20,7 +20,7 @@ class PatientServiceTest {
     private val patientRepository: PatientRepository = mock()
     private val patientService = PatientService(patientRepository)
 
-    private fun samplePatient(id: Long = 1L) = Patient(
+    private fun samplePatient(id: Long = 1L) = PatientEntity(
         id = id,
         firstName = "John",
         lastName = "Doe",
@@ -109,7 +109,7 @@ class AppointmentServiceTest {
     private val doctorRepository: DoctorRepository = mock()
     private val appointmentService = AppointmentService(appointmentRepository, patientRepository, doctorRepository)
 
-    private fun samplePatient() = Patient(
+    private fun samplePatient() = PatientEntity(
         id = 1L, firstName = "John", lastName = "Doe",
         fiscalCode = "DOEJHN80A01H501Z", birthDate = LocalDate.of(1980, 1, 1),
         email = "john@email.com"
@@ -121,9 +121,9 @@ class AppointmentServiceTest {
         licenseNumber = "RM-12345"
     )
 
-    private fun sampleAppointment() = Appointment(
+    private fun sampleAppointment() = AppointmentEntity(
         id = 1L,
-        patient = samplePatient(),
+        patientEntity = samplePatient(),
         doctor = sampleDoctor(),
         scheduledAt = LocalDateTime.now().plusDays(2),
         visitType = "Cardiology Check-up",
@@ -183,9 +183,9 @@ class ReportServiceTest {
     private val appointmentRepository: AppointmentRepository = mock()
     private val reportService = ReportService(reportRepository, appointmentRepository)
 
-    private fun completedAppointment() = Appointment(
+    private fun completedAppointment() = AppointmentEntity(
         id = 3L,
-        patient = Patient(
+        patientEntity = PatientEntity(
             id = 1L, firstName = "Matteo", lastName = "Esposito",
             fiscalCode = "SPSMT85C10L219K", birthDate = LocalDate.of(1985, 3, 10),
             email = "matteo@email.it"
@@ -207,7 +207,7 @@ class ReportServiceTest {
         val req = ReportRequest(appointmentId = 3L, diagnosis = "Tendinite")
         whenever(appointmentRepository.findById(3L)).thenReturn(Optional.of(appt))
         whenever(reportRepository.existsByAppointmentId(3L)).thenReturn(false)
-        val report = Report(id = 1L, appointment = appt, diagnosis = "Tendinite")
+        val report = Report(id = 1L, appointmentEntity = appt, diagnosis = "Tendinite")
         whenever(reportRepository.save(any())).thenReturn(report)
         val result = reportService.create(req)
         assertEquals("Tendinite", result.diagnosis)
