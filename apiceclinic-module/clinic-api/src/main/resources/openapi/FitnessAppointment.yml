@@ -1,0 +1,204 @@
+openapi: 3.0.0
+info:
+  title: Fitness Appointment API
+  version: "1"
+servers:
+  - url: "http://localhost:8080"
+
+paths:
+  /api/fitness-appointments:
+    get:
+      summary: List appointments
+      description: Filter by clientId, trainerId or status
+      operationId: findAllFitnessAppointments
+      parameters:
+        - name: clientId
+          in: query
+          required: false
+          description: Filter by client ID
+          schema:
+            type: integer
+            format: int64
+        - name: trainerId
+          in: query
+          required: false
+          description: Filter by trainer ID
+          schema:
+            type: integer
+            format: int64
+        - name: status
+          in: query
+          required: false
+          description: Filter by appointment status
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of fitness appointments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FitnessAppointmentResponse'
+    post:
+      summary: Book a new appointment
+      description: Books a new fitness appointment
+      operationId: createFitnessAppointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FitnessAppointmentRequest'
+      responses:
+        '201':
+          description: Fitness appointment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FitnessAppointmentResponse'
+
+  /api/fitness-appointments/{id}:
+    get:
+      summary: Get appointment by ID
+      description: Returns a fitness appointment by its ID
+      operationId: getFitnessAppointmentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Fitness appointment ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Fitness appointment found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FitnessAppointmentResponse'
+        '404':
+          description: Fitness appointment not found
+    delete:
+      summary: Cancel an appointment
+      description: Cancels a fitness appointment by its ID
+      operationId: deleteFitnessAppointment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Fitness appointment ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Fitness appointment cancelled
+        '404':
+          description: Fitness appointment not found
+
+  /api/fitness-appointments/{id}/status:
+    put:
+      summary: Update appointment status
+      description: Updates the status of an existing fitness appointment
+      operationId: updateFitnessAppointmentStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Fitness appointment ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FitnessAppointmentStatusRequest'
+      responses:
+        '200':
+          description: Fitness appointment status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FitnessAppointmentResponse'
+        '404':
+          description: Fitness appointment not found
+
+components:
+  schemas:
+    FitnessAppointmentRequest:
+      type: object
+      properties:
+        clientId:
+          type: integer
+          format: int64
+        trainerId:
+          type: integer
+          format: int64
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        type:
+          type: string
+          description: Type of fitness session (e.g. PT, group class)
+        notes:
+          type: string
+      required:
+        - clientId
+        - trainerId
+        - startTime
+        - endTime
+
+    FitnessAppointmentStatusRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          description: New appointment status (e.g. BOOKED, COMPLETED, CANCELLED)
+      required:
+        - status
+
+    FitnessAppointmentResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        clientId:
+          type: integer
+          format: int64
+        trainerId:
+          type: integer
+          format: int64
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        status:
+          type: string
+        type:
+          type: string
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - clientId
+        - trainerId
+        - startTime
+        - endTime
+        - status

@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.clinica</groupId>
+        <artifactId>clinica-sanitaria</artifactId>
+        <version>1.0.0</version>
+        <!-- dal modulo clinic-api risali di due livelli a backend/pom.xml -->
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <groupId>com.clinic</groupId>
+    <artifactId>clinic-api</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    <name>Clinic API DTOs</name>
+
+    <dependencies>
+        <!-- Kotlin base (ereditato dal parent) -->
+        <!-- rimosse kotlin-stdlib e kotlin-reflect perché dichiarate nel parent -->
+
+        <!-- Jackson + java.time (versione gestita da Spring Boot BOM) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-kotlin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+
+        <!-- Moshi (usato dal codice generato dall'OpenAPI generator) -->
+        <dependency>
+            <groupId>com.squareup.moshi</groupId>
+            <artifactId>moshi</artifactId>
+            <version>1.15.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.moshi</groupId>
+            <artifactId>moshi-kotlin</artifactId>
+            <version>1.15.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+
+        <plugins>
+            <!-- Il plugin Kotlin è ereditato dal parent; evitiamo la duplicazione qui -->
+
+            <!-- OpenAPI Generator: genera SOLO DTO (model) in com.clinic.model -->
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${openapi.generator.version}</version>
+                <executions>
+                    <!-- Appointment -->
+                    <execution>
+                        <id>generate-appointment-models</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/Appointment.yml</inputSpec>
+                            <output>${project.build.directory}/generated-appointment</output>
+
+                            <!-- SOLO model -->
+                            <generatorName>kotlin</generatorName>
+                            <modelPackage>com.clinic.model</modelPackage>
+                            <modelOnly>true</modelOnly>
+
+                            <!-- niente API, niente supporting files -->
+                            <apiPackage>ignore.api</apiPackage>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiTests>false</generateApiTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <supportingFilesToGenerate/>
+
+                            <configOptions>
+                                <dateLibrary>java8</dateLibrary>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- DietPlan -->
+                    <execution>
+                        <id>generate-dietplan-models</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/DietPlan.yml</inputSpec>
+                            <output>${project.build.directory}/generated-dietplan</output>
+
+                            <generatorName>kotlin</generatorName>
+                            <modelPackage>com.clinic.model</modelPackage>
+                            <modelOnly>true</modelOnly>
+
+                            <apiPackage>ignore.api</apiPackage>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiTests>false</generateApiTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <supportingFilesToGenerate/>
+
+                            <configOptions>
+                                <dateLibrary>java8</dateLibrary>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- FitnessAppointment -->
+                    <execution>
+                        <id>generate-fitness-appointment-models</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/FitnessAppointment.yml</inputSpec>
+                            <output>${project.build.directory}/generated-fitness</output>
+
+                            <generatorName>kotlin</generatorName>
+                            <modelPackage>com.clinic.model</modelPackage>
+                            <modelOnly>true</modelOnly>
+
+                            <apiPackage>ignore.api</apiPackage>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiTests>false</generateApiTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <supportingFilesToGenerate/>
+
+                            <configOptions>
+                                <dateLibrary>java8</dateLibrary>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- Patient -->
+                    <execution>
+                        <id>generate-patient-models</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/Patient.yml</inputSpec>
+                            <output>${project.build.directory}/generated-patient</output>
+
+                            <generatorName>kotlin</generatorName>
+                            <modelPackage>com.clinic.model</modelPackage>
+                            <modelOnly>true</modelOnly>
+
+                            <apiPackage>ignore.api</apiPackage>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiTests>false</generateApiTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <supportingFilesToGenerate/>
+
+                            <configOptions>
+                                <dateLibrary>java8</dateLibrary>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- Staff -->
+                    <execution>
+                        <id>generate-staff-models</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/Staff.yml</inputSpec>
+                            <output>${project.build.directory}/generated-staff</output>
+
+                            <generatorName>kotlin</generatorName>
+                            <modelPackage>com.clinic.model</modelPackage>
+                            <modelOnly>true</modelOnly>
+
+                            <apiPackage>ignore.api</apiPackage>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiTests>false</generateApiTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <supportingFilesToGenerate/>
+
+                            <configOptions>
+                                <dateLibrary>java8</dateLibrary>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- Recipe -->
+                    <execution>
+                        <id>generate-recipe-models</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/Recipe.yml</inputSpec>
+                            <output>${project.build.directory}/generated-recipe</output>
+
+                            <generatorName>kotlin</generatorName>
+                            <modelPackage>com.clinic.model</modelPackage>
+                            <modelOnly>true</modelOnly>
+
+                            <apiPackage>ignore.api</apiPackage>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiTests>false</generateApiTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <supportingFilesToGenerate/>
+
+                            <configOptions>
+                                <dateLibrary>java8</dateLibrary>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- Report -->
+                    <execution>
+                        <id>generate-report-models</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/Report.yml</inputSpec>
+                            <output>${project.build.directory}/generated-report</output>
+
+                            <generatorName>kotlin</generatorName>
+                            <modelPackage>com.clinic.model</modelPackage>
+                            <modelOnly>true</modelOnly>
+
+                            <apiPackage>ignore.api</apiPackage>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiTests>false</generateApiTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <supportingFilesToGenerate/>
+
+                            <configOptions>
+                                <dateLibrary>java8</dateLibrary>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>add-openapi-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+
+                                <source>${project.build.directory}/generated-appointment/src/main/kotlin/com/clinic/model</source>
+                                <source>${project.build.directory}/generated-dietplan/src/main/kotlin/com/clinic/model</source>
+                                <source>${project.build.directory}/generated-fitness/src/main/kotlin/com/clinic/model</source>
+                                <source>${project.build.directory}/generated-patient/src/main/kotlin/com/clinic/model</source>
+                                <source>${project.build.directory}/generated-staff/src/main/kotlin/com/clinic/model</source>
+                                <source>${project.build.directory}/generated-recipe/src/main/kotlin/com/clinic/model</source>
+                                <source>${project.build.directory}/generated-report/src/main/kotlin/com/clinic/model</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
