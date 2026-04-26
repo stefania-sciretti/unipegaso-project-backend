@@ -1,0 +1,149 @@
+openapi: 3.0.0
+info:
+  title: Patient API
+  version: "1"
+servers:
+  - url: "http://localhost:8080"
+paths:
+
+  /patients:
+    get:
+      summary: List all patients
+      description: Returns the list of all patients
+      operationId: getAllPatients
+      responses:
+        '200':
+          description: List of patients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PatientResponse"
+    post:
+      summary: Register a new patient
+      description: Creates a new patient
+      operationId: createPatient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatientRequest"
+      responses:
+        '201':
+          description: Patient created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PatientResponse"
+
+  /patients/{id}:
+    get:
+      summary: Get patient by ID
+      description: Returns a patient by its ID
+      operationId: getPatientById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the patient
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Patient found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PatientResponse"
+        '404':
+          description: Patient not found
+    patch:
+      summary: Update patient information
+      description: Updates a patient by its ID
+      operationId: updatePatient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the patient
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatientRequest"
+      responses:
+        '200':
+          description: Patient updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PatientResponse"
+        '404':
+          description: Patient not found
+    delete:
+      summary: Delete a patient
+      description: Deletes a patient by its ID
+      operationId: deletePatient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the patient
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Patient deleted
+        '404':
+          description: Patient not found
+
+components:
+  schemas:
+    PatientRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+      required:
+        - firstName
+        - lastName
+    PatientResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+      required:
+        - id
+        - firstName
+        - lastName

@@ -1,0 +1,183 @@
+openapi: 3.0.0
+info:
+  title: Recipe API
+  version: "1.0.0"
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /api/recipes:
+    get:
+      summary: List all recipes
+      description: Optionally filter by category or search by title
+      operationId: findAllRecipes
+      parameters:
+        - name: category
+          in: query
+          required: false
+          description: Filter recipes by category
+          schema:
+            type: string
+        - name: search
+          in: query
+          required: false
+          description: Search recipes by title (partial match)
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of recipes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RecipeResponse"
+
+    post:
+      summary: Create a new recipe
+      description: Creates a new fit recipe
+      operationId: createRecipe
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecipeRequest"
+      responses:
+        "201":
+          description: Recipe created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecipeResponse"
+
+  /api/recipes/{id}:
+    get:
+      summary: Get recipe by ID
+      description: Returns a recipe by its ID
+      operationId: getRecipeById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Recipe ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Recipe found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecipeResponse"
+        "404":
+          description: Recipe not found
+
+    put:
+      summary: Update a recipe
+      description: Updates an existing recipe by its ID
+      operationId: updateRecipe
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Recipe ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecipeRequest"
+      responses:
+        "200":
+          description: Recipe updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecipeResponse"
+        "404":
+          description: Recipe not found
+
+    delete:
+      summary: Delete a recipe
+      description: Deletes a recipe by its ID
+      operationId: deleteRecipe
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Recipe ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Recipe deleted
+        "404":
+          description: Recipe not found
+
+components:
+  schemas:
+    RecipeRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Recipe title
+        description:
+          type: string
+          description: Short description of the recipe
+        ingredients:
+          type: string
+          description: Ingredients list (free text or structured string)
+        instructions:
+          type: string
+          description: Preparation steps
+        calories:
+          type: integer
+          format: int32
+          description: Approximate calories per serving
+        category:
+          type: string
+          description: Recipe category (e.g. BREAKFAST, LUNCH, DINNER, SNACK)
+      required:
+        - title
+        - ingredients
+        - instructions
+
+    RecipeResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+        ingredients:
+          type: string
+        instructions:
+          type: string
+        calories:
+          type: integer
+          format: int32
+        category:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - ingredients
+        - instructions
