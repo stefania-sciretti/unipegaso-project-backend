@@ -4,6 +4,7 @@ import com.clinica.application.service.PatientService
 import com.clinica.doors.inbound.routes.mappers.toResponse
 import com.clinica.dto.PatientRequest
 import com.clinica.dto.PatientResponse
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -27,6 +28,19 @@ class PatientController(
     ])
     fun getAllPatients(): List<PatientResponse> =
         patientService.getAllPatients().map { it.toResponse() }
+
+    @GetMapping("/search")
+    @Operation(summary = "Search patients by name", description = "Search by first name, last name (min 3 characters)")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Search results"),
+        ApiResponse(responseCode = "400", description = "Search term too short"),
+        ApiResponse(responseCode = "401", description = "Unauthorized")
+    ])
+    fun search(
+        @Parameter(description = "Search term (min 3 characters)")
+        @RequestParam q: String
+    ): List<PatientResponse> =
+        patientService.search(q).map { it.toResponse() }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
