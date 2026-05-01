@@ -8,10 +8,10 @@ import java.time.LocalDateTime
 // ─── GlycemiaMeasurement ─────────────────────────────────────────────────────
 
 data class GlycemiaMeasurementRequest(
-    @field:NotNull(message = "Client ID is required")
-    val clientId: Long,
-    @field:NotNull(message = "Trainer ID is required")
-    val trainerId: Long,
+    @field:NotNull(message = "Patient ID is required")
+    val patientId: Long,
+    @field:NotNull(message = "Specialist ID is required")
+    val specialistId: Long,
     @field:NotNull(message = "Measurement date/time is required")
     val measuredAt: LocalDateTime,
     @field:NotNull(message = "Glycemia value is required")
@@ -24,10 +24,10 @@ data class GlycemiaMeasurementRequest(
 
 data class GlycemiaMeasurementResponse(
     val id: Long,
-    val clientId: Long,
-    val clientFullName: String,
-    val trainerId: Long,
-    val trainerFullName: String,
+    val patientId: Long,
+    val patientFullName: String,
+    val specialistId: Long,
+    val specialistFullName: String,
     val measuredAt: LocalDateTime,
     val valueMgDl: BigDecimal,
     val context: String,

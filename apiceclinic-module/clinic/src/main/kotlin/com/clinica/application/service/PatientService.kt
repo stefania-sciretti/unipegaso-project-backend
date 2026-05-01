@@ -28,7 +28,7 @@ class PatientService(
     }
 
     fun create(request: PatientRequest): Patient {
-        require(!dao.existsByFiscalCode(request.fiscalCode)) {
+        check(!dao.existsByFiscalCode(request.fiscalCode)) {
             "A patient with fiscal code '${request.fiscalCode}' already exists"
         }
         val patient = Patient(

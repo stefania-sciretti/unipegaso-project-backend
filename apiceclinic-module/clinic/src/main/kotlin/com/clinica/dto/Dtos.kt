@@ -3,6 +3,7 @@ package com.clinica.dto
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -18,6 +19,10 @@ data class PatientRequest(
 
     @field:NotBlank(message = "Fiscal code is required")
     @field:Size(min = 16, max = 16, message = "Fiscal code must be 16 characters")
+    @field:Pattern(
+        regexp = "^[A-Z]{6}\\d{2}[A-Z]\\d{2}[A-Z]\\d{3}[A-Z]$",
+        message = "Invalid Italian fiscal code format"
+    )
     val fiscalCode: String,
 
     @field:NotNull(message = "Birth date is required")

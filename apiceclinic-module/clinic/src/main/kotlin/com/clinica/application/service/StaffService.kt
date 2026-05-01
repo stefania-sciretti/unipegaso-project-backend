@@ -27,7 +27,7 @@ class SpecialistService(
 
     @Transactional
     fun create(request: SpecialistRequest): SpecialistResponse {
-        require(!specialistDao.existsByEmail(request.email)) {
+        check(!specialistDao.existsByEmail(request.email)) {
             "A specialist with email '${request.email}' already exists"
         }
         val specialist = Specialist(

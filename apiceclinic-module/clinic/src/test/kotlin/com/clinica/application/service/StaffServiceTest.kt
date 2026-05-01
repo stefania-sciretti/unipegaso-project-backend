@@ -112,7 +112,7 @@ class SpecialistServiceTest {
         )
         every { specialistDao.existsByEmail("anna@example.com") } returns true
 
-        assertThrows<IllegalArgumentException> { service.create(request) }
+        assertThrows<IllegalStateException> { service.create(request) }
     }
 
     // update

@@ -1,6 +1,8 @@
 package com.clinica.dto
 
 import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
@@ -85,7 +87,13 @@ data class DietPlanRequest(
     val title: String,
 
     val description: String? = null,
+
+    @field:Min(value = 500, message = "Calories must be at least 500")
+    @field:Max(value = 5000, message = "Calories cannot exceed 5000")
     val calories: Int? = null,
+
+    @field:Min(value = 1, message = "Duration must be at least 1 week")
+    @field:Max(value = 52, message = "Duration cannot exceed 52 weeks")
     val durationWeeks: Int? = null,
     val active: Boolean = true
 )
@@ -120,7 +128,13 @@ data class TrainingPlanRequest(
     val title: String,
 
     val description: String? = null,
+
+    @field:Min(value = 1, message = "Duration must be at least 1 week")
+    @field:Max(value = 52, message = "Duration cannot exceed 52 weeks")
     val weeks: Int? = null,
+
+    @field:Min(value = 1, message = "Sessions per week must be at least 1")
+    @field:Max(value = 7, message = "Sessions per week cannot exceed 7")
     val sessionsPerWeek: Int? = null,
     val active: Boolean = true
 )

@@ -3,6 +3,7 @@ package com.clinica.config
 import com.clinica.dto.ErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -28,6 +29,12 @@ class GlobalExceptionHandler {
     fun handleConflict(ex: IllegalStateException): ResponseEntity<ErrorResponse> =
         ResponseEntity.status(HttpStatus.CONFLICT).body(
             ErrorResponse(status = 409, error = "Conflict", message = ex.message ?: "Operation not allowed")
+        )
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleMessageNotReadable(ex: HttpMessageNotReadableException): ResponseEntity<ErrorResponse> =
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ErrorResponse(status = 400, error = "Bad Request", message = "Malformed or missing request body")
         )
 
     @ExceptionHandler(MethodArgumentNotValidException::class)

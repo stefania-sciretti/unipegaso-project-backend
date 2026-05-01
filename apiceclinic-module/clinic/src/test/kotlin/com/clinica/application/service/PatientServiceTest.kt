@@ -122,11 +122,11 @@ class PatientServiceTest {
     }
 
     @Test
-    fun `create throws IllegalArgumentException when fiscal code already exists`() {
+    fun `create throws IllegalStateException when fiscal code already exists`() {
         val request = buildRequest()
         every { dao.existsByFiscalCode(request.fiscalCode) } returns true
 
-        val ex = assertThrows<IllegalArgumentException> { service.create(request) }
+        val ex = assertThrows<IllegalStateException> { service.create(request) }
         assert(ex.message!!.contains(request.fiscalCode))
         verify(exactly = 0) { dao.save(any()) }
     }
