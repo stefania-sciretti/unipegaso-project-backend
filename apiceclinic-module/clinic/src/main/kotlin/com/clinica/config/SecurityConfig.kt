@@ -49,6 +49,7 @@ class SecurityConfig {
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                     .requestMatchers("/actuator/**").permitAll()
                     .requestMatchers("/h2-console/**").permitAll()   // H2 console dev
+                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/specialists", "/api/specialists/**").permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
