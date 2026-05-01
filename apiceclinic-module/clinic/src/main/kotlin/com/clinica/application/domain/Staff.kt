@@ -2,7 +2,7 @@ package com.clinica.application.domain
 
 import java.time.LocalDateTime
 
-data class Staff(
+data class Specialist(
     val id: Long,
     val firstName: String,
     val lastName: String,

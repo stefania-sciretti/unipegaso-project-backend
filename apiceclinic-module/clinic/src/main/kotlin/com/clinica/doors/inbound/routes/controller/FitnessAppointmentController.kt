@@ -18,10 +18,10 @@ class FitnessAppointmentController(private val fitnessAppointmentService: Fitnes
     @GetMapping
     @Operation(summary = "List appointments")
     fun findAll(
-        @RequestParam(required = false) clientId: Long?,
-        @RequestParam(required = false) trainerId: Long?,
+        @RequestParam(required = false) patientId: Long?,
+        @RequestParam(required = false) specialistId: Long?,
         @RequestParam(required = false) status: String?
-    ): List<FitnessAppointmentResponse> = fitnessAppointmentService.findAll(clientId, trainerId, status)
+    ): List<FitnessAppointmentResponse> = fitnessAppointmentService.findAll(patientId, specialistId, status)
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

@@ -2,10 +2,10 @@ package com.clinica.application.service
 
 import com.clinica.application.domain.DietPlan
 import com.clinica.application.domain.Patient
-import com.clinica.application.domain.Staff
+import com.clinica.application.domain.Specialist
 import com.clinica.doors.outbound.database.dao.DietPlanDao
 import com.clinica.doors.outbound.database.dao.PatientDao
-import com.clinica.doors.outbound.database.dao.StaffDao
+import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.dto.DietPlanRequest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -26,7 +26,7 @@ class DietPlanServiceTest {
 
     @MockK private lateinit var dietPlanDao: DietPlanDao
     @MockK private lateinit var patientDao: PatientDao
-    @MockK private lateinit var staffDao: StaffDao
+    @MockK private lateinit var specialistDao: SpecialistDao
 
     @InjectMockKs
     private lateinit var service: DietPlanService
@@ -39,39 +39,39 @@ class DietPlanServiceTest {
         email = "mario@example.com"
     )
 
-    private fun buildStaff(id: Long = 10L) = Staff(
+    private fun buildSpecialist(id: Long = 10L) = Specialist(
         id = id, firstName = "Anna", lastName = "Verdi",
         role = "NUTRITIONIST", email = "anna@example.com"
     )
 
     private fun buildDietPlan(id: Long = 1L) = DietPlan(
-        id = id, client = buildPatient(), trainer = buildStaff(),
+        id = id, patient = buildPatient(), specialist = buildSpecialist(),
         title = "Low-carb plan", description = "Lose 5kg",
         calories = 1800, durationWeeks = 8, active = true,
         createdAt = now, updatedAt = now
     )
 
     private fun buildRequest() = DietPlanRequest(
-        clientId = 1L, trainerId = 10L, title = "Low-carb plan",
+        patientId = 1L, specialistId = 10L, title = "Low-carb plan",
         description = "Lose 5kg", calories = 1800, durationWeeks = 8, active = true
     )
 
     // findAll
 
     @Test
-    fun `findAll returns all plans when clientId is null`() {
+    fun `findAll returns all plans when patientId is null`() {
         every { dietPlanDao.findAll(null) } returns listOf(buildDietPlan(1L), buildDietPlan(2L))
         assertEquals(2, service.findAll(null).size)
     }
 
     @Test
-    fun `findAll filters by clientId`() {
+    fun `findAll filters by patientId`() {
         every { dietPlanDao.findAll(1L) } returns listOf(buildDietPlan())
 
         val result = service.findAll(1L)
 
         assertEquals(1, result.size)
-        assertEquals(1L, result[0].clientId)
+        assertEquals(1L, result[0].patientId)
     }
 
     // findById
@@ -84,8 +84,8 @@ class DietPlanServiceTest {
 
         assertEquals(1L, result.id)
         assertEquals("Low-carb plan", result.title)
-        assertEquals("Mario", result.clientFirstName)
-        assertEquals("Anna", result.trainerFirstName)
+        assertEquals("Mario", result.patientFirstName)
+        assertEquals("Anna", result.specialistFirstName)
     }
 
     @Test
@@ -102,7 +102,7 @@ class DietPlanServiceTest {
     fun `create saves and returns new diet plan`() {
         val saved = buildDietPlan(id = 5L)
         every { patientDao.findById(1L) } returns buildPatient()
-        every { staffDao.findById(10L) } returns buildStaff()
+        every { specialistDao.findById(10L) } returns buildSpecialist()
         every { dietPlanDao.save(any()) } returns saved
 
         val result = service.create(buildRequest())
@@ -123,7 +123,7 @@ class DietPlanServiceTest {
     @Test
     fun `create throws NoSuchElementException when trainer not found`() {
         every { patientDao.findById(1L) } returns buildPatient()
-        every { staffDao.findById(10L) } returns null
+        every { specialistDao.findById(10L) } returns null
 
         assertThrows<NoSuchElementException> { service.create(buildRequest()) }
         verify(exactly = 0) { dietPlanDao.save(any()) }
@@ -137,7 +137,7 @@ class DietPlanServiceTest {
         val updated = existing.copy(title = "Updated plan")
         every { dietPlanDao.findById(1L) } returns existing
         every { patientDao.findById(1L) } returns buildPatient()
-        every { staffDao.findById(10L) } returns buildStaff()
+        every { specialistDao.findById(10L) } returns buildSpecialist()
         every { dietPlanDao.save(any()) } returns updated
 
         val result = service.update(1L, buildRequest())

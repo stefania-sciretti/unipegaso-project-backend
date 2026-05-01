@@ -1,10 +1,10 @@
 package com.clinica.application.service
 
 import com.clinica.application.domain.Patient
-import com.clinica.application.domain.Staff
+import com.clinica.application.domain.Specialist
 import com.clinica.application.domain.TrainingPlan
 import com.clinica.doors.outbound.database.dao.PatientDao
-import com.clinica.doors.outbound.database.dao.StaffDao
+import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.doors.outbound.database.dao.TrainingPlanDao
 import com.clinica.dto.TrainingPlanRequest
 import io.mockk.every
@@ -26,7 +26,7 @@ class TrainingPlanServiceTest {
 
     @MockK private lateinit var trainingPlanDao: TrainingPlanDao
     @MockK private lateinit var patientDao: PatientDao
-    @MockK private lateinit var staffDao: StaffDao
+    @MockK private lateinit var specialistDao: SpecialistDao
 
     @InjectMockKs
     private lateinit var service: TrainingPlanService
@@ -37,20 +37,20 @@ class TrainingPlanServiceTest {
         email = "mario@example.com"
     )
 
-    private fun buildStaff(id: Long = 10L) = Staff(
+    private fun buildSpecialist(id: Long = 10L) = Specialist(
         id = id, firstName = "Anna", lastName = "Verdi",
         role = "TRAINER", email = "anna@example.com"
     )
 
     private fun buildPlan(id: Long = 1L) = TrainingPlan(
-        id = id, client = buildPatient(), trainer = buildStaff(),
+        id = id, patient = buildPatient(), specialist = buildSpecialist(),
         title = "Strength Plan", description = "12-week strength",
         weeks = 12, sessionsPerWeek = 3, active = true,
         createdAt = LocalDateTime.now()
     )
 
     private fun buildRequest() = TrainingPlanRequest(
-        clientId = 1L, trainerId = 10L, title = "Strength Plan",
+        patientId = 1L, specialistId = 10L, title = "Strength Plan",
         description = "12-week strength", weeks = 12, sessionsPerWeek = 3, active = true
     )
 
@@ -63,7 +63,7 @@ class TrainingPlanServiceTest {
     }
 
     @Test
-    fun `findAll filters by clientId`() {
+    fun `findAll filters by patientId`() {
         every { trainingPlanDao.findAll(1L) } returns listOf(buildPlan())
         assertEquals(1, service.findAll(1L).size)
     }
@@ -78,8 +78,8 @@ class TrainingPlanServiceTest {
 
         assertEquals(1L, result.id)
         assertEquals("Strength Plan", result.title)
-        assertEquals("Mario Rossi", result.clientFullName)
-        assertEquals("Anna Verdi", result.trainerFullName)
+        assertEquals("Mario Rossi", result.patientFullName)
+        assertEquals("Anna Verdi", result.specialistFullName)
     }
 
     @Test
@@ -96,7 +96,7 @@ class TrainingPlanServiceTest {
     fun `create saves and returns new training plan`() {
         val saved = buildPlan(id = 5L)
         every { patientDao.findById(1L) } returns buildPatient()
-        every { staffDao.findById(10L) } returns buildStaff()
+        every { specialistDao.findById(10L) } returns buildSpecialist()
         every { trainingPlanDao.save(any()) } returns saved
 
         val result = service.create(buildRequest())
@@ -116,7 +116,7 @@ class TrainingPlanServiceTest {
     @Test
     fun `create throws NoSuchElementException when trainer not found`() {
         every { patientDao.findById(1L) } returns buildPatient()
-        every { staffDao.findById(10L) } returns null
+        every { specialistDao.findById(10L) } returns null
 
         assertThrows<NoSuchElementException> { service.create(buildRequest()) }
         verify(exactly = 0) { trainingPlanDao.save(any()) }
@@ -130,7 +130,7 @@ class TrainingPlanServiceTest {
         val updated = existing.copy(title = "Updated Plan")
         every { trainingPlanDao.findById(1L) } returns existing
         every { patientDao.findById(1L) } returns buildPatient()
-        every { staffDao.findById(10L) } returns buildStaff()
+        every { specialistDao.findById(10L) } returns buildSpecialist()
         every { trainingPlanDao.save(any()) } returns updated
 
         val result = service.update(1L, buildRequest())

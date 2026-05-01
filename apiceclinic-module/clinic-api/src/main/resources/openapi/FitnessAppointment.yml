@@ -12,17 +12,17 @@ paths:
       description: Filter by clientId, trainerId or status
       operationId: findAllFitnessAppointments
       parameters:
-        - name: clientId
+        - name: patientId
           in: query
           required: false
-          description: Filter by client ID
+          description: Filter by patient ID
           schema:
             type: integer
             format: int64
-        - name: trainerId
+        - name: specialistId
           in: query
           required: false
-          description: Filter by trainer ID
+          description: Filter by specialist ID
           schema:
             type: integer
             format: int64
@@ -133,10 +133,10 @@ components:
     FitnessAppointmentRequest:
       type: object
       properties:
-        clientId:
+        patientId:
           type: integer
           format: int64
-        trainerId:
+        specialistId:
           type: integer
           format: int64
         startTime:
@@ -151,8 +151,8 @@ components:
         notes:
           type: string
       required:
-        - clientId
-        - trainerId
+        - patientId
+        - specialistId
         - startTime
         - endTime
 
@@ -171,10 +171,10 @@ components:
         id:
           type: integer
           format: int64
-        clientId:
+        patientId:
           type: integer
           format: int64
-        trainerId:
+        specialistId:
           type: integer
           format: int64
         startTime:
@@ -197,8 +197,8 @@ components:
           format: date-time
       required:
         - id
-        - clientId
-        - trainerId
+        - patientId
+        - specialistId
         - startTime
         - endTime
         - status

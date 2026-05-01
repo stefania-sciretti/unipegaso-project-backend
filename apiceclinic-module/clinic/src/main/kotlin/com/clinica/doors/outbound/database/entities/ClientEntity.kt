@@ -1,3 +1,2 @@
 package com.clinica.doors.outbound.database.entities
-
-typealias ClientEntity = PatientEntity
+// ClientEntity is an alias for PatientEntity - use PatientEntity directly

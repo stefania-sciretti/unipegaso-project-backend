@@ -5,9 +5,9 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
 
-// ─── Staff ─────────────────────────────────────────────────────────────────
+// ─── Specialist ─────────────────────────────────────────────────────────────────
 
-data class StaffResponse(
+data class SpecialistResponse(
     val id: Long,
     val firstName: String,
     val lastName: String,
@@ -20,11 +20,11 @@ data class StaffResponse(
 // ─── FitnessAppointment ───────────────────────────────────────────────────────
 
 data class FitnessAppointmentRequest(
-    @field:NotNull(message = "Client ID is required")
-    val clientId: Long,
+    @field:NotNull(message = "Patient ID is required")
+    val patientId: Long,
 
-    @field:NotNull(message = "Trainer ID is required")
-    val trainerId: Long,
+    @field:NotNull(message = "Specialist ID is required")
+    val specialistId: Long,
 
     @field:NotNull(message = "Scheduled date/time is required")
     val scheduledAt: LocalDateTime,
@@ -42,11 +42,11 @@ data class FitnessAppointmentStatusRequest(
 
 data class FitnessAppointmentResponse(
     val id: Long,
-    val clientId: Long,
-    val clientFullName: String,
-    val trainerId: Long,
-    val trainerFullName: String,
-    val trainerRole: String,
+    val patientId: Long,
+    val patientFullName: String,
+    val specialistId: Long,
+    val specialistFullName: String,
+    val specialistRole: String,
     val scheduledAt: LocalDateTime,
     val serviceType: String,
     val status: String,
@@ -58,11 +58,11 @@ data class FitnessAppointmentResponse(
 // ─── DietPlan ─────────────────────────────────────────────────────────────────
 
 data class DietPlanRequest(
-    @field:NotNull(message = "Client ID is required")
-    val clientId: Long,
+    @field:NotNull(message = "Patient ID is required")
+    val patientId: Long,
 
-    @field:NotNull(message = "Trainer ID is required")
-    val trainerId: Long,
+    @field:NotNull(message = "Specialist ID is required")
+    val specialistId: Long,
 
     @field:NotBlank(message = "Title is required")
     val title: String,
@@ -75,12 +75,12 @@ data class DietPlanRequest(
 
 data class DietPlanResponse(
     val id: Long,
-    val clientId: Long,
-    val trainerId: Long,
-    val clientFirstName: String,
-    val clientLastName: String,
-    val trainerFirstName: String,
-    val trainerLastName: String,
+    val patientId: Long,
+    val specialistId: Long,
+    val patientFirstName: String,
+    val patientLastName: String,
+    val specialistFirstName: String,
+    val specialistLastName: String,
     val title: String,
     val description: String?,
     val calories: Int?,
@@ -93,11 +93,11 @@ data class DietPlanResponse(
 // ─── TrainingPlan ─────────────────────────────────────────────────────────────
 
 data class TrainingPlanRequest(
-    @field:NotNull(message = "Client ID is required")
-    val clientId: Long,
+    @field:NotNull(message = "Patient ID is required")
+    val patientId: Long,
 
-    @field:NotNull(message = "Trainer ID is required")
-    val trainerId: Long,
+    @field:NotNull(message = "Specialist ID is required")
+    val specialistId: Long,
 
     @field:NotBlank(message = "Title is required")
     val title: String,
@@ -110,10 +110,10 @@ data class TrainingPlanRequest(
 
 data class TrainingPlanResponse(
     val id: Long,
-    val clientId: Long,
-    val clientFullName: String,
-    val trainerId: Long,
-    val trainerFullName: String,
+    val patientId: Long,
+    val patientFullName: String,
+    val specialistId: Long,
+    val specialistFullName: String,
     val title: String,
     val description: String?,
     val weeks: Int?,

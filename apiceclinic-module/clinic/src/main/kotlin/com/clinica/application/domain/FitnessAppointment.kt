@@ -4,8 +4,8 @@ import java.time.LocalDateTime
 
 data class FitnessAppointment(
     val id: Long,
-    val client: Patient,
-    val staff: Staff,
+    val patient: Patient,
+    val specialist: Specialist,
     val scheduledAt: LocalDateTime,
     val serviceType: String,
     val status: AppointmentStatus = AppointmentStatus.BOOKED,

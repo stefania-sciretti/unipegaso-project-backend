@@ -11,13 +11,13 @@ paths:
       operationId: listTrainingPlans
       tags: [Training Plans]
       parameters:
-        - name: clientId
+        - name: patientId
           in: query
           required: false
           schema:
             type: integer
             format: int64
-          description: Filter plans by client ID
+          description: Filter plans by patient ID
       responses:
         '200':
           description: List of training plans
@@ -130,18 +130,18 @@ components:
     TrainingPlanRequest:
       type: object
       required:
-        - clientId
-        - trainerId
+        - patientId
+        - specialistId
         - title
       properties:
-        clientId:
+        patientId:
           type: integer
           format: int64
-          description: ID of the client (patient)
-        trainerId:
+          description: ID of the patient
+        specialistId:
           type: integer
           format: int64
-          description: ID of the assigned staff/trainer
+          description: ID of the assigned specialist
         title:
           type: string
           maxLength: 255
@@ -166,15 +166,15 @@ components:
         id:
           type: integer
           format: int64
-        clientId:
+        patientId:
           type: integer
           format: int64
-        clientFullName:
+        patientFullName:
           type: string
-        trainerId:
+        specialistId:
           type: integer
           format: int64
-        trainerFullName:
+        specialistFullName:
           type: string
         title:
           type: string

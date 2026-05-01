@@ -1,8 +1,8 @@
--- V9: Create fitness_appointment table (client_id references patient)
+-- V9: Create fitness_appointment table (patient_id references patient)
 CREATE TABLE fitness_appointment (
     id           BIGSERIAL    PRIMARY KEY,
-    client_id    BIGINT       NOT NULL REFERENCES patient(id),
-    trainer_id   BIGINT       NOT NULL REFERENCES staff(id),
+    patient_id   BIGINT       NOT NULL REFERENCES patient(id),
+    trainer_id   BIGINT       NOT NULL REFERENCES specialist(id),
     scheduled_at TIMESTAMP    NOT NULL,
     service_type VARCHAR(200) NOT NULL,
     status       VARCHAR(20)  NOT NULL DEFAULT 'BOOKED',
@@ -11,7 +11,7 @@ CREATE TABLE fitness_appointment (
     updated_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_fitness_appt_client_id    ON fitness_appointment(client_id);
+CREATE INDEX idx_fitness_appt_patient_id    ON fitness_appointment(patient_id);
 CREATE INDEX idx_fitness_appt_trainer_id   ON fitness_appointment(trainer_id);
 CREATE INDEX idx_fitness_appt_scheduled_at ON fitness_appointment(scheduled_at);
 CREATE INDEX idx_fitness_appt_status       ON fitness_appointment(status);

@@ -9,24 +9,24 @@ import org.springframework.stereotype.Repository
 @Repository
 interface FitnessAppointmentRepository : JpaRepository<FitnessAppointmentEntity, Long> {
 
-    fun findByClientEntityId(clientId: Long): List<FitnessAppointmentEntity>
+    fun findByPatientEntityId(patientId: Long): List<FitnessAppointmentEntity>
 
-    fun findByStaffId(trainerId: Long): List<FitnessAppointmentEntity>
+    fun findBySpecialistId(specialistId: Long): List<FitnessAppointmentEntity>
 
     fun findByStatus(status: String): List<FitnessAppointmentEntity>
 
-    fun findByClientEntityIdAndStaffId(
-        clientId: Long,
-        trainerId: Long
+    fun findByPatientEntityIdAndSpecialistId(
+        patientId: Long,
+        specialistId: Long
     ): List<FitnessAppointmentEntity>
 
-    fun findByClientEntityIdAndStatus(
-        clientId: Long,
+    fun findByPatientEntityIdAndStatus(
+        patientId: Long,
         status: String
     ): List<FitnessAppointmentEntity>
 
-    fun findByStaffIdAndStatus(
-        trainerId: Long,
+    fun findBySpecialistIdAndStatus(
+        specialistId: Long,
         status: String
     ): List<FitnessAppointmentEntity>
 
@@ -34,20 +34,20 @@ interface FitnessAppointmentRepository : JpaRepository<FitnessAppointmentEntity,
         """
         SELECT f
         FROM FitnessAppointmentEntity f
-        WHERE (:clientId  IS NULL OR f.clientEntity.id = :clientId)
-          AND (:trainerId IS NULL OR f.staff.id         = :trainerId)
-          AND (:status    IS NULL OR f.status           = :status)
+        WHERE (:patientId   IS NULL OR f.patientEntity.id = :patientId)
+          AND (:specialistId IS NULL OR f.specialist.id   = :specialistId)
+          AND (:status      IS NULL OR f.status           = :status)
         """
     )
     fun search(
-        @Param("clientId") clientId: Long?,
-        @Param("trainerId") trainerId: Long?,
+        @Param("patientId") patientId: Long?,
+        @Param("specialistId") specialistId: Long?,
         @Param("status") status: String?
     ): List<FitnessAppointmentEntity>
 
-    fun findByClientEntityIdAndStaffIdAndStatus(
-        clientId: Long,
-        trainerId: Long,
+    fun findByPatientEntityIdAndSpecialistIdAndStatus(
+        patientId: Long,
+        specialistId: Long,
         status: String
     ): List<FitnessAppointmentEntity>
 }

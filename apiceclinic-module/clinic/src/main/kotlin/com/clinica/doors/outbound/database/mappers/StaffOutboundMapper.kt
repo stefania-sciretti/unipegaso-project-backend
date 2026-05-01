@@ -1,10 +1,10 @@
 package com.clinica.doors.outbound.database.mappers
 
-import com.clinica.application.domain.Staff
-import com.clinica.doors.outbound.database.entities.StaffEntity
+import com.clinica.application.domain.Specialist
+import com.clinica.doors.outbound.database.entities.SpecialistEntity
 
-fun StaffEntity.toDomain(): Staff =
-    Staff(
+fun SpecialistEntity.toDomain(): Specialist =
+    Specialist(
         id = this.id,
         firstName = this.firstName,
         lastName = this.lastName,

@@ -1,7 +1,7 @@
 package com.clinica.application.service
 
-import com.clinica.application.domain.Staff
-import com.clinica.doors.outbound.database.dao.StaffDao
+import com.clinica.application.domain.Specialist
+import com.clinica.doors.outbound.database.dao.SpecialistDao
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -13,15 +13,15 @@ import org.junit.jupiter.api.extension.ExtendWith
 import java.time.LocalDateTime
 
 @ExtendWith(MockKExtension::class)
-class StaffServiceTest {
+class SpecialistServiceTest {
 
     @MockK
-    private lateinit var staffDao: StaffDao
+    private lateinit var specialistDao: SpecialistDao
 
     @InjectMockKs
-    private lateinit var service: StaffService
+    private lateinit var service: SpecialistService
 
-    private fun buildStaff(id: Long = 1L, role: String = "NUTRITIONIST") = Staff(
+    private fun buildSpecialist(id: Long = 1L, role: String = "NUTRITIONIST") = Specialist(
         id = id, firstName = "Anna", lastName = "Verdi",
         role = role, bio = "Specialist", email = "anna@example.com",
         createdAt = LocalDateTime.now(), updatedAt = LocalDateTime.now()
@@ -30,8 +30,8 @@ class StaffServiceTest {
     // findAll
 
     @Test
-    fun `findAll returns all staff members`() {
-        every { staffDao.findAll() } returns listOf(buildStaff(1L), buildStaff(2L, "TRAINER"))
+    fun `findAll returns all specialists`() {
+        every { specialistDao.findAll() } returns listOf(buildSpecialist(1L), buildSpecialist(2L, "TRAINER"))
 
         val result = service.findAll()
 
@@ -41,16 +41,16 @@ class StaffServiceTest {
     }
 
     @Test
-    fun `findAll returns empty list when no staff`() {
-        every { staffDao.findAll() } returns emptyList()
+    fun `findAll returns empty list when no specialists`() {
+        every { specialistDao.findAll() } returns emptyList()
         assertEquals(0, service.findAll().size)
     }
 
     // findByRole
 
     @Test
-    fun `findByRole returns staff matching role`() {
-        every { staffDao.findByRole("TRAINER") } returns listOf(buildStaff(2L, "TRAINER"))
+    fun `findByRole returns specialists matching role`() {
+        every { specialistDao.findByRole("TRAINER") } returns listOf(buildSpecialist(2L, "TRAINER"))
 
         val result = service.findByRole("TRAINER")
 
@@ -60,15 +60,15 @@ class StaffServiceTest {
 
     @Test
     fun `findByRole returns empty list when no match`() {
-        every { staffDao.findByRole("UNKNOWN") } returns emptyList()
+        every { specialistDao.findByRole("UNKNOWN") } returns emptyList()
         assertEquals(0, service.findByRole("UNKNOWN").size)
     }
 
     // findById
 
     @Test
-    fun `findById returns staff response`() {
-        every { staffDao.findById(1L) } returns buildStaff()
+    fun `findById returns specialist response`() {
+        every { specialistDao.findById(1L) } returns buildSpecialist()
 
         val result = service.findById(1L)
 
@@ -79,7 +79,7 @@ class StaffServiceTest {
 
     @Test
     fun `findById throws NoSuchElementException when not found`() {
-        every { staffDao.findById(99L) } returns null
+        every { specialistDao.findById(99L) } returns null
 
         val ex = assertThrows<NoSuchElementException> { service.findById(99L) }
         assert(ex.message!!.contains("99"))

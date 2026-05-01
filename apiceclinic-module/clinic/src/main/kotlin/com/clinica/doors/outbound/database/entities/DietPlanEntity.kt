@@ -11,12 +11,12 @@ class DietPlanEntity(
     val id: Long,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "client_id", nullable = false)
-    var clientEntity: ClientEntity,
+    @JoinColumn(name = "patient_id", nullable = false)
+    var patientEntity: PatientEntity,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "trainer_id", nullable = false)
-    var staff: StaffEntity,
+    var specialist: SpecialistEntity,
 
     @Column(nullable = false, length = 255)
     var title: String,

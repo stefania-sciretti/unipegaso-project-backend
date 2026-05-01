@@ -3,7 +3,7 @@ package com.clinica.application.service
 import com.clinica.application.domain.DietPlan
 import com.clinica.doors.outbound.database.dao.DietPlanDao
 import com.clinica.doors.outbound.database.dao.PatientDao
-import com.clinica.doors.outbound.database.dao.StaffDao
+import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.dto.DietPlanRequest
 import com.clinica.dto.DietPlanResponse
 import org.springframework.stereotype.Service
@@ -15,12 +15,12 @@ import java.time.LocalDateTime
 class DietPlanService(
     private val dietPlanDao: DietPlanDao,
     private val patientDao: PatientDao,
-    private val staffDao: StaffDao
+    private val specialistDao: SpecialistDao
 )  {
 
     @Transactional(readOnly = true)
-    fun findAll(clientId: Long?): List<DietPlanResponse> =
-        dietPlanDao.findAll(clientId)
+    fun findAll(patientId: Long?): List<DietPlanResponse> =
+        dietPlanDao.findAll(patientId)
             .map { it.toResponse() }
 
     @Transactional(readOnly = true)
@@ -28,18 +28,18 @@ class DietPlanService(
         dietPlanDao.findById(id).orThrow("Diet plan not found with id: $id").toResponse()
 
     fun create(request: DietPlanRequest): DietPlanResponse {
-        val client = patientDao.findById(request.clientId)
-            .orThrow("Client (patient) not found with id: ${request.clientId}")
+        val patient = patientDao.findById(request.patientId)
+            .orThrow("Patient not found with id: ${request.patientId}")
 
-        val trainer = staffDao.findById(request.trainerId)
-            .orThrow("Trainer (staff) not found with id: ${request.trainerId}")
+        val specialist = specialistDao.findById(request.specialistId)
+            .orThrow("Specialist not found with id: ${request.specialistId}")
 
         val now = LocalDateTime.now()
 
         val dietPlan = DietPlan(
             id = 0L,
-            client = client,
-            trainer = trainer,
+            patient = patient,
+            specialist = specialist,
             title = request.title,
             description = request.description,
             calories = request.calories,
@@ -56,15 +56,15 @@ class DietPlanService(
         val existing = dietPlanDao.findById(id)
             .orThrow("Diet plan not found with id: $id")
 
-        val client = patientDao.findById(request.clientId)
-            .orThrow("Client (patient) not found with id: ${request.clientId}")
+        val patient = patientDao.findById(request.patientId)
+            .orThrow("Patient not found with id: ${request.patientId}")
 
-        val trainer = staffDao.findById(request.trainerId)
-            .orThrow("Trainer (staff) not found with id: ${request.trainerId}")
+        val specialist = specialistDao.findById(request.specialistId)
+            .orThrow("Specialist not found with id: ${request.specialistId}")
 
         val updated = existing.copy(
-            client = client,
-            trainer = trainer,
+            patient = patient,
+            specialist = specialist,
             title = request.title,
             description = request.description,
             calories = request.calories,
@@ -84,12 +84,12 @@ class DietPlanService(
     private fun DietPlan.toResponse(): DietPlanResponse =
         DietPlanResponse(
             id = this.id,
-            clientId = this.client.id,
-            trainerId = this.trainer.id,
-            clientFirstName = this.client.firstName,
-            clientLastName = this.client.lastName,
-            trainerFirstName = this.trainer.firstName,
-            trainerLastName = this.trainer.lastName,
+            patientId = this.patient.id,
+            specialistId = this.specialist.id,
+            patientFirstName = this.patient.firstName,
+            patientLastName = this.patient.lastName,
+            specialistFirstName = this.specialist.firstName,
+            specialistLastName = this.specialist.lastName,
             title = this.title,
             description = this.description,
             calories = this.calories,

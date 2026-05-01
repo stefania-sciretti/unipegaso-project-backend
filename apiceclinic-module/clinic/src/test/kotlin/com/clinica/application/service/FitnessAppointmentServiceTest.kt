@@ -3,10 +3,10 @@ package com.clinica.application.service
 import com.clinica.application.domain.AppointmentStatus
 import com.clinica.application.domain.FitnessAppointment
 import com.clinica.application.domain.Patient
-import com.clinica.application.domain.Staff
+import com.clinica.application.domain.Specialist
 import com.clinica.doors.outbound.database.dao.FitnessAppointmentDao
 import com.clinica.doors.outbound.database.dao.PatientDao
-import com.clinica.doors.outbound.database.dao.StaffDao
+import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.dto.FitnessAppointmentRequest
 import com.clinica.dto.FitnessAppointmentStatusRequest
 import io.mockk.every
@@ -25,8 +25,8 @@ import java.time.LocalDateTime
 class FitnessAppointmentServiceTest {
 
     @MockK private lateinit var appointmentDao: FitnessAppointmentDao
-    @MockK private lateinit var clientDao: PatientDao
-    @MockK private lateinit var staffDao: StaffDao
+    @MockK private lateinit var patientDao: PatientDao
+    @MockK private lateinit var specialistDao: SpecialistDao
 
     @InjectMockKs
     private lateinit var service: FitnessAppointmentService
@@ -39,7 +39,7 @@ class FitnessAppointmentServiceTest {
         email = "mario@example.com"
     )
 
-    private fun buildStaff(id: Long = 10L) = Staff(
+    private fun buildSpecialist(id: Long = 10L) = Specialist(
         id = id, firstName = "Anna", lastName = "Verdi",
         role = "TRAINER", email = "anna@example.com"
     )
@@ -48,13 +48,13 @@ class FitnessAppointmentServiceTest {
         id: Long = 1L,
         status: AppointmentStatus = AppointmentStatus.BOOKED
     ) = FitnessAppointment(
-        id = id, client = buildPatient(), staff = buildStaff(),
+        id = id, patient = buildPatient(), specialist = buildSpecialist(),
         scheduledAt = fixedTime, serviceType = "Personal Training",
         status = status, notes = "Note", updatedAt = fixedTime
     )
 
     private fun buildRequest() = FitnessAppointmentRequest(
-        clientId = 1L, trainerId = 10L, scheduledAt = fixedTime,
+        patientId = 1L, specialistId = 10L, scheduledAt = fixedTime,
         serviceType = "Personal Training", notes = "Note"
     )
 
@@ -79,7 +79,7 @@ class FitnessAppointmentServiceTest {
         assertEquals(1L, result.id)
         assertEquals("BOOKED", result.status)
         assertEquals("Personal Training", result.serviceType)
-        assertEquals("Mario Rossi", result.clientFullName)
+        assertEquals("Mario Rossi", result.patientFullName)
     }
 
     @Test
@@ -93,8 +93,8 @@ class FitnessAppointmentServiceTest {
     @Test
     fun `create saves appointment with BOOKED status`() {
         val saved = buildFitnessAppointment(id = 5L)
-        every { clientDao.findById(1L) } returns buildPatient()
-        every { staffDao.findById(10L) } returns buildStaff()
+        every { patientDao.findById(1L) } returns buildPatient()
+        every { specialistDao.findById(10L) } returns buildSpecialist()
         every { appointmentDao.save(any()) } returns saved
 
         val result = service.create(buildRequest())
@@ -105,7 +105,7 @@ class FitnessAppointmentServiceTest {
 
     @Test
     fun `create throws NoSuchElementException when client not found`() {
-        every { clientDao.findById(1L) } returns null
+        every { patientDao.findById(1L) } returns null
 
         assertThrows<NoSuchElementException> { service.create(buildRequest()) }
         verify(exactly = 0) { appointmentDao.save(any()) }
@@ -113,8 +113,8 @@ class FitnessAppointmentServiceTest {
 
     @Test
     fun `create throws NoSuchElementException when staff not found`() {
-        every { clientDao.findById(1L) } returns buildPatient()
-        every { staffDao.findById(10L) } returns null
+        every { patientDao.findById(1L) } returns buildPatient()
+        every { specialistDao.findById(10L) } returns null
 
         assertThrows<NoSuchElementException> { service.create(buildRequest()) }
         verify(exactly = 0) { appointmentDao.save(any()) }

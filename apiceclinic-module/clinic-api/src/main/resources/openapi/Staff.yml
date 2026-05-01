@@ -1,60 +1,60 @@
 openapi: 3.0.0
 info:
-  title: Staff / Trainers API
+  title: Specialist API
   version: "1.0.0"
 
 servers:
   - url: http://localhost:8080
 
 paths:
-  /api/trainers:
+  /api/specialists:
     get:
-      summary: List all staff members
+      summary: List all specialists
       description: Optionally filter by role
-      operationId: findAllStaff
+      operationId: findAllSpecialists
       parameters:
         - name: role
           in: query
           required: false
-          description: Filter staff members by role (e.g. TRAINER, NUTRITIONIST)
+          description: Filter specialists by role (e.g. TRAINER, NUTRITIONIST)
           schema:
             type: string
       responses:
         "200":
-          description: List of staff members
+          description: List of specialists
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/StaffResponse"
+                  $ref: "#/components/schemas/SpecialistResponse"
 
-  /api/trainers/{id}:
+  /api/specialists/{id}:
     get:
-      summary: Get staff member by ID
-      description: Returns a staff member by its ID
-      operationId: getStaffById
+      summary: Get specialist by ID
+      description: Returns a specialist by its ID
+      operationId: getSpecialistById
       parameters:
         - name: id
           in: path
           required: true
-          description: Staff member ID
+          description: Specialist ID
           schema:
             type: integer
             format: int64
       responses:
         "200":
-          description: Staff member found
+          description: Specialist found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/StaffResponse"
+                $ref: "#/components/schemas/SpecialistResponse"
         "404":
-          description: Staff member not found
+          description: Specialist not found
 
 components:
   schemas:
-    StaffResponse:
+    SpecialistResponse:
       type: object
       properties:
         id:
@@ -66,7 +66,7 @@ components:
           type: string
         role:
           type: string
-          description: Staff role (e.g. TRAINER, NUTRITIONIST)
+          description: Specialist role (e.g. TRAINER, NUTRITIONIST)
         email:
           type: string
           format: email
@@ -74,7 +74,7 @@ components:
           type: string
         specialization:
           type: string
-          description: Main specialization of the staff member
+          description: Main specialization of the specialist
       required:
         - id
         - firstName

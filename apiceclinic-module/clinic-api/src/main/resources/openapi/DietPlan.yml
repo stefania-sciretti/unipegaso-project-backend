@@ -11,10 +11,10 @@ paths:
       description: List all diet plans, optionally filtered by clientId
       operationId: findAllDietPlans
       parameters:
-        - name: clientId
+        - name: patientId
           in: query
           required: false
-          description: Filter diet plans by client ID
+          description: Filter diet plans by patient ID
           schema:
             type: integer
             format: int64
@@ -117,7 +117,7 @@ components:
     DietPlanRequest:
       type: object
       properties:
-        clientId:
+        patientId:
           type: integer
           format: int64
         title:
@@ -135,7 +135,7 @@ components:
         notes:
           type: string
       required:
-        - clientId
+        - patientId
         - title
         - startDate
         - endDate
@@ -146,7 +146,7 @@ components:
         id:
           type: integer
           format: int64
-        clientId:
+        patientId:
           type: integer
           format: int64
         title:
@@ -171,7 +171,7 @@ components:
           format: date-time
       required:
         - id
-        - clientId
+        - patientId
         - title
         - startDate
         - endDate

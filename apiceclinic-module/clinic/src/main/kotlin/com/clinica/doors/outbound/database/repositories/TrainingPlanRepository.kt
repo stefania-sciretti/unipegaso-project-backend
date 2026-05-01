@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TrainingPlanRepository : JpaRepository<TrainingPlanEntity, Long> {
-    fun findByClientEntityId(clientId: Long): List<TrainingPlanEntity>
+    fun findByPatientEntityId(patientId: Long): List<TrainingPlanEntity>
     fun countByActiveTrue(): Long
 }

@@ -4,8 +4,8 @@ import java.time.LocalDateTime
 
 data class TrainingPlan(
     val id: Long = 0L,
-    val client: Patient,
-    val trainer: Staff,
+    val patient: Patient,
+    val specialist: Specialist,
     val title: String,
     val description: String? = null,
     val weeks: Int? = null,

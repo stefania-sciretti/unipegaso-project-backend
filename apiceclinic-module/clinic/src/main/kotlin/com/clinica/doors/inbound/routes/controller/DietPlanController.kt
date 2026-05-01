@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.*
 class DietPlanController(private val dietPlanService: DietPlanService) {
 
     @GetMapping
-    @Operation(summary = "List all diet plans", description = "Optionally filter by clientId")
-    fun findAll(@RequestParam(required = false) clientId: Long?): List<DietPlanResponse> =
-        dietPlanService.findAll(clientId)
+    @Operation(summary = "List all diet plans", description = "Optionally filter by patientId")
+    fun findAll(@RequestParam(required = false) patientId: Long?): List<DietPlanResponse> =
+        dietPlanService.findAll(patientId)
 
     @GetMapping("/{id}")
     @Operation(summary = "Get diet plan by ID")

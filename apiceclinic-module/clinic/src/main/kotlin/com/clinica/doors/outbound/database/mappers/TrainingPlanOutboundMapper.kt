@@ -2,14 +2,14 @@ package com.clinica.doors.outbound.database.mappers
 
 import com.clinica.application.domain.TrainingPlan
 import com.clinica.doors.outbound.database.entities.PatientEntity
-import com.clinica.doors.outbound.database.entities.StaffEntity
+import com.clinica.doors.outbound.database.entities.SpecialistEntity
 import com.clinica.doors.outbound.database.entities.TrainingPlanEntity
 
 fun TrainingPlanEntity.toDomain(): TrainingPlan =
     TrainingPlan(
         id = this.id,
-        client = this.clientEntity.toDomain(),
-        trainer = this.staff.toDomain(),
+        patient = this.patientEntity.toDomain(),
+        specialist = this.specialist.toDomain(),
         title = this.title,
         description = this.description,
         weeks = this.weeks,
@@ -19,13 +19,13 @@ fun TrainingPlanEntity.toDomain(): TrainingPlan =
     )
 
 fun TrainingPlan.toEntity(
-    clientEntityProvider: () -> PatientEntity,
-    staffEntityProvider: () -> StaffEntity,
+    patientEntityProvider: () -> PatientEntity,
+    specialistEntityProvider: () -> SpecialistEntity,
     existingEntity: TrainingPlanEntity? = null
 ): TrainingPlanEntity {
     existingEntity?.let {
-        it.clientEntity = clientEntityProvider()
-        it.staff = staffEntityProvider()
+        it.patientEntity = patientEntityProvider()
+        it.specialist = specialistEntityProvider()
         it.title = this.title
         it.description = this.description
         it.weeks = this.weeks
@@ -35,8 +35,8 @@ fun TrainingPlan.toEntity(
     }
     return TrainingPlanEntity(
         id = this.id,
-        clientEntity = clientEntityProvider(),
-        staff = staffEntityProvider(),
+        patientEntity = patientEntityProvider(),
+        specialist = specialistEntityProvider(),
         title = this.title,
         description = this.description,
         weeks = this.weeks,

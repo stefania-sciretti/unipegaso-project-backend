@@ -2,13 +2,13 @@ package com.clinica.doors.outbound.database.dao
 
 import com.clinica.application.domain.FitnessAppointment
 import com.clinica.application.domain.Patient
-import com.clinica.application.domain.Staff
+import com.clinica.application.domain.Specialist
 import com.clinica.doors.outbound.database.entities.FitnessAppointmentEntity
 import com.clinica.doors.outbound.database.entities.PatientEntity
-import com.clinica.doors.outbound.database.entities.StaffEntity
+import com.clinica.doors.outbound.database.entities.SpecialistEntity
 import com.clinica.doors.outbound.database.repositories.FitnessAppointmentRepository
 import com.clinica.doors.outbound.database.repositories.PatientRepository
-import com.clinica.doors.outbound.database.repositories.StaffRepository
+import com.clinica.doors.outbound.database.repositories.SpecialistRepository
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,12 +16,12 @@ import org.springframework.transaction.annotation.Transactional
 class FitnessAppointmentDao(
     private val repository: FitnessAppointmentRepository,
     private val patientRepository: PatientRepository,
-    private val staffRepository: StaffRepository
+    private val specialistRepository: SpecialistRepository
 ) {
 
     @Transactional(readOnly = true)
-    fun findAll(clientId: Long?, trainerId: Long?, status: String?): List<FitnessAppointment> =
-        repository.search(clientId, trainerId, status).map { it.toDomain() }
+    fun findAll(patientId: Long?, specialistId: Long?, status: String?): List<FitnessAppointment> =
+        repository.search(patientId, specialistId, status).map { it.toDomain() }
 
     @Transactional(readOnly = true)
     fun findById(id: Long): FitnessAppointment? =
@@ -29,28 +29,28 @@ class FitnessAppointmentDao(
 
     @Transactional
     fun save(appointment: FitnessAppointment): FitnessAppointment {
-        val clientId = appointment.client.id
-        val staffId = appointment.staff.id
+        val patientId = appointment.patient.id
+        val specialistId = appointment.specialist.id
 
-        val clientEntity = patientRepository.findById(clientId)
-            .orElseThrow { IllegalArgumentException("Client not found: $clientId") }
-        val staffEntity = staffRepository.findById(staffId)
-            .orElseThrow { IllegalArgumentException("Staff not found: $staffId") }
+        val patientEntity = patientRepository.findById(patientId)
+            .orElseThrow { IllegalArgumentException("Patient not found: $patientId") }
+        val specialistEntity = specialistRepository.findById(specialistId)
+            .orElseThrow { IllegalArgumentException("Specialist not found: $specialistId") }
 
         val existing = if (appointment.id != 0L)
             repository.findById(appointment.id).orElse(null) else null
 
         val entity = existing?.also {
-            it.clientEntity = clientEntity
-            it.staff = staffEntity
+            it.patientEntity = patientEntity
+            it.specialist = specialistEntity
             it.scheduledAt = appointment.scheduledAt
             it.serviceType = appointment.serviceType
             it.status = appointment.status
             it.notes = appointment.notes
         } ?: FitnessAppointmentEntity(
             id = appointment.id,
-            clientEntity = clientEntity,
-            staff = staffEntity,
+            patientEntity = patientEntity,
+            specialist = specialistEntity,
             scheduledAt = appointment.scheduledAt,
             serviceType = appointment.serviceType,
             status = appointment.status,
@@ -66,8 +66,8 @@ class FitnessAppointmentDao(
     private fun FitnessAppointmentEntity.toDomain(): FitnessAppointment =
         FitnessAppointment(
             id = id,
-            client = clientEntity.clientToDomain(),
-            staff = staff.staffToDomain(),
+            patient = patientEntity.patientToDomain(),
+            specialist = specialist.specialistToDomain(),
             scheduledAt = scheduledAt,
             serviceType = serviceType,
             status = status,
@@ -75,7 +75,7 @@ class FitnessAppointmentDao(
             updatedAt = updatedAt
         )
 
-    private fun PatientEntity.clientToDomain(): Patient =
+    private fun PatientEntity.patientToDomain(): Patient =
         Patient(
             id = id,
             firstName = firstName,
@@ -87,8 +87,8 @@ class FitnessAppointmentDao(
             updatedAt = updatedAt
         )
 
-    private fun StaffEntity.staffToDomain(): Staff =
-        Staff(
+    private fun SpecialistEntity.specialistToDomain(): Specialist =
+        Specialist(
             id = id,
             firstName = firstName,
             lastName = lastName,

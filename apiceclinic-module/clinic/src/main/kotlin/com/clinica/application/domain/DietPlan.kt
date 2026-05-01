@@ -4,8 +4,8 @@ import java.time.LocalDateTime
 
 data class DietPlan(
     val id: Long = 0,
-    val client: Patient,
-    val trainer: Staff,
+    val patient: Patient,
+    val specialist: Specialist,
     val title: String,
     val description: String? = null,
     val calories: Int? = null,

@@ -4,7 +4,7 @@ import com.clinica.application.domain.AppointmentStatus
 import com.clinica.application.domain.FitnessAppointment
 import com.clinica.doors.outbound.database.dao.FitnessAppointmentDao
 import com.clinica.doors.outbound.database.dao.PatientDao
-import com.clinica.doors.outbound.database.dao.StaffDao
+import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.dto.FitnessAppointmentRequest
 import com.clinica.dto.FitnessAppointmentResponse
 import com.clinica.dto.FitnessAppointmentStatusRequest
@@ -16,28 +16,28 @@ import java.time.LocalDateTime
 @Transactional
 class FitnessAppointmentService(
     private val appointmentDao: FitnessAppointmentDao,
-    private val clientDao: PatientDao,
-    private val staffDao: StaffDao
+    private val patientDao: PatientDao,
+    private val specialistDao: SpecialistDao
 ) {
 
     @Transactional(readOnly = true)
-    fun findAll(clientId: Long?, trainerId: Long?, status: String?): List<FitnessAppointmentResponse> =
-        appointmentDao.findAll(clientId, trainerId, status).map { it.toResponse() }
+    fun findAll(patientId: Long?, specialistId: Long?, status: String?): List<FitnessAppointmentResponse> =
+        appointmentDao.findAll(patientId, specialistId, status).map { it.toResponse() }
 
     @Transactional(readOnly = true)
     fun findById(id: Long): FitnessAppointmentResponse =
         appointmentDao.findById(id).orThrow("Fitness appointment not found with id: $id").toResponse()
 
     fun create(request: FitnessAppointmentRequest): FitnessAppointmentResponse {
-        val client = clientDao.findById(request.clientId)
-            .orThrow("Client not found with id: ${request.clientId}")
-        val staff = staffDao.findById(request.trainerId)
-            .orThrow("Staff not found with id: ${request.trainerId}")
+        val patient = patientDao.findById(request.patientId)
+            .orThrow("Patient not found with id: ${request.patientId}")
+        val specialist = specialistDao.findById(request.specialistId)
+            .orThrow("Specialist not found with id: ${request.specialistId}")
 
         val appointment = FitnessAppointment(
             id = 0L,
-            client = client,
-            staff = staff,
+            patient = patient,
+            specialist = specialist,
             scheduledAt = request.scheduledAt,
             serviceType = request.serviceType,
             status = AppointmentStatus.BOOKED,
@@ -65,11 +65,11 @@ class FitnessAppointmentService(
 
     private fun FitnessAppointment.toResponse() = FitnessAppointmentResponse(
         id = id,
-        clientId = client.id,
-        clientFullName = client.fullName,
-        trainerId = staff.id,
-        trainerFullName = staff.fullName,
-        trainerRole = staff.role,
+        patientId = patient.id,
+        patientFullName = patient.fullName,
+        specialistId = specialist.id,
+        specialistFullName = specialist.fullName,
+        specialistRole = specialist.role,
         scheduledAt = scheduledAt,
         serviceType = serviceType,
         status = status.name,

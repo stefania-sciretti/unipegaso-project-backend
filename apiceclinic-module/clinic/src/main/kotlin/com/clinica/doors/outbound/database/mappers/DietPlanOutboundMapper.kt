@@ -3,13 +3,13 @@ package com.clinica.doors.outbound.database.mappers
 import com.clinica.application.domain.DietPlan
 import com.clinica.doors.outbound.database.entities.DietPlanEntity
 import com.clinica.doors.outbound.database.entities.PatientEntity
-import com.clinica.doors.outbound.database.entities.StaffEntity
+import com.clinica.doors.outbound.database.entities.SpecialistEntity
 
 fun DietPlanEntity.toDomain(): DietPlan =
     DietPlan(
         id = this.id,
-        client = this.clientEntity.toDomain(),
-        trainer = this.staff.toDomain(),
+        patient = this.patientEntity.toDomain(),
+        specialist = this.specialist.toDomain(),
         title = this.title,
         description = this.description,
         calories = this.calories,
@@ -20,14 +20,14 @@ fun DietPlanEntity.toDomain(): DietPlan =
     )
 
 fun DietPlan.toEntity(
-    clientEntityProvider: () -> PatientEntity,
-    staffEntityProvider: () -> StaffEntity,
+    patientEntityProvider: () -> PatientEntity,
+    specialistEntityProvider: () -> SpecialistEntity,
     existingEntity: DietPlanEntity? = null
 ): DietPlanEntity {
     val entity = existingEntity ?: DietPlanEntity(
         id = this.id,
-        clientEntity = clientEntityProvider(),
-        staff = staffEntityProvider(),
+        patientEntity = patientEntityProvider(),
+        specialist = specialistEntityProvider(),
         title = this.title,
         description = this.description,
         calories = this.calories,
@@ -37,8 +37,8 @@ fun DietPlan.toEntity(
         updatedAt = this.updatedAt
     )
     existingEntity?.let {
-        it.clientEntity = clientEntityProvider()
-        it.staff = staffEntityProvider()
+        it.patientEntity = patientEntityProvider()
+        it.specialist = specialistEntityProvider()
         it.title = this.title
         it.description = this.description
         it.calories = this.calories

@@ -2,7 +2,7 @@ package com.clinica.application.service
 
 import com.clinica.application.domain.TrainingPlan
 import com.clinica.doors.outbound.database.dao.PatientDao
-import com.clinica.doors.outbound.database.dao.StaffDao
+import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.doors.outbound.database.dao.TrainingPlanDao
 import com.clinica.dto.TrainingPlanRequest
 import com.clinica.dto.TrainingPlanResponse
@@ -14,26 +14,26 @@ import org.springframework.transaction.annotation.Transactional
 class TrainingPlanService(
     private val trainingPlanDao: TrainingPlanDao,
     private val patientDao: PatientDao,
-    private val staffDao: StaffDao
+    private val specialistDao: SpecialistDao
 ) : TrainingPlanServicePort {
 
     @Transactional(readOnly = true)
-    override fun findAll(clientId: Long?): List<TrainingPlanResponse> =
-        trainingPlanDao.findAll(clientId).map { it.toResponse() }
+    override fun findAll(patientId: Long?): List<TrainingPlanResponse> =
+        trainingPlanDao.findAll(patientId).map { it.toResponse() }
 
     @Transactional(readOnly = true)
     override fun findById(id: Long): TrainingPlanResponse =
         trainingPlanDao.findById(id).orThrow("Training plan not found with id: $id").toResponse()
 
     override fun create(request: TrainingPlanRequest): TrainingPlanResponse {
-        val client = patientDao.findById(request.clientId)
-            .orThrow("Client not found with id: ${request.clientId}")
-        val trainer = staffDao.findById(request.trainerId)
-            .orThrow("Staff not found with id: ${request.trainerId}")
+        val patient = patientDao.findById(request.patientId)
+            .orThrow("Patient not found with id: ${request.patientId}")
+        val specialist = specialistDao.findById(request.specialistId)
+            .orThrow("Specialist not found with id: ${request.specialistId}")
 
         val plan = TrainingPlan(
-            client = client,
-            trainer = trainer,
+            patient = patient,
+            specialist = specialist,
             title = request.title,
             description = request.description,
             weeks = request.weeks,
@@ -46,15 +46,15 @@ class TrainingPlanService(
     override fun update(id: Long, request: TrainingPlanRequest): TrainingPlanResponse {
         trainingPlanDao.findById(id).orThrow("Training plan not found with id: $id")
 
-        val client = patientDao.findById(request.clientId)
-            .orThrow("Client not found with id: ${request.clientId}")
-        val trainer = staffDao.findById(request.trainerId)
-            .orThrow("Staff not found with id: ${request.trainerId}")
+        val patient = patientDao.findById(request.patientId)
+            .orThrow("Patient not found with id: ${request.patientId}")
+        val specialist = specialistDao.findById(request.specialistId)
+            .orThrow("Specialist not found with id: ${request.specialistId}")
 
         val updated = TrainingPlan(
             id = id,
-            client = client,
-            trainer = trainer,
+            patient = patient,
+            specialist = specialist,
             title = request.title,
             description = request.description,
             weeks = request.weeks,
@@ -71,10 +71,10 @@ class TrainingPlanService(
 
     private fun TrainingPlan.toResponse() = TrainingPlanResponse(
         id = id,
-        clientId = client.id,
-        clientFullName = client.fullName,
-        trainerId = trainer.id,
-        trainerFullName = trainer.fullName,
+        patientId = patient.id,
+        patientFullName = patient.fullName,
+        specialistId = specialist.id,
+        specialistFullName = specialist.fullName,
         title = title,
         description = description,
         weeks = weeks,

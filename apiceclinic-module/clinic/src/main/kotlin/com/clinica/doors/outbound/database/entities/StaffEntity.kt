@@ -4,8 +4,8 @@ import java.time.LocalDateTime
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "staff")
-data class StaffEntity(
+@Table(name = "specialist")
+data class SpecialistEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
@@ -31,6 +31,6 @@ data class StaffEntity(
     @Column(name = "updated_at", nullable = false)
     var updatedAt: LocalDateTime = LocalDateTime.now(),
 
-    @OneToMany(mappedBy = "staff", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "specialist", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     val appointments: MutableList<FitnessAppointmentEntity> = mutableListOf()
 )

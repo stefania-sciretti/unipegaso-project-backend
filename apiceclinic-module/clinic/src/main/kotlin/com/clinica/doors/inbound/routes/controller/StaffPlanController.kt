@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.*
 class StaffPlanController(private val trainingPlanService: TrainingPlanServicePort) {
 
     @GetMapping
-    @Operation(summary = "List all training plans", description = "Optionally filter by clientId")
-    fun findAll(@RequestParam(required = false) clientId: Long?): List<TrainingPlanResponse> =
-        trainingPlanService.findAll(clientId)
+    @Operation(summary = "List all training plans", description = "Optionally filter by patientId")
+    fun findAll(@RequestParam(required = false) patientId: Long?): List<TrainingPlanResponse> =
+        trainingPlanService.findAll(patientId)
 
     @GetMapping("/{id}")
     @Operation(summary = "Get training plan by ID")
