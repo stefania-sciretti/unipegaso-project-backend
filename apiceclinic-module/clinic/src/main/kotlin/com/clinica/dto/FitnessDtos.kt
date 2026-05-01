@@ -17,6 +17,23 @@ data class SpecialistResponse(
     val createdAt: LocalDateTime
 )
 
+data class SpecialistRequest(
+    @field:NotBlank(message = "First name is required")
+    val firstName: String,
+
+    @field:NotBlank(message = "Last name is required")
+    val lastName: String,
+
+    @field:NotBlank(message = "Role is required")
+    val role: String,
+
+    val bio: String? = null,
+
+    @field:NotBlank(message = "Email is required")
+    @field:Email(message = "Invalid email format")
+    val email: String
+)
+
 // ─── FitnessAppointment ───────────────────────────────────────────────────────
 
 data class FitnessAppointmentRequest(

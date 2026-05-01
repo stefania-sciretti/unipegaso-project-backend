@@ -14,3 +14,15 @@ fun SpecialistEntity.toDomain(): Specialist =
         createdAt = this.createdAt,
         updatedAt = this.updatedAt
     )
+
+fun Specialist.toEntity(): SpecialistEntity =
+    SpecialistEntity(
+        id = this.id,
+        firstName = this.firstName,
+        lastName = this.lastName,
+        role = this.role,
+        bio = this.bio,
+        email = this.email,
+        createdAt = this.createdAt,
+        updatedAt = this.updatedAt
+    )

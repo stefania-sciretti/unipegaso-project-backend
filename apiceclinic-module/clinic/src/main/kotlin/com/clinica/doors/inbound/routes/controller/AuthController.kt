@@ -6,6 +6,8 @@ import com.clinica.dto.LoginResponse
 import com.clinica.dto.RegisterRequest
 import com.clinica.security.JwtTokenProvider
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,6 +35,10 @@ class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Registra nuovo utente", description = "Crea un nuovo account utente")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Utente registrato"),
+        ApiResponse(responseCode = "400", description = "Dati non validi")
+    ])
     fun register(@RequestBody registerRequest: RegisterRequest): ResponseEntity<Any> {
         return try {
             val user = authService.registerUser(registerRequest)
@@ -54,6 +60,10 @@ class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "Login utente", description = "Effettua il login e restituisce un JWT token")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Login effettuato"),
+        ApiResponse(responseCode = "401", description = "Credenziali non valide")
+    ])
     fun login(@RequestBody loginRequest: LoginRequest): ResponseEntity<Any> {
         logger.debug("Login attempt: username={}", loginRequest.username)
 
@@ -96,6 +106,9 @@ class AuthController {
 
     @GetMapping("/validate")
     @Operation(summary = "Valida token JWT", description = "Verifica se il token JWT è valido")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Risultato validazione token")
+    ])
     fun validateToken(@RequestHeader("Authorization") token: String): ResponseEntity<Map<String, Any>> {
         val jwt = if (token.startsWith("Bearer ")) {
             token.substring(7)
@@ -117,6 +130,9 @@ class AuthController {
 
     @GetMapping("/test")
     @Operation(summary = "Test endpoint", description = "Endpoint di test per verificare il login")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "API funzionante")
+    ])
     fun test(): ResponseEntity<Map<String, String>> {
         return ResponseEntity.ok(mapOf(
             "status" to "ok",

@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository
 interface SpecialistRepository : JpaRepository<SpecialistEntity, Long> {
 
     fun findByRole(role: String): List<SpecialistEntity>
+    fun existsByEmail(email: String): Boolean
+    fun existsByEmailAndIdNot(email: String, id: Long): Boolean
 }

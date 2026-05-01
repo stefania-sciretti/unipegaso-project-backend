@@ -16,7 +16,7 @@ paths:
         - name: role
           in: query
           required: false
-          description: Filter specialists by role (e.g. TRAINER, NUTRITIONIST)
+          description: Filter by role (e.g. TRAINER, NUTRITIONIST)
           schema:
             type: string
       responses:
@@ -28,17 +28,39 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/SpecialistResponse"
+        "401":
+          description: Unauthorized
+    post:
+      summary: Register a new specialist
+      operationId: createSpecialist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpecialistRequest"
+      responses:
+        "201":
+          description: Specialist created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpecialistResponse"
+        "400":
+          description: Validation error
+        "409":
+          description: Email already exists
+        "401":
+          description: Unauthorized
 
   /api/specialists/{id}:
     get:
       summary: Get specialist by ID
-      description: Returns a specialist by its ID
       operationId: getSpecialistById
       parameters:
         - name: id
           in: path
           required: true
-          description: Specialist ID
           schema:
             type: integer
             format: int64
@@ -51,11 +73,94 @@ paths:
                 $ref: "#/components/schemas/SpecialistResponse"
         "404":
           description: Specialist not found
+        "401":
+          description: Unauthorized
+    put:
+      summary: Update specialist information
+      operationId: updateSpecialist
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpecialistRequest"
+      responses:
+        "200":
+          description: Specialist updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpecialistResponse"
+        "400":
+          description: Validation error
+        "404":
+          description: Specialist not found
+        "409":
+          description: Email already exists
+        "401":
+          description: Unauthorized
+    delete:
+      summary: Delete a specialist
+      operationId: deleteSpecialist
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Specialist deleted
+        "404":
+          description: Specialist not found
+        "401":
+          description: Unauthorized
 
 components:
   schemas:
+    SpecialistRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - role
+        - email
+      properties:
+        firstName:
+          type: string
+          example: "Maria"
+        lastName:
+          type: string
+          example: "Rossi"
+        role:
+          type: string
+          example: "NUTRITIONIST"
+        bio:
+          type: string
+          nullable: true
+          example: "Nutritionist with 10 years of experience"
+        email:
+          type: string
+          format: email
+          example: "maria.rossi@apiceclinic.it"
+
     SpecialistResponse:
       type: object
+      required:
+        - id
+        - firstName
+        - lastName
+        - role
+        - email
+        - createdAt
       properties:
         id:
           type: integer
@@ -66,18 +171,12 @@ components:
           type: string
         role:
           type: string
-          description: Specialist role (e.g. TRAINER, NUTRITIONIST)
+        bio:
+          type: string
+          nullable: true
         email:
           type: string
           format: email
-        phone:
+        createdAt:
           type: string
-        specialization:
-          type: string
-          description: Main specialization of the specialist
-      required:
-        - id
-        - firstName
-        - lastName
-        - role
-        - email
+          format: date-time
