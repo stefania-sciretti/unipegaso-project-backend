@@ -1,7 +1,7 @@
-package com.clinica.application.service
+package com.clinica.application.mappers
 
-import com.clinica.application.domain.GlycemiaMeasurement
 import com.clinic.model.GlycemiaMeasurementResponse
+import com.clinica.application.domain.GlycemiaMeasurement
 import java.time.ZoneOffset
 
 fun GlycemiaMeasurement.toResponse(): GlycemiaMeasurementResponse =

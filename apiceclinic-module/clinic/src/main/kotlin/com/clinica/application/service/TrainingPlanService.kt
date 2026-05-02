@@ -1,11 +1,12 @@
 package com.clinica.application.service
 
+import com.clinic.model.TrainingPlanResponse
 import com.clinica.application.domain.TrainingPlan
+import com.clinica.application.mappers.toResponse
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.doors.outbound.database.dao.TrainingPlanDao
 import com.clinica.dto.TrainingPlanRequest
-import com.clinic.model.TrainingPlanResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

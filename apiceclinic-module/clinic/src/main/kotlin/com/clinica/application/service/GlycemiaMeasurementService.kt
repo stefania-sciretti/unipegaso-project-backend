@@ -1,12 +1,13 @@
 package com.clinica.application.service
 
+import com.clinic.model.GlycemiaMeasurementResponse
 import com.clinica.application.domain.GlycemiaContext
 import com.clinica.application.domain.GlycemiaMeasurement
+import com.clinica.application.mappers.toResponse
 import com.clinica.doors.outbound.database.dao.GlycemiaMeasurementDao
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.dto.GlycemiaMeasurementRequest
-import com.clinic.model.GlycemiaMeasurementResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime

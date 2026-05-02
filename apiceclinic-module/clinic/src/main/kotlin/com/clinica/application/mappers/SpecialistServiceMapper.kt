@@ -1,7 +1,7 @@
-package com.clinica.application.service
+package com.clinica.application.mappers
 
-import com.clinica.application.domain.Specialist
 import com.clinic.model.SpecialistResponse
+import com.clinica.application.domain.Specialist
 import java.time.ZoneOffset
 
 fun Specialist.toResponse(): SpecialistResponse =

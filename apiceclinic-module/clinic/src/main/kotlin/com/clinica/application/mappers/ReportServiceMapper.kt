@@ -1,7 +1,7 @@
-package com.clinica.application.service
+package com.clinica.application.mappers
 
-import com.clinica.doors.outbound.database.entities.ReportEntity
 import com.clinic.model.ReportResponse
+import com.clinica.doors.outbound.database.entities.ReportEntity
 import java.time.ZoneOffset
 
 fun ReportEntity.toResponse(): ReportResponse =

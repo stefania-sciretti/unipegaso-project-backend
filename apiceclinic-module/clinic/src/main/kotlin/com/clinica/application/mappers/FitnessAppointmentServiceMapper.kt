@@ -1,7 +1,7 @@
-package com.clinica.application.service
+package com.clinica.application.mappers
 
-import com.clinica.application.domain.FitnessAppointment
 import com.clinic.model.FitnessAppointmentResponse
+import com.clinica.application.domain.FitnessAppointment
 import java.time.ZoneOffset
 
 fun FitnessAppointment.toResponse(): FitnessAppointmentResponse =

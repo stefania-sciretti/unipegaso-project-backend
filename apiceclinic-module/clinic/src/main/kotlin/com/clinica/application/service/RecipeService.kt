@@ -1,9 +1,10 @@
 package com.clinica.application.service
 
+import com.clinic.model.RecipeResponse
 import com.clinica.application.domain.Recipe
+import com.clinica.application.mappers.toResponse
 import com.clinica.doors.outbound.database.dao.RecipeDao
 import com.clinica.dto.RecipeRequest
-import com.clinic.model.RecipeResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime

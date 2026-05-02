@@ -1,11 +1,12 @@
 package com.clinica.application.service
 
+import com.clinic.model.DietPlanResponse
 import com.clinica.application.domain.DietPlan
+import com.clinica.application.mappers.toResponse
 import com.clinica.doors.outbound.database.dao.DietPlanDao
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.dto.DietPlanRequest
-import com.clinic.model.DietPlanResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime

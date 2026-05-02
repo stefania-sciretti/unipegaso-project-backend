@@ -1,12 +1,13 @@
 package com.clinica.application.service
 
+import com.clinic.model.AppointmentResponse
 import com.clinica.application.domain.Appointment
 import com.clinica.application.domain.AppointmentStatusEnum
+import com.clinica.application.mappers.toResponse
 import com.clinica.doors.outbound.database.dao.AppointmentDao
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.dto.AppointmentRequest
-import com.clinic.model.AppointmentResponse
 import com.clinica.dto.AppointmentStatusRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

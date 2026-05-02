@@ -1,7 +1,7 @@
-package com.clinica.application.service
+package com.clinica.application.mappers
 
-import com.clinica.application.domain.TrainingPlan
 import com.clinic.model.TrainingPlanResponse
+import com.clinica.application.domain.TrainingPlan
 import java.time.ZoneOffset
 
 fun TrainingPlan.toResponse(): TrainingPlanResponse =

@@ -1,7 +1,7 @@
-package com.clinica.application.service
+package com.clinica.application.mappers
 
-import com.clinica.application.domain.DietPlan
 import com.clinic.model.DietPlanResponse
+import com.clinica.application.domain.DietPlan
 import java.time.ZoneOffset
 
 fun DietPlan.toResponse(): DietPlanResponse =

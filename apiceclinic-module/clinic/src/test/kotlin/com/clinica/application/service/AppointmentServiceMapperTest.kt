@@ -4,9 +4,8 @@ import com.clinica.application.domain.Appointment
 import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.application.domain.Patient
 import com.clinica.application.domain.Specialist
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertNull
+import com.clinica.application.mappers.toResponse
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime

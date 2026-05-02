@@ -1,10 +1,7 @@
 package com.clinica.application.service
 
-import com.clinica.application.domain.GlycemiaClassification
-import com.clinica.application.domain.GlycemiaContext
-import com.clinica.application.domain.GlycemiaMeasurement
-import com.clinica.application.domain.Patient
-import com.clinica.application.domain.Specialist
+import com.clinica.application.domain.*
+import com.clinica.application.mappers.toResponse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
