@@ -17,7 +17,11 @@ class PatientService(
     fun findById(id: Long): Patient =
         dao.findById(id).orThrow("Patient not found with id: $id")
 
-    fun search(query: String): List<Patient> = dao.search(query.trim())
+    fun search(query: String): List<Patient> {
+        val term = query.trim()
+        require(term.length >= 3) { "Search term must be at least 3 characters" }
+        return dao.search(term)
+    }
 
     @Transactional
     fun create(request: PatientRequest): Patient {

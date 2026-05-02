@@ -4,26 +4,24 @@ import com.clinica.doors.outbound.database.entities.UserEntity
 import com.clinica.doors.outbound.database.repositories.UserRepository
 import com.clinica.dto.LoginRequest
 import com.clinica.dto.RegisterRequest
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
-class AuthService {
-
-    @Autowired
-    private lateinit var userRepository: UserRepository
-
-    @Autowired
-    private lateinit var passwordEncoder: PasswordEncoder
+class AuthService(
+    private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder
+) {
 
     fun registerUser(registerRequest: RegisterRequest): UserEntity {
-        if (userRepository.existsByUsername(registerRequest.username)) {
-            throw IllegalArgumentException("Username già esistente")
+        require(!userRepository.existsByUsername(registerRequest.username)) {
+            "Username '${registerRequest.username}' già esistente"
         }
 
-        if (!registerRequest.email.isNullOrEmpty() && userRepository.existsByEmail(registerRequest.email)) {
-            throw IllegalArgumentException("Email già registrata")
+        registerRequest.email?.takeIf { it.isNotEmpty() }?.let { email ->
+            require(!userRepository.existsByEmail(email)) {
+                "Email '$email' già registrata"
+            }
         }
 
         val user = UserEntity(

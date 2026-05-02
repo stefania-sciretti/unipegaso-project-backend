@@ -4,9 +4,9 @@ import com.clinica.application.domain.Specialist
 import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.dto.SpecialistRequest
 import com.clinica.dto.SpecialistResponse
-import java.time.LocalDateTime
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Service
 class SpecialistService(
@@ -64,15 +64,4 @@ class SpecialistService(
         specialistDao.findById(id).orThrow("Specialist $id not found")
         specialistDao.deleteById(id)
     }
-
-    private fun Specialist.toResponse(): SpecialistResponse =
-        SpecialistResponse(
-            id = id,
-            firstName = firstName,
-            lastName = lastName,
-            role = role,
-            bio = bio,
-            email = email,
-            createdAt = createdAt
-        )
 }

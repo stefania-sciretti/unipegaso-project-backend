@@ -9,6 +9,7 @@ import com.clinica.dto.AppointmentRequest
 import com.clinica.dto.AppointmentResponse
 import com.clinica.dto.AppointmentStatusRequest
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
@@ -18,6 +19,7 @@ class AppointmentService(
     private val specialistDao: SpecialistDao,
 ) {
 
+    @Transactional(readOnly = true)
     fun findAll(
         patientId: Long?,
         specialist: Long?,
@@ -26,9 +28,11 @@ class AppointmentService(
         appointmentDao.findAll(patientId, specialist, status)
             .map { it.toResponse() }
 
+    @Transactional(readOnly = true)
     fun findById(id: Long): AppointmentResponse =
         appointmentDao.findById(id).orThrow("Appointment not found with id: $id").toResponse()
 
+    @Transactional
     fun create(request: AppointmentRequest): AppointmentResponse {
         val patient = patientDao.findById(request.patientId)
             .orThrow("Patient not found with id: ${request.patientId}")
@@ -50,6 +54,7 @@ class AppointmentService(
         return appointmentDao.save(appointment).toResponse()
     }
 
+    @Transactional
     fun updateStatus(id: Long, request: AppointmentStatusRequest): AppointmentResponse {
         val appointment = appointmentDao.findById(id)
             .orThrow("Appointment not found with id: $id")
@@ -60,24 +65,9 @@ class AppointmentService(
         return appointmentDao.save(updated).toResponse()
     }
 
+    @Transactional
     fun delete(id: Long) {
         appointmentDao.findById(id).orThrow("Appointment not found with id: $id")
         appointmentDao.deleteById(id)
     }
-
-    private fun Appointment.toResponse(): AppointmentResponse =
-        AppointmentResponse(
-            id = this.id,
-            patientId = this.patient.id,
-            patientFullName = this.patient.fullName,
-            specialistId = this.specialist.id,
-            specialistFullName = this.specialist.fullName,
-            specialistSpecialization = this.specialist.role,
-            scheduledAt = this.scheduledAt,
-            visitType = this.visitType,
-            status = this.status.name,
-            notes = this.notes,
-            hasReport = false,
-            createdAt = this.updatedAt
-        )
 }

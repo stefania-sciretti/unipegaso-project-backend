@@ -55,15 +55,4 @@ class RecipeService(
 
     @Transactional
     fun delete(id: Long) = recipeDao.deleteById(id)
-
-    private fun Recipe.toResponse() = RecipeResponse(
-        id = id,
-        title = title,
-        description = description,
-        ingredients = ingredients,
-        instructions = instructions,
-        calories = calories,
-        category = category,
-        createdAt = createdAt
-    )
 }

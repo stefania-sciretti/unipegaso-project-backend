@@ -2,11 +2,8 @@ package com.clinica.doors.outbound.database.dao
 
 import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.application.domain.FitnessAppointment
-import com.clinica.application.domain.Patient
-import com.clinica.application.domain.Specialist
 import com.clinica.doors.outbound.database.entities.FitnessAppointmentEntity
-import com.clinica.doors.outbound.database.entities.PatientEntity
-import com.clinica.doors.outbound.database.entities.SpecialistEntity
+import com.clinica.doors.outbound.database.mappers.toDomain
 import com.clinica.doors.outbound.database.repositories.FitnessAppointmentRepository
 import com.clinica.doors.outbound.database.repositories.PatientRepository
 import com.clinica.doors.outbound.database.repositories.SpecialistRepository
@@ -32,13 +29,10 @@ class FitnessAppointmentDao(
 
     @Transactional
     fun save(appointment: FitnessAppointment): FitnessAppointment {
-        val patientId = appointment.patient.id
-        val specialistId = appointment.specialist.id
-
-        val patientEntity = patientRepository.findById(patientId)
-            .orElseThrow { IllegalArgumentException("Patient not found: $patientId") }
-        val specialistEntity = specialistRepository.findById(specialistId)
-            .orElseThrow { IllegalArgumentException("Specialist not found: $specialistId") }
+        val patientEntity = patientRepository.findById(appointment.patient.id)
+            .orElseThrow { IllegalArgumentException("Patient not found: ${appointment.patient.id}") }
+        val specialistEntity = specialistRepository.findById(appointment.specialist.id)
+            .orElseThrow { IllegalArgumentException("Specialist not found: ${appointment.specialist.id}") }
 
         val existing = if (appointment.id != 0L)
             repository.findById(appointment.id).orElse(null) else null
@@ -65,39 +59,4 @@ class FitnessAppointmentDao(
 
     @Transactional
     fun deleteById(id: Long) = repository.deleteById(id)
-
-    private fun FitnessAppointmentEntity.toDomain(): FitnessAppointment =
-        FitnessAppointment(
-            id = id ?: 0L,
-            patient = patientEntity.patientToDomain(),
-            specialist = specialist.specialistToDomain(),
-            scheduledAt = scheduledAt,
-            serviceType = serviceType,
-            status = status,
-            notes = notes,
-            updatedAt = updatedAt
-        )
-
-    private fun PatientEntity.patientToDomain(): Patient =
-        Patient(
-            id = id,
-            firstName = firstName,
-            lastName = lastName,
-            fiscalCode = fiscalCode,
-            birthDate = birthDate,
-            email = email,
-            phone = phone,
-            updatedAt = updatedAt
-        )
-
-    private fun SpecialistEntity.specialistToDomain(): Specialist =
-        Specialist(
-            id = id,
-            firstName = firstName,
-            lastName = lastName,
-            role = role,
-            bio = bio,
-            email = email,
-            updatedAt = updatedAt
-        )
 }

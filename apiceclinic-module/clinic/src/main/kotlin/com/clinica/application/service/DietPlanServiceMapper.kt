@@ -1,0 +1,22 @@
+package com.clinica.application.service
+
+import com.clinica.application.domain.DietPlan
+import com.clinica.dto.DietPlanResponse
+
+fun DietPlan.toResponse(): DietPlanResponse =
+    DietPlanResponse(
+        id = this.id,
+        patientId = this.patient.id,
+        specialistId = this.specialist.id,
+        patientFirstName = this.patient.firstName,
+        patientLastName = this.patient.lastName,
+        specialistFirstName = this.specialist.firstName,
+        specialistLastName = this.specialist.lastName,
+        title = this.title,
+        description = this.description,
+        calories = this.calories,
+        durationWeeks = this.durationWeeks,
+        active = this.active,
+        createdAt = this.createdAt,
+        updatedAt = this.updatedAt
+    )

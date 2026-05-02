@@ -68,18 +68,4 @@ class TrainingPlanService(
         trainingPlanDao.findById(id).orThrow("Training plan not found with id: $id")
         trainingPlanDao.deleteById(id)
     }
-
-    private fun TrainingPlan.toResponse() = TrainingPlanResponse(
-        id = id,
-        patientId = patient.id,
-        patientFullName = patient.fullName,
-        specialistId = specialist.id,
-        specialistFullName = specialist.fullName,
-        title = title,
-        description = description,
-        weeks = weeks,
-        sessionsPerWeek = sessionsPerWeek,
-        active = active,
-        createdAt = createdAt
-    )
 }

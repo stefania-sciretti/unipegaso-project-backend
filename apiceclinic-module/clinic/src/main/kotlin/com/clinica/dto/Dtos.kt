@@ -42,36 +42,6 @@ data class PatientResponse(
     val createdAt: LocalDateTime
 )
 
-// ─── specialist ────────────────────────────────────────────────
-
-data class specialistRequest(
-    @field:NotBlank(message = "First name is required")
-    val firstName: String,
-
-    @field:NotBlank(message = "Last name is required")
-    val lastName: String,
-
-    @field:NotBlank(message = "Specialization is required")
-    val specialization: String,
-
-    @field:NotBlank(message = "Email is required")
-    @field:Email(message = "Invalid email format")
-    val email: String,
-
-    @field:NotBlank(message = "License number is required")
-    val licenseNumber: String
-)
-
-data class specialistResponse(
-    val id: Long,
-    val firstName: String,
-    val lastName: String,
-    val specialization: String,
-    val email: String,
-    val licenseNumber: String,
-    val createdAt: LocalDateTime
-)
-
 // ─── Appointment ───────────────────────────────────────────
 
 data class AppointmentRequest(
@@ -114,7 +84,7 @@ data class AppointmentResponse(
 
 data class ReportRequest(
     @field:NotNull(message = "Appointment ID is required")
-    var appointmentId: Long,
+    val appointmentId: Long,
 
     @field:NotBlank(message = "Diagnosis is required")
     val diagnosis: String,
