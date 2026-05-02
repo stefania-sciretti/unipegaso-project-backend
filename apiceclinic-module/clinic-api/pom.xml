@@ -316,15 +316,15 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${project.basedir}/generated-appointment/src/main/kotlin</source>
-                                <source>${project.basedir}/generated-dietplan/src/main/kotlin</source>
-                                <source>${project.basedir}/generated-fitness/src/main/kotlin</source>
-                                <source>${project.basedir}/generated-patient/src/main/kotlin</source>
-                                <source>${project.basedir}/generated-staff/src/main/kotlin</source>
-                                <source>${project.basedir}/generated-recipe/src/main/kotlin</source>
-                                <source>${project.basedir}/generated-report/src/main/kotlin</source>
-                                <source>${project.basedir}/generated-glycemia/src/main/kotlin</source>
-                                <source>${project.basedir}/generated-trainingplan/src/main/kotlin</source>
+                                <source>${project.basedir}/generated-appointment/src/main/kotlin/com/clinic/model</source>
+                                <source>${project.basedir}/generated-dietplan/src/main/kotlin/com/clinic/model</source>
+                                <source>${project.basedir}/generated-fitness/src/main/kotlin/com/clinic/model</source>
+                                <source>${project.basedir}/generated-glycemia/src/main/kotlin/com/clinic/model</source>
+                                <source>${project.basedir}/generated-patient/src/main/kotlin/com/clinic/model</source>
+                                <source>${project.basedir}/generated-staff/src/main/kotlin/com/clinic/model</source>
+                                <source>${project.basedir}/generated-recipe/src/main/kotlin/com/clinic/model</source>
+                                <source>${project.basedir}/generated-report/src/main/kotlin/com/clinic/model</source>
+                                <source>${project.basedir}/generated-trainingplan/src/main/kotlin/com/clinic/model</source>
                             </sources>
                         </configuration>
                     </execution>
