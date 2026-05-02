@@ -13,7 +13,7 @@ fun PatientEntity.toDomain(): Patient =
         email = this.email,
         phone = this.phone,
         createdAt = this.createdAt,
-        updatedAt = this.updatedAt
+        updatedAt = this.updatedAt,
     )
 
 fun Patient.toEntity(): PatientEntity =
@@ -26,5 +26,5 @@ fun Patient.toEntity(): PatientEntity =
         email = this.email,
         phone = this.phone,
         createdAt = this.createdAt,
-        updatedAt = this.updatedAt
+        updatedAt = this.updatedAt,
     )

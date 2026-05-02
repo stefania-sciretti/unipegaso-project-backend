@@ -9,11 +9,16 @@ import org.springframework.stereotype.Repository
 @Repository
 interface PatientRepository : JpaRepository<PatientEntity, Long> {
 
+    @Query("""
+        SELECT p FROM PatientEntity p ORDER BY p.lastName
+    """)
+    fun findAllSortingByLastName(): List<PatientEntity>
+
     @Query(
         """
         SELECT p FROM PatientEntity p
-        WHERE LOWER(p.firstName) LIKE LOWER(CONCAT('%', :term, '%'))
-           OR LOWER(p.lastName)  LIKE LOWER(CONCAT('%', :term, '%'))
+        WHERE LOWER(p.firstName) LIKE LOWER(CONCAT(:term, '%'))
+           OR LOWER(p.lastName)  LIKE LOWER(CONCAT(:term, '%'))
         """
     )
     fun searchByNameOrLastName(@Param("term") term: String): List<PatientEntity>

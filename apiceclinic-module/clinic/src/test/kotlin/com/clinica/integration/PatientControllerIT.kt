@@ -117,7 +117,7 @@ class PatientControllerIT {
                 .content(objectMapper.writeValueAsString(patientJson(firstName = "Giulia", lastName = "Verdi", fiscalCode = "VRDGLI90B41F205Z", email = "giulia@test.com")))
         ).andExpect(status().isCreated)
 
-        mockMvc.perform(get("/api/patients/search?q=Giu"))
+        mockMvc.perform(get("/api/patients?search=Giu"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].firstName").value("Giulia"))
     }
@@ -125,7 +125,7 @@ class PatientControllerIT {
     @Test
     @WithMockUser(username = "admin", roles = ["ADMIN"])
     fun `GET patient search returns 400 for short query`() {
-        mockMvc.perform(get("/api/patients/search?q=ab"))
+        mockMvc.perform(get("/api/patients?search=ab"))
             .andExpect(status().isBadRequest)
     }
 

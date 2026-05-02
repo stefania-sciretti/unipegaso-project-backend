@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 class PatientEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
+    var id: Long,
 
     @Column(name = "first_name", nullable = false, length = 100)
     var firstName: String,
@@ -30,7 +30,7 @@ class PatientEntity(
     var phone: String? = null,
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    var createdAt: LocalDateTime = LocalDateTime.now(),
 
     @Column(name = "updated_at", nullable = false)
     var updatedAt: LocalDateTime = LocalDateTime.now(),

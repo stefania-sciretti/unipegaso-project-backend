@@ -12,7 +12,7 @@ class PatientDao(
 ) {
 
     fun getAllPatients(): List<Patient> =
-        repository.findAll().map { it.toDomain() }
+        repository.findAllSortingByLastName().map { it.toDomain() }
 
     fun findById(id: Long): Patient? =
         repository.findById(id).orElse(null)?.toDomain()
@@ -22,9 +22,6 @@ class PatientDao(
 
     fun existsByFiscalCode(fiscalCode: String): Boolean =
         repository.existsByFiscalCode(fiscalCode)
-
-    fun existsById(id: Long): Boolean =
-        repository.existsById(id)
 
     fun save(patient: Patient): Patient {
         val entity = patient.toEntity()

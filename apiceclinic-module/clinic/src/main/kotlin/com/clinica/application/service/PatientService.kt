@@ -8,25 +8,18 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
-@Transactional
 class PatientService(
     private val dao: PatientDao,
 ) {
 
-    @Transactional(readOnly = true)
     fun getAllPatients(): List<Patient> = dao.getAllPatients()
 
-    @Transactional(readOnly = true)
     fun findById(id: Long): Patient =
         dao.findById(id).orThrow("Patient not found with id: $id")
 
-    @Transactional(readOnly = true)
-    fun search(query: String): List<Patient> {
-        val cleaned = query.trim()
-        require(cleaned.length >= 3) { "Search term must be at least 3 characters long" }
-        return dao.search(cleaned)
-    }
+    fun search(query: String): List<Patient> = dao.search(query.trim())
 
+    @Transactional
     fun create(request: PatientRequest): Patient {
         check(!dao.existsByFiscalCode(request.fiscalCode)) {
             "A patient with fiscal code '${request.fiscalCode}' already exists"
@@ -44,11 +37,9 @@ class PatientService(
         return dao.save(patient)
     }
 
+    @Transactional
     fun update(id: Long, request: PatientRequest): Patient {
         val patient = dao.findById(id).orThrow("Patient not found with id: $id")
-        require(patient.fiscalCode == request.fiscalCode || !dao.existsByFiscalCode(request.fiscalCode)) {
-            "A patient with fiscal code '${request.fiscalCode}' already exists"
-        }
         val updated = patient.copy(
             firstName = request.firstName,
             lastName = request.lastName,
@@ -61,6 +52,7 @@ class PatientService(
         return dao.save(updated)
     }
 
+    @Transactional
     fun delete(id: Long) {
         dao.findById(id).orThrow("Patient not found with id: $id")
         dao.deleteById(id)

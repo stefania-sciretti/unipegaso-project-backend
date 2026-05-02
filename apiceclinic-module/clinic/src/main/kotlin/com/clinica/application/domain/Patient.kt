@@ -14,5 +14,5 @@ data class Patient(
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime = LocalDateTime.now()
 ) {
-    val fullName: String get() = "$firstName $lastName"
+    val fullName: String get() = "$lastName $firstName"
 }
