@@ -1,0 +1,432 @@
+openapi: 3.0.0
+info:
+  title: Glycemia Measurements API
+  description: >
+    Blood glucose monitoring endpoints following ADA/WHO classification thresholds.
+    Measurements are classified as NORMALE, ATTENZIONE, or ELEVATA based on context
+    (A_DIGIUNO, POST_PASTO_1H, POST_PASTO_2H).
+  version: "1"
+servers:
+  - url: "http://localhost:8080"
+
+paths:
+  /api/glycemia-measurements:
+    get:
+      summary: List glycemia measurements
+      description: Returns all measurements ordered by date desc. Optionally filter by patientId.
+      operationId: findAllGlycemiaMeasurements
+      parameters:
+        - name: patientId
+          in: query
+          required: false
+          description: Filter by patient ID
+          schema:
+            type: integer
+            format: int64
+            example: 3
+      responses:
+        '200':
+          description: List of glycemia measurements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GlycemiaMeasurementResponse'
+              example:
+                - id: 1
+                  patientId: 3
+                  patientFirstName: "Giulia"
+                  patientLastName: "Ferretti"
+                  specialistId: 1
+                  specialistFirstName: "Simona"
+                  specialistLastName: "Ruberti"
+                  measuredAt: "2026-04-20T08:00:00"
+                  valueMgDl: 92
+                  context: "A_DIGIUNO"
+                  classification: "NORMALE"
+                  notes: null
+                  createdAt: "2026-04-20T08:05:00"
+                  updatedAt: "2026-04-20T08:05:00"
+        '401':
+          description: Unauthorized
+
+    post:
+      summary: Record a new glycemia measurement
+      description: Saves a new blood glucose measurement for a patient.
+      operationId: createGlycemiaMeasurement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GlycemiaMeasurementRequest'
+            example:
+              patientId: 3
+              specialistId: 1
+              measuredAt: "2026-05-01T08:00:00"
+              valueMgDl: 110
+              context: "A_DIGIUNO"
+              notes: "Prima misurazione dopo dieta"
+      responses:
+        '201':
+          description: Measurement recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GlycemiaMeasurementResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '404':
+          description: Patient or specialist not found
+        '401':
+          description: Unauthorized
+
+  /api/glycemia-measurements/classification-rules:
+    get:
+      summary: Get ADA/WHO glycemia classification rules
+      description: >
+        Returns the complete classification thresholds for each measurement context.
+        Use this endpoint to dynamically render classification legends in the UI
+        instead of hard-coding them on the frontend.
+      operationId: getGlycemiaClassificationRules
+      responses:
+        '200':
+          description: Classification rules for all contexts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GlycemiaClassificationRulesResponse'
+              example:
+                contexts:
+                  - context: "A_DIGIUNO"
+                    label: "A digiuno"
+                    thresholds:
+                      - classification: "NORMALE"
+                        label: "< 100 MG/DL = NORMALE"
+                        minMgDl: null
+                        maxMgDl: 99
+                      - classification: "ATTENZIONE"
+                        label: "100–125 = ATTENZIONE"
+                        minMgDl: 100
+                        maxMgDl: 125
+                      - classification: "ELEVATA"
+                        label: "≥ 126 = ELEVATA"
+                        minMgDl: 126
+                        maxMgDl: null
+                  - context: "POST_PASTO_1H"
+                    label: "Post-pasto 1h"
+                    thresholds:
+                      - classification: "NORMALE"
+                        label: "< 155 MG/DL = NORMALE"
+                        minMgDl: null
+                        maxMgDl: 154
+                      - classification: "ATTENZIONE"
+                        label: "155–208 = ATTENZIONE"
+                        minMgDl: 155
+                        maxMgDl: 208
+                      - classification: "ELEVATA"
+                        label: "≥ 209 = ELEVATA"
+                        minMgDl: 209
+                        maxMgDl: null
+                  - context: "POST_PASTO_2H"
+                    label: "Post-pasto 2h"
+                    thresholds:
+                      - classification: "NORMALE"
+                        label: "< 140 MG/DL = NORMALE"
+                        minMgDl: null
+                        maxMgDl: 139
+                      - classification: "ATTENZIONE"
+                        label: "140–199 = ATTENZIONE"
+                        minMgDl: 140
+                        maxMgDl: 199
+                      - classification: "ELEVATA"
+                        label: "≥ 200 = ELEVATA"
+                        minMgDl: 200
+                        maxMgDl: null
+
+  /api/glycemia-measurements/{id}:
+    get:
+      summary: Get a glycemia measurement by ID
+      operationId: getGlycemiaMeasurementById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Measurement ID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Measurement found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GlycemiaMeasurementResponse'
+        '404':
+          description: Measurement not found
+        '401':
+          description: Unauthorized
+
+    put:
+      summary: Update a glycemia measurement
+      operationId: updateGlycemiaMeasurement
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Measurement ID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GlycemiaMeasurementRequest'
+      responses:
+        '200':
+          description: Measurement updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GlycemiaMeasurementResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '404':
+          description: Measurement not found
+        '401':
+          description: Unauthorized
+
+    delete:
+      summary: Delete a glycemia measurement
+      operationId: deleteGlycemiaMeasurement
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Measurement ID
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: Measurement deleted
+        '404':
+          description: Measurement not found
+        '401':
+          description: Unauthorized
+
+components:
+  schemas:
+
+    GlycemiaMeasurementRequest:
+      type: object
+      required:
+        - patientId
+        - specialistId
+        - measuredAt
+        - valueMgDl
+        - context
+      properties:
+        patientId:
+          type: integer
+          format: int64
+          description: ID of the patient
+          example: 3
+        specialistId:
+          type: integer
+          format: int64
+          description: ID of the specialist recording the measurement
+          example: 1
+        measuredAt:
+          type: string
+          format: date-time
+          description: Date and time of the measurement
+          example: "2026-05-01T08:00:00"
+        valueMgDl:
+          type: integer
+          description: Blood glucose value in mg/dL (range 20–600)
+          minimum: 20
+          maximum: 600
+          example: 110
+        context:
+          type: string
+          description: Measurement context
+          enum:
+            - A_DIGIUNO
+            - POST_PASTO_1H
+            - POST_PASTO_2H
+          example: "A_DIGIUNO"
+        notes:
+          type: string
+          nullable: true
+          description: Optional clinical notes
+          example: "Prima misurazione dopo inizio dieta"
+
+    GlycemiaMeasurementResponse:
+      type: object
+      required:
+        - id
+        - patientId
+        - patientFirstName
+        - patientLastName
+        - specialistId
+        - specialistFirstName
+        - specialistLastName
+        - measuredAt
+        - valueMgDl
+        - context
+        - classification
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        patientId:
+          type: integer
+          format: int64
+          example: 3
+        patientFirstName:
+          type: string
+          example: "Giulia"
+        patientLastName:
+          type: string
+          example: "Ferretti"
+        specialistId:
+          type: integer
+          format: int64
+          example: 1
+        specialistFirstName:
+          type: string
+          example: "Simona"
+        specialistLastName:
+          type: string
+          example: "Ruberti"
+        measuredAt:
+          type: string
+          format: date-time
+          example: "2026-04-20T08:00:00"
+        valueMgDl:
+          type: integer
+          description: Blood glucose value in mg/dL
+          example: 92
+        context:
+          type: string
+          description: Measurement context
+          enum:
+            - A_DIGIUNO
+            - POST_PASTO_1H
+            - POST_PASTO_2H
+          example: "A_DIGIUNO"
+        classification:
+          type: string
+          description: ADA/WHO classification derived from context and value
+          enum:
+            - NORMALE
+            - ATTENZIONE
+            - ELEVATA
+          example: "NORMALE"
+        notes:
+          type: string
+          nullable: true
+          example: null
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-04-20T08:05:00"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2026-04-20T08:05:00"
+
+    GlycemiaThreshold:
+      type: object
+      required:
+        - classification
+        - label
+      properties:
+        classification:
+          type: string
+          enum:
+            - NORMALE
+            - ATTENZIONE
+            - ELEVATA
+          example: "NORMALE"
+        label:
+          type: string
+          description: Human-readable threshold label for UI display
+          example: "< 100 MG/DL = NORMALE"
+        minMgDl:
+          type: integer
+          nullable: true
+          description: Lower bound in mg/dL (null = no lower bound)
+          example: null
+        maxMgDl:
+          type: integer
+          nullable: true
+          description: Upper bound in mg/dL (null = no upper bound)
+          example: 99
+
+    GlycemiaContextRules:
+      type: object
+      required:
+        - context
+        - label
+        - thresholds
+      properties:
+        context:
+          type: string
+          enum:
+            - A_DIGIUNO
+            - POST_PASTO_1H
+            - POST_PASTO_2H
+          example: "A_DIGIUNO"
+        label:
+          type: string
+          description: Human-readable context label for UI display
+          example: "A digiuno"
+        thresholds:
+          type: array
+          items:
+            $ref: '#/components/schemas/GlycemiaThreshold'
+
+    GlycemiaClassificationRulesResponse:
+      type: object
+      required:
+        - contexts
+      properties:
+        contexts:
+          type: array
+          description: Classification rules for each measurement context
+          items:
+            $ref: '#/components/schemas/GlycemiaContextRules'
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        errors:
+          type: array
+          items:
+            type: string
+          example:
+            - "Value must be at least 20 mg/dL"
+            - "Context is required (A_DIGIUNO, POST_PASTO_1H or POST_PASTO_2H)"
