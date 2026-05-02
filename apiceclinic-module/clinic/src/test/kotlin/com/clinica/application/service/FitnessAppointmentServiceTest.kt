@@ -1,6 +1,6 @@
 package com.clinica.application.service
 
-import com.clinica.application.domain.AppointmentStatus
+import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.application.domain.FitnessAppointment
 import com.clinica.application.domain.Patient
 import com.clinica.application.domain.Specialist
@@ -46,7 +46,7 @@ class FitnessAppointmentServiceTest {
 
     private fun buildFitnessAppointment(
         id: Long = 1L,
-        status: AppointmentStatus = AppointmentStatus.BOOKED
+        status: AppointmentStatusEnum = AppointmentStatusEnum.BOOKED
     ) = FitnessAppointment(
         id = id, patient = buildPatient(), specialist = buildSpecialist(),
         scheduledAt = fixedTime, serviceType = "Personal Training",
@@ -124,8 +124,8 @@ class FitnessAppointmentServiceTest {
 
     @Test
     fun `updateStatus changes appointment status`() {
-        val appointment = buildFitnessAppointment(status = AppointmentStatus.BOOKED)
-        val updated = appointment.copy(status = AppointmentStatus.CONFIRMED)
+        val appointment = buildFitnessAppointment(status = AppointmentStatusEnum.BOOKED)
+        val updated = appointment.copy(status = AppointmentStatusEnum.CONFIRMED)
         every { appointmentDao.findById(1L) } returns appointment
         every { appointmentDao.save(any()) } returns updated
 
@@ -156,8 +156,8 @@ class FitnessAppointmentServiceTest {
 
     @Test
     fun `delete cancels appointment instead of physically deleting`() {
-        val appointment = buildFitnessAppointment(status = AppointmentStatus.BOOKED)
-        val cancelled = appointment.copy(status = AppointmentStatus.CANCELLED)
+        val appointment = buildFitnessAppointment(status = AppointmentStatusEnum.BOOKED)
+        val cancelled = appointment.copy(status = AppointmentStatusEnum.CANCELLED)
         every { appointmentDao.findById(1L) } returns appointment
         every { appointmentDao.save(any()) } returns cancelled
 

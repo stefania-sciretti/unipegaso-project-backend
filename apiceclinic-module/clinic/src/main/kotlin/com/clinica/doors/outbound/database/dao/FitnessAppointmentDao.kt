@@ -1,5 +1,6 @@
 package com.clinica.doors.outbound.database.dao
 
+import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.application.domain.FitnessAppointment
 import com.clinica.application.domain.Patient
 import com.clinica.application.domain.Specialist
@@ -20,8 +21,10 @@ class FitnessAppointmentDao(
 ) {
 
     @Transactional(readOnly = true)
-    fun findAll(patientId: Long?, specialistId: Long?, status: String?): List<FitnessAppointment> =
-        repository.search(patientId, specialistId, status).map { it.toDomain() }
+    fun findAll(patientId: Long?, specialistId: Long?, status: String?): List<FitnessAppointment> {
+        val statusEnum = status?.let { AppointmentStatusEnum.parse(it) }
+        return repository.search(patientId, specialistId, statusEnum).map { it.toDomain() }
+    }
 
     @Transactional(readOnly = true)
     fun findById(id: Long): FitnessAppointment? =
@@ -48,7 +51,7 @@ class FitnessAppointmentDao(
             it.status = appointment.status
             it.notes = appointment.notes
         } ?: FitnessAppointmentEntity(
-            id = appointment.id,
+            id = if (appointment.id == 0L) null else appointment.id,
             patientEntity = patientEntity,
             specialist = specialistEntity,
             scheduledAt = appointment.scheduledAt,
@@ -65,7 +68,7 @@ class FitnessAppointmentDao(
 
     private fun FitnessAppointmentEntity.toDomain(): FitnessAppointment =
         FitnessAppointment(
-            id = id,
+            id = id ?: 0L,
             patient = patientEntity.patientToDomain(),
             specialist = specialist.specialistToDomain(),
             scheduledAt = scheduledAt,

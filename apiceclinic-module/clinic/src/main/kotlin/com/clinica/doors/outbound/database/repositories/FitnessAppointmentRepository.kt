@@ -1,5 +1,6 @@
 package com.clinica.doors.outbound.database.repositories
 
+import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.doors.outbound.database.entities.FitnessAppointmentEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -8,27 +9,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface FitnessAppointmentRepository : JpaRepository<FitnessAppointmentEntity, Long> {
-
-    fun findByPatientEntityId(patientId: Long): List<FitnessAppointmentEntity>
-
-    fun findBySpecialistId(specialistId: Long): List<FitnessAppointmentEntity>
-
-    fun findByStatus(status: String): List<FitnessAppointmentEntity>
-
-    fun findByPatientEntityIdAndSpecialistId(
-        patientId: Long,
-        specialistId: Long
-    ): List<FitnessAppointmentEntity>
-
-    fun findByPatientEntityIdAndStatus(
-        patientId: Long,
-        status: String
-    ): List<FitnessAppointmentEntity>
-
-    fun findBySpecialistIdAndStatus(
-        specialistId: Long,
-        status: String
-    ): List<FitnessAppointmentEntity>
 
     @Query(
         """
@@ -42,12 +22,8 @@ interface FitnessAppointmentRepository : JpaRepository<FitnessAppointmentEntity,
     fun search(
         @Param("patientId") patientId: Long?,
         @Param("specialistId") specialistId: Long?,
-        @Param("status") status: String?
+        @Param("status") status: AppointmentStatusEnum?
     ): List<FitnessAppointmentEntity>
 
-    fun findByPatientEntityIdAndSpecialistIdAndStatus(
-        patientId: Long,
-        specialistId: Long,
-        status: String
-    ): List<FitnessAppointmentEntity>
+
 }

@@ -1,4 +1,4 @@
-package com.clinica.controller
+package com.clinica.doors.inbound.routes.controller
 
 import com.clinica.application.service.FitnessAppointmentService
 import com.clinica.dto.FitnessAppointmentRequest
@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/fitness-appointments")
+@RequestMapping("/api/appointments")
 @Tag(name = "Fitness Appointments", description = "Fitness appointment booking and management")
 class FitnessAppointmentController(private val fitnessAppointmentService: FitnessAppointmentService) {
 

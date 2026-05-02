@@ -1,6 +1,6 @@
 package com.clinica.doors.outbound.database.entities
 
-import com.clinica.application.domain.AppointmentStatus
+import com.clinica.application.domain.AppointmentStatusEnum
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 class FitnessAppointmentEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "patient_id", nullable = false)
@@ -27,7 +27,7 @@ class FitnessAppointmentEntity(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    var status: AppointmentStatus = AppointmentStatus.BOOKED,
+    var status: AppointmentStatusEnum = AppointmentStatusEnum.BOOKED,
 
     @Column(columnDefinition = "TEXT")
     var notes: String? = null,

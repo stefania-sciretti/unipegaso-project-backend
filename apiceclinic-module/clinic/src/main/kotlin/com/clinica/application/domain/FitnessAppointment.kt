@@ -8,7 +8,7 @@ data class FitnessAppointment(
     val specialist: Specialist,
     val scheduledAt: LocalDateTime,
     val serviceType: String,
-    val status: AppointmentStatus = AppointmentStatus.BOOKED,
+    val status: AppointmentStatusEnum = AppointmentStatusEnum.BOOKED,
     val notes: String? = null,
     val updatedAt: LocalDateTime = LocalDateTime.now()
 )

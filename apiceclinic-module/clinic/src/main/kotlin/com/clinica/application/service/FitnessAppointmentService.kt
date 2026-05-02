@@ -1,6 +1,6 @@
 package com.clinica.application.service
 
-import com.clinica.application.domain.AppointmentStatus
+import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.application.domain.FitnessAppointment
 import com.clinica.doors.outbound.database.dao.FitnessAppointmentDao
 import com.clinica.doors.outbound.database.dao.PatientDao
@@ -9,22 +9,18 @@ import com.clinica.dto.FitnessAppointmentRequest
 import com.clinica.dto.FitnessAppointmentResponse
 import com.clinica.dto.FitnessAppointmentStatusRequest
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
-@Transactional
 class FitnessAppointmentService(
     private val appointmentDao: FitnessAppointmentDao,
     private val patientDao: PatientDao,
     private val specialistDao: SpecialistDao
 ) {
 
-    @Transactional(readOnly = true)
     fun findAll(patientId: Long?, specialistId: Long?, status: String?): List<FitnessAppointmentResponse> =
         appointmentDao.findAll(patientId, specialistId, status).map { it.toResponse() }
 
-    @Transactional(readOnly = true)
     fun findById(id: Long): FitnessAppointmentResponse =
         appointmentDao.findById(id).orThrow("Fitness appointment not found with id: $id").toResponse()
 
@@ -40,7 +36,7 @@ class FitnessAppointmentService(
             specialist = specialist,
             scheduledAt = request.scheduledAt,
             serviceType = request.serviceType,
-            status = AppointmentStatus.BOOKED,
+            status = AppointmentStatusEnum.BOOKED,
             notes = request.notes,
             updatedAt = LocalDateTime.now()
         )
@@ -51,7 +47,7 @@ class FitnessAppointmentService(
         val appointment = appointmentDao.findById(id)
             .orThrow("Fitness appointment not found with id: $id")
         val updated = appointment.copy(
-            status = AppointmentStatus.parse(request.status),
+            status = AppointmentStatusEnum.parse(request.status),
             updatedAt = LocalDateTime.now()
         )
         return appointmentDao.save(updated).toResponse()
@@ -60,7 +56,7 @@ class FitnessAppointmentService(
     fun delete(id: Long) {
         val appointment = appointmentDao.findById(id)
             .orThrow("Fitness appointment not found with id: $id")
-        appointmentDao.save(appointment.copy(status = AppointmentStatus.CANCELLED))
+        appointmentDao.save(appointment.copy(status = AppointmentStatusEnum.CANCELLED))
     }
 
     private fun FitnessAppointment.toResponse() = FitnessAppointmentResponse(
