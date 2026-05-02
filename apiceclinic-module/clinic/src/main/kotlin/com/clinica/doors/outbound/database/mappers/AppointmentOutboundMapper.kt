@@ -1,35 +1,32 @@
 package com.clinica.doors.outbound.database.mappers
 
 import com.clinica.application.domain.Appointment
-import com.clinica.application.domain.AppointmentStatus
-import com.clinica.application.domain.Report
+import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.doors.outbound.database.entities.AppointmentEntity
-import com.clinica.doors.outbound.database.entities.DoctorEntity
 import com.clinica.doors.outbound.database.entities.PatientEntity
-import com.clinica.doors.outbound.database.entities.ReportEntity
+import com.clinica.doors.outbound.database.entities.SpecialistEntity
 
 fun AppointmentEntity.toDomain(): Appointment =
     Appointment(
         id = this.id,
         patient = this.patientEntity.toDomain(),
-        doctor = this.doctor.toDomain(),
+        specialist = this.specialistEntity.toDomain(),
         scheduledAt = this.scheduledAt,
         visitType = this.visitType,
-        status = AppointmentStatus.valueOf(this.status),
+        status = AppointmentStatusEnum.valueOf(this.status),
         notes = this.notes,
-        updatedAt = this.updatedAt,
-        report = this.report?.toReportDomain()
+        updatedAt = this.updatedAt
     )
 
 fun Appointment.toEntity(
     patientEntityProvider: () -> PatientEntity,
-    doctorEntityProvider: () -> DoctorEntity,
+    specialistEntityProvider: () -> SpecialistEntity,
     existingEntity: AppointmentEntity? = null
 ): AppointmentEntity {
     val entity = existingEntity ?: AppointmentEntity(
         id = this.id,
         patientEntity = patientEntityProvider(),
-        doctor = doctorEntityProvider(),
+        specialistEntity = specialistEntityProvider(),
         scheduledAt = this.scheduledAt,
         visitType = this.visitType,
         status = this.status.name,
@@ -38,7 +35,7 @@ fun Appointment.toEntity(
     )
     existingEntity?.let {
         it.patientEntity = patientEntityProvider()
-        it.doctor = doctorEntityProvider()
+        it.specialistEntity = specialistEntityProvider()
         it.scheduledAt = this.scheduledAt
         it.visitType = this.visitType
         it.status = this.status.name
@@ -48,13 +45,4 @@ fun Appointment.toEntity(
     return entity
 }
 
-private fun ReportEntity.toReportDomain(): Report =
-    Report(
-        id = this.id,
-        appointment = this.appointmentEntity.toDomain(),
-        issuedDate = this.issuedDate,
-        diagnosis = this.diagnosis,
-        prescription = this.prescription,
-        doctorNotes = this.doctorNotes,
-        updatedAt = this.updatedAt
-    )
+

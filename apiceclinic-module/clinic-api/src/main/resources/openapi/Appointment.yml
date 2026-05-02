@@ -8,7 +8,7 @@ paths:
   /api/appointments:
     get:
       summary: List all appointments
-      description: List all appointments, optionally filtered by patientId, doctorId or status
+      description: List all appointments, optionally filtered by patientId, specialistId or status
       operationId: findAllAppointments
       parameters:
         - name: patientId
@@ -18,10 +18,10 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: doctorId
+        - name: specialistId
           in: query
           required: false
-          description: Filter by doctor ID
+          description: Filter by specialist ID
           schema:
             type: integer
             format: int64
@@ -135,7 +135,7 @@ components:
         patientId:
           type: integer
           format: int64
-        doctorId:
+        specialistId:
           type: integer
           format: int64
         startTime:
@@ -150,7 +150,7 @@ components:
           type: string
       required:
         - patientId
-        - doctorId
+        - specialistId
         - startTime
         - endTime
 
@@ -172,7 +172,7 @@ components:
         patientId:
           type: integer
           format: int64
-        doctorId:
+        specialistId:
           type: integer
           format: int64
         startTime:
@@ -196,7 +196,7 @@ components:
       required:
         - id
         - patientId
-        - doctorId
+        - specialistId
         - startTime
         - endTime
         - status

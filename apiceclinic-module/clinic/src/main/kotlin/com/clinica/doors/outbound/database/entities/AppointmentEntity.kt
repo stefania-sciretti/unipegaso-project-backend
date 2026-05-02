@@ -1,7 +1,6 @@
 package com.clinica.doors.outbound.database.entities
 
 import jakarta.persistence.*
-import jakarta.persistence.CascadeType
 import java.time.LocalDateTime
 
 
@@ -10,15 +9,15 @@ import java.time.LocalDateTime
 class AppointmentEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    var id: Long = 0,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "patient_id", nullable = false)
     var patientEntity: PatientEntity,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "doctor_id", nullable = false)
-    var doctor: DoctorEntity,
+    @JoinColumn(name = "specialist_id", nullable = false)
+    var specialistEntity: SpecialistEntity,
 
     @Column(name = "scheduled_at", nullable = false)
     var scheduledAt: LocalDateTime,
@@ -34,7 +33,4 @@ class AppointmentEntity(
 
     @Column(name = "updated_at", nullable = false)
     var updatedAt: LocalDateTime = LocalDateTime.now(),
-
-    @OneToOne(mappedBy = "appointmentEntity", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    var report: ReportEntity? = null,
 )

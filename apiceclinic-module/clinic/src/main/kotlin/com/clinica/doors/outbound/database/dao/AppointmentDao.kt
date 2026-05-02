@@ -1,29 +1,30 @@
 package com.clinica.doors.outbound.database.dao
 
 import com.clinica.application.domain.Appointment
+import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.doors.outbound.database.entities.AppointmentEntity
-import com.clinica.doors.outbound.database.entities.DoctorEntity
 import com.clinica.doors.outbound.database.entities.PatientEntity
+import com.clinica.doors.outbound.database.entities.SpecialistEntity
 import com.clinica.doors.outbound.database.mappers.toDomain
 import com.clinica.doors.outbound.database.mappers.toEntity
 import com.clinica.doors.outbound.database.repositories.AppointmentRepository
-import com.clinica.doors.outbound.database.repositories.DoctorRepository
 import com.clinica.doors.outbound.database.repositories.PatientRepository
+import com.clinica.doors.outbound.database.repositories.SpecialistRepository
 import org.springframework.stereotype.Component
 
 @Component
 class AppointmentDao(
     private val appointmentRepository: AppointmentRepository,
     private val patientRepository: PatientRepository,
-    private val doctorRepository: DoctorRepository
+    private val specialistRepository: SpecialistRepository
 ) {
 
     fun findAll(
         patientId: Long?,
-        doctorId: Long?,
-        status: String?
+        specialistId: Long?,
+        status: AppointmentStatusEnum?
     ): List<Appointment> =
-        appointmentRepository.search(patientId, doctorId, status)
+        appointmentRepository.search(patientId, specialistId, status?.name)
             .map { it.toDomain() }
 
     fun findById(id: Long): Appointment? =
@@ -34,13 +35,13 @@ class AppointmentDao(
 
     fun save(appointment: Appointment): Appointment {
         val patientId = appointment.patient.id
-        val doctorId = appointment.doctor.id
+        val specialistId = appointment.specialist.id
 
         val patientEntity: PatientEntity = patientRepository.findById(patientId)
             .orElseThrow { IllegalArgumentException("Patient not found with id: $patientId") }
 
-        val doctorEntity: DoctorEntity = doctorRepository.findById(doctorId)
-            .orElseThrow { IllegalArgumentException("Doctor not found with id: $doctorId") }
+        val specialistEntity: SpecialistEntity = specialistRepository.findById(specialistId)
+            .orElseThrow { IllegalArgumentException("Specialist not found with id: $specialistId") }
 
         val existing: AppointmentEntity? =
             if (appointment.id != 0L) {
@@ -51,7 +52,7 @@ class AppointmentDao(
 
         val entityToSave = appointment.toEntity(
             patientEntityProvider = { patientEntity },
-            doctorEntityProvider = { doctorEntity },
+            specialistEntityProvider = { specialistEntity },
             existingEntity = existing
         )
 

@@ -9,37 +9,21 @@ import org.springframework.stereotype.Repository
 @Repository
 interface AppointmentRepository : JpaRepository<AppointmentEntity, Long> {
 
-    fun findByPatientEntityId(patientId: Long): List<AppointmentEntity>
-
-    fun findByDoctorId(doctorId: Long): List<AppointmentEntity>
-
-    fun findByStatus(status: String): List<AppointmentEntity>
-
     fun countByStatus(status: String): Long
-
-    fun findByPatientEntityIdAndDoctorId(patientId: Long, doctorId: Long): List<AppointmentEntity>
-
-    fun findByPatientEntityIdAndStatus(patientId: Long, status: String): List<AppointmentEntity>
-
-    fun findByDoctorIdAndStatus(doctorId: Long, status: String): List<AppointmentEntity>
 
     @Query(
         """
         SELECT a
         FROM AppointmentEntity a
         WHERE (:patientId IS NULL OR a.patientEntity.id = :patientId)
-          AND (:doctorId  IS NULL OR a.doctor.id = :doctorId)
+          AND (:specialistId  IS NULL OR a.specialistEntity.id = :specialistId)
           AND (:status    IS NULL OR a.status = :status)
+        ORDER BY a.patientEntity.lastName
         """
     )
     fun search(
         @Param("patientId") patientId: Long?,
-        @Param("doctorId") doctorId: Long?,
+        @Param("specialistId") specialistId: Long?,
         @Param("status") status: String?
-    ): List<AppointmentEntity>
-    fun findByPatientEntityIdAndDoctorIdAndStatus(
-        patientId: Long,
-        doctorId: Long,
-        status: String
     ): List<AppointmentEntity>
 }

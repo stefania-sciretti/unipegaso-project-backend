@@ -5,11 +5,10 @@ import java.time.LocalDateTime
 data class Appointment(
     val id: Long,
     val patient: Patient,
-    val doctor: Doctor,
+    val specialist: Specialist,
     val scheduledAt: LocalDateTime,
     val visitType: String,
-    val status: AppointmentStatus = AppointmentStatus.BOOKED,
+    val status: AppointmentStatusEnum = AppointmentStatusEnum.BOOKED,
     val notes: String? = null,
-    val updatedAt: LocalDateTime = LocalDateTime.now(),
-    val report: Report? = null
+    val updatedAt: LocalDateTime = LocalDateTime.now()
 )

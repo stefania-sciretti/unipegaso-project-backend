@@ -1,12 +1,12 @@
 package com.clinica.application.service
 
 import com.clinica.application.domain.Appointment
-import com.clinica.application.domain.AppointmentStatus
-import com.clinica.application.domain.Doctor
+import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.application.domain.Patient
+import com.clinica.application.domain.Specialist
 import com.clinica.doors.outbound.database.dao.AppointmentDao
-import com.clinica.doors.outbound.database.dao.DoctorDao
 import com.clinica.doors.outbound.database.dao.PatientDao
+import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.dto.AppointmentRequest
 import com.clinica.dto.AppointmentStatusRequest
 import io.mockk.every
@@ -28,7 +28,7 @@ class AppointmentServiceTest {
 
     @MockK private lateinit var appointmentDao: AppointmentDao
     @MockK private lateinit var patientDao: PatientDao
-    @MockK private lateinit var doctorDao: DoctorDao
+    @MockK private lateinit var specialistDao: SpecialistDao
 
     @InjectMockKs
     private lateinit var service: AppointmentService
@@ -36,28 +36,32 @@ class AppointmentServiceTest {
     private val fixedTime = LocalDateTime.of(2025, 6, 15, 10, 0)
 
     private fun buildPatient(id: Long = 1L) = Patient(
-        id = id, firstName = "Mario", lastName = "Rossi",
-        fiscalCode = "RSSMRA80A01H501U", birthDate = LocalDate.of(1980, 1, 1),
+        id = id, firstName = "Mario",
+        lastName = "Rossi",
+        fiscalCode = "RSSMRA80A01H501U",
+        birthDate = LocalDate.of(1980, 1, 1),
         email = "mario@example.com"
     )
 
-    private fun buildDoctor(id: Long = 1L) = Doctor(
-        id = id, firstName = "Luigi", lastName = "Bianchi",
-        specialization = "Cardiology", email = "luigi@example.com",
-        licenseNumber = "LIC-001"
+    private fun buildSpecialist(id: Long = 1L) = Specialist(
+        id = id,
+        firstName = "Luigi",
+        lastName = "Bianchi",
+        role = "Nutrizionista",
+        email = "luigi@example.com",
     )
 
     private fun buildAppointment(
         id: Long = 1L,
-        status: AppointmentStatus = AppointmentStatus.BOOKED
+        status: AppointmentStatusEnum = AppointmentStatusEnum.BOOKED
     ) = Appointment(
-        id = id, patient = buildPatient(), doctor = buildDoctor(),
+        id = id, patient = buildPatient(), specialist = buildSpecialist(),
         scheduledAt = fixedTime, visitType = "Routine", status = status,
         notes = "Note", updatedAt = fixedTime, report = null
     )
 
     private fun buildRequest() = AppointmentRequest(
-        patientId = 1L, doctorId = 1L, scheduledAt = fixedTime,
+        patientId = 1L, specialistId = 1L, scheduledAt = fixedTime,
         visitType = "Routine", notes = "Note"
     )
 
@@ -95,7 +99,7 @@ class AppointmentServiceTest {
         assertEquals(1L, result.id)
         assertEquals("BOOKED", result.status)
         assertEquals("Mario Rossi", result.patientFullName)
-        assertEquals("Luigi Bianchi", result.doctorFullName)
+        assertEquals("Luigi Bianchi", result.specialistFullName)
     }
 
     @Test
@@ -112,7 +116,7 @@ class AppointmentServiceTest {
     fun `create saves appointment with BOOKED status`() {
         val saved = buildAppointment(id = 5L)
         every { patientDao.findById(1L) } returns buildPatient()
-        every { doctorDao.findById(1L) } returns buildDoctor()
+        every { specialistDao.findById(1L) } returns buildSpecialist()
         every { appointmentDao.save(any()) } returns saved
 
         val result = service.create(buildRequest())
@@ -131,9 +135,9 @@ class AppointmentServiceTest {
     }
 
     @Test
-    fun `create throws NoSuchElementException when doctor not found`() {
+    fun `create throws NoSuchElementException when specialist not found`() {
         every { patientDao.findById(1L) } returns buildPatient()
-        every { doctorDao.findById(1L) } returns null
+        every { specialistDao.findById(1L) } returns null
 
         assertThrows<NoSuchElementException> { service.create(buildRequest()) }
         verify(exactly = 0) { appointmentDao.save(any()) }
@@ -143,8 +147,8 @@ class AppointmentServiceTest {
 
     @Test
     fun `updateStatus changes appointment status`() {
-        val appointment = buildAppointment(status = AppointmentStatus.BOOKED)
-        val updated = appointment.copy(status = AppointmentStatus.CONFIRMED)
+        val appointment = buildAppointment(status = AppointmentStatusEnum.BOOKED)
+        val updated = appointment.copy(status = AppointmentStatusEnum.CONFIRMED)
         every { appointmentDao.findById(1L) } returns appointment
         every { appointmentDao.save(any()) } returns updated
 
