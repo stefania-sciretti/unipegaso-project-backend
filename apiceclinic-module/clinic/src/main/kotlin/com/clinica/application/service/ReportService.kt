@@ -5,7 +5,7 @@ import com.clinica.doors.outbound.database.dao.ReportDao
 import com.clinica.doors.outbound.database.entities.ReportEntity
 import com.clinica.doors.outbound.database.repositories.FitnessAppointmentRepository
 import com.clinica.dto.ReportRequest
-import com.clinica.dto.ReportResponse
+import com.clinic.model.ReportResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate

@@ -5,16 +5,6 @@ import java.time.LocalDateTime
 
 // ─── Specialist ─────────────────────────────────────────────────────────────────
 
-data class SpecialistResponse(
-    val id: Long,
-    val firstName: String,
-    val lastName: String,
-    val role: String,
-    val bio: String?,
-    val email: String,
-    val createdAt: LocalDateTime
-)
-
 data class SpecialistRequest(
     @field:NotBlank(message = "First name is required")
     val firstName: String,
@@ -55,21 +45,6 @@ data class FitnessAppointmentStatusRequest(
     val status: String
 )
 
-data class FitnessAppointmentResponse(
-    val id: Long,
-    val patientId: Long,
-    val patientFullName: String,
-    val specialistId: Long,
-    val specialistFullName: String,
-    val specialistRole: String,
-    val scheduledAt: LocalDateTime,
-    val serviceType: String,
-    val status: String,
-    val notes: String?,
-    val createdAt: LocalDateTime
-)
-
-
 // ─── DietPlan ─────────────────────────────────────────────────────────────────
 
 data class DietPlanRequest(
@@ -92,23 +67,6 @@ data class DietPlanRequest(
     @field:Max(value = 52, message = "Duration cannot exceed 52 weeks")
     val durationWeeks: Int? = null,
     val active: Boolean = true
-)
-
-data class DietPlanResponse(
-    val id: Long,
-    val patientId: Long,
-    val specialistId: Long,
-    val patientFirstName: String,
-    val patientLastName: String,
-    val specialistFirstName: String,
-    val specialistLastName: String,
-    val title: String,
-    val description: String?,
-    val calories: Int?,
-    val durationWeeks: Int?,
-    val active: Boolean,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
 )
 
 // ─── TrainingPlan ─────────────────────────────────────────────────────────────
@@ -135,20 +93,6 @@ data class TrainingPlanRequest(
     val active: Boolean = true
 )
 
-data class TrainingPlanResponse(
-    val id: Long,
-    val patientId: Long,
-    val patientFullName: String,
-    val specialistId: Long,
-    val specialistFullName: String,
-    val title: String,
-    val description: String?,
-    val weeks: Int?,
-    val sessionsPerWeek: Int?,
-    val active: Boolean,
-    val createdAt: LocalDateTime
-)
-
 // ─── Recipe ───────────────────────────────────────────────────────────────────
 
 data class RecipeRequest(
@@ -160,17 +104,6 @@ data class RecipeRequest(
     val instructions: String? = null,
     val calories: Int? = null,
     val category: String? = null
-)
-
-data class RecipeResponse(
-    val id: Long,
-    val title: String,
-    val description: String?,
-    val ingredients: String?,
-    val instructions: String?,
-    val calories: Int?,
-    val category: String?,
-    val createdAt: LocalDateTime
 )
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────

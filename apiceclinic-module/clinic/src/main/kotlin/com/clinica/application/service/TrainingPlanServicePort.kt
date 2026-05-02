@@ -1,7 +1,7 @@
 package com.clinica.application.service
 
 import com.clinica.dto.TrainingPlanRequest
-import com.clinica.dto.TrainingPlanResponse
+import com.clinic.model.TrainingPlanResponse
 
 interface TrainingPlanServicePort {
     fun findAll(patientId: Long?): List<TrainingPlanResponse>

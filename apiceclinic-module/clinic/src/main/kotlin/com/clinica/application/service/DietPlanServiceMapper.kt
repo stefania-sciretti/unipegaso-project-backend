@@ -1,7 +1,8 @@
 package com.clinica.application.service
 
 import com.clinica.application.domain.DietPlan
-import com.clinica.dto.DietPlanResponse
+import com.clinic.model.DietPlanResponse
+import java.time.ZoneOffset
 
 fun DietPlan.toResponse(): DietPlanResponse =
     DietPlanResponse(
@@ -17,6 +18,6 @@ fun DietPlan.toResponse(): DietPlanResponse =
         calories = this.calories,
         durationWeeks = this.durationWeeks,
         active = this.active,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt
+        createdAt = this.createdAt.atOffset(ZoneOffset.UTC),
+        updatedAt = this.updatedAt.atOffset(ZoneOffset.UTC)
     )

@@ -1,11 +1,11 @@
 package com.clinica.doors.inbound.routes.controller
 
 import com.clinica.application.service.GlycemiaMeasurementService
-import com.clinica.dto.GlycemiaClassificationRulesResponse
-import com.clinica.dto.GlycemiaContextRules
-import com.clinica.dto.GlycemiaThreshold
 import com.clinica.dto.GlycemiaMeasurementRequest
-import com.clinica.dto.GlycemiaMeasurementResponse
+import com.clinic.model.GlycemiaClassificationRulesResponse
+import com.clinic.model.GlycemiaContextRules
+import com.clinic.model.GlycemiaThreshold
+import com.clinic.model.GlycemiaMeasurementResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -49,30 +49,30 @@ class GlycemiaMeasurementController(
         GlycemiaClassificationRulesResponse(
             contexts = listOf(
                 GlycemiaContextRules(
-                    context = "A_DIGIUNO",
+                    context = GlycemiaContextRules.Context.A_DIGIUNO,
                     label = "A digiuno",
                     thresholds = listOf(
-                        GlycemiaThreshold("NORMALE",    "< 100 MG/DL = NORMALE",   null, 99),
-                        GlycemiaThreshold("ATTENZIONE", "100–125 = ATTENZIONE",    100,  125),
-                        GlycemiaThreshold("ELEVATA",    "≥ 126 = ELEVATA",         126,  null)
+                        GlycemiaThreshold(GlycemiaThreshold.Classification.NORMALE,    "< 100 MG/DL = NORMALE",   null, 99),
+                        GlycemiaThreshold(GlycemiaThreshold.Classification.ATTENZIONE, "100–125 = ATTENZIONE",    100,  125),
+                        GlycemiaThreshold(GlycemiaThreshold.Classification.ELEVATA,    "≥ 126 = ELEVATA",         126,  null)
                     )
                 ),
                 GlycemiaContextRules(
-                    context = "POST_PASTO_1H",
+                    context = GlycemiaContextRules.Context.POST_PASTO_1H,
                     label = "Post-pasto 1h",
                     thresholds = listOf(
-                        GlycemiaThreshold("NORMALE",    "< 155 MG/DL = NORMALE",   null, 154),
-                        GlycemiaThreshold("ATTENZIONE", "155–208 = ATTENZIONE",    155,  208),
-                        GlycemiaThreshold("ELEVATA",    "≥ 209 = ELEVATA",         209,  null)
+                        GlycemiaThreshold(GlycemiaThreshold.Classification.NORMALE,    "< 155 MG/DL = NORMALE",   null, 154),
+                        GlycemiaThreshold(GlycemiaThreshold.Classification.ATTENZIONE, "155–208 = ATTENZIONE",    155,  208),
+                        GlycemiaThreshold(GlycemiaThreshold.Classification.ELEVATA,    "≥ 209 = ELEVATA",         209,  null)
                     )
                 ),
                 GlycemiaContextRules(
-                    context = "POST_PASTO_2H",
+                    context = GlycemiaContextRules.Context.POST_PASTO_2H,
                     label = "Post-pasto 2h",
                     thresholds = listOf(
-                        GlycemiaThreshold("NORMALE",    "< 140 MG/DL = NORMALE",   null, 139),
-                        GlycemiaThreshold("ATTENZIONE", "140–199 = ATTENZIONE",    140,  199),
-                        GlycemiaThreshold("ELEVATA",    "≥ 200 = ELEVATA",         200,  null)
+                        GlycemiaThreshold(GlycemiaThreshold.Classification.NORMALE,    "< 140 MG/DL = NORMALE",   null, 139),
+                        GlycemiaThreshold(GlycemiaThreshold.Classification.ATTENZIONE, "140–199 = ATTENZIONE",    140,  199),
+                        GlycemiaThreshold(GlycemiaThreshold.Classification.ELEVATA,    "≥ 200 = ELEVATA",         200,  null)
                     )
                 )
             )

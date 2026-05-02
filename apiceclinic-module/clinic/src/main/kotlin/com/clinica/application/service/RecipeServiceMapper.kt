@@ -1,7 +1,8 @@
 package com.clinica.application.service
 
 import com.clinica.application.domain.Recipe
-import com.clinica.dto.RecipeResponse
+import com.clinic.model.RecipeResponse
+import java.time.ZoneOffset
 
 fun Recipe.toResponse(): RecipeResponse =
     RecipeResponse(
@@ -12,5 +13,5 @@ fun Recipe.toResponse(): RecipeResponse =
         instructions = instructions,
         calories = calories,
         category = category,
-        createdAt = createdAt
+        createdAt = createdAt.atOffset(ZoneOffset.UTC)
     )

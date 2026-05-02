@@ -1,7 +1,8 @@
 package com.clinica.application.service
 
 import com.clinica.application.domain.TrainingPlan
-import com.clinica.dto.TrainingPlanResponse
+import com.clinic.model.TrainingPlanResponse
+import java.time.ZoneOffset
 
 fun TrainingPlan.toResponse(): TrainingPlanResponse =
     TrainingPlanResponse(
@@ -15,5 +16,5 @@ fun TrainingPlan.toResponse(): TrainingPlanResponse =
         weeks = weeks,
         sessionsPerWeek = sessionsPerWeek,
         active = active,
-        createdAt = createdAt
+        createdAt = createdAt.atOffset(ZoneOffset.UTC)
     )

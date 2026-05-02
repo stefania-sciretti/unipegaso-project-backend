@@ -31,17 +31,6 @@ data class PatientRequest(
     val phone: String? = null
 )
 
-data class PatientResponse(
-    val id: Long,
-    val firstName: String,
-    val lastName: String,
-    val fiscalCode: String,
-    val birthDate: LocalDate,
-    val email: String,
-    val phone: String?,
-    val createdAt: LocalDateTime
-)
-
 // ─── Appointment ───────────────────────────────────────────
 
 data class AppointmentRequest(
@@ -65,21 +54,6 @@ data class AppointmentStatusRequest(
     val status: String
 )
 
-data class AppointmentResponse(
-    val id: Long,
-    val patientId: Long,
-    val patientFullName: String,
-    val specialistId: Long,
-    val specialistFullName: String,
-    val specialistSpecialization: String,
-    val scheduledAt: LocalDateTime,
-    val visitType: String,
-    val status: String,
-    val notes: String?,
-    val hasReport: Boolean,
-    val createdAt: LocalDateTime
-)
-
 // ─── Report ────────────────────────────────────────────────
 
 data class ReportRequest(
@@ -92,18 +66,3 @@ data class ReportRequest(
     val prescription: String? = null,
     val specialistNotes: String? = null
 )
-
-data class ReportResponse(
-    val id: Long,
-    val appointmentId: Long,
-    val patientFullName: String,
-    val specialistFullName: String,
-    val visitType: String,
-    val scheduledAt: LocalDateTime,
-    val issuedDate: LocalDate,
-    val diagnosis: String,
-    val prescription: String?,
-    val specialistNotes: String?,
-    val createdAt: LocalDateTime
-)
-

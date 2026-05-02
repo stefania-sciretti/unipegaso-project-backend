@@ -1,7 +1,8 @@
 package com.clinica.application.service
 
 import com.clinica.doors.outbound.database.entities.ReportEntity
-import com.clinica.dto.ReportResponse
+import com.clinic.model.ReportResponse
+import java.time.ZoneOffset
 
 fun ReportEntity.toResponse(): ReportResponse =
     ReportResponse(
@@ -10,10 +11,10 @@ fun ReportEntity.toResponse(): ReportResponse =
         patientFullName = "${fitnessAppointmentEntity.patientEntity.firstName} ${fitnessAppointmentEntity.patientEntity.lastName}",
         specialistFullName = "${fitnessAppointmentEntity.specialist.firstName} ${fitnessAppointmentEntity.specialist.lastName}",
         visitType = fitnessAppointmentEntity.serviceType,
-        scheduledAt = fitnessAppointmentEntity.scheduledAt,
+        scheduledAt = fitnessAppointmentEntity.scheduledAt.atOffset(ZoneOffset.UTC),
         issuedDate = issuedDate,
         diagnosis = diagnosis,
         prescription = prescription,
         specialistNotes = specialistNotes,
-        createdAt = createdAt
+        createdAt = createdAt.atOffset(ZoneOffset.UTC)
     )

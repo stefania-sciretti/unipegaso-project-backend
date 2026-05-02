@@ -6,7 +6,7 @@ import com.clinica.doors.outbound.database.dao.FitnessAppointmentDao
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.dto.FitnessAppointmentRequest
-import com.clinica.dto.FitnessAppointmentResponse
+import com.clinic.model.FitnessAppointmentResponse
 import com.clinica.dto.FitnessAppointmentStatusRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

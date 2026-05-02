@@ -1,7 +1,8 @@
 package com.clinica.application.service
 
 import com.clinica.application.domain.Specialist
-import com.clinica.dto.SpecialistResponse
+import com.clinic.model.SpecialistResponse
+import java.time.ZoneOffset
 
 fun Specialist.toResponse(): SpecialistResponse =
     SpecialistResponse(
@@ -11,5 +12,5 @@ fun Specialist.toResponse(): SpecialistResponse =
         role = role,
         bio = bio,
         email = email,
-        createdAt = createdAt
+        createdAt = createdAt.atOffset(ZoneOffset.UTC)
     )

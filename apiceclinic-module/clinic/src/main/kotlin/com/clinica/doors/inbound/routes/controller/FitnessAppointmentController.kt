@@ -2,7 +2,7 @@ package com.clinica.doors.inbound.routes.controller
 
 import com.clinica.application.service.FitnessAppointmentService
 import com.clinica.dto.FitnessAppointmentRequest
-import com.clinica.dto.FitnessAppointmentResponse
+import com.clinic.model.FitnessAppointmentResponse
 import com.clinica.dto.FitnessAppointmentStatusRequest
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse

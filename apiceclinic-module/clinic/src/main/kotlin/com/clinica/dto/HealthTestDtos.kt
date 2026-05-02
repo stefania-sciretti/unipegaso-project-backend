@@ -3,7 +3,6 @@ package com.clinica.dto
 import jakarta.validation.constraints.*
 import java.time.LocalDateTime
 
-
 // ─── GlycemiaMeasurement ──────────────────────────────────────────────────────
 
 data class GlycemiaMeasurementRequest(
@@ -27,40 +26,3 @@ data class GlycemiaMeasurementRequest(
 
     val notes: String? = null
 )
-
-data class GlycemiaMeasurementResponse(
-    val id: Long,
-    val patientId: Long,
-    val patientFirstName: String,
-    val patientLastName: String,
-    val specialistId: Long,
-    val specialistFirstName: String,
-    val specialistLastName: String,
-    val measuredAt: LocalDateTime,
-    val valueMgDl: Int,
-    val context: String,
-    val classification: String,
-    val notes: String?,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
-)
-
-// ─── GlycemiaClassificationRules ─────────────────────────────────────────────
-
-data class GlycemiaThreshold(
-    val classification: String,
-    val label: String,
-    val minMgDl: Int?,
-    val maxMgDl: Int?
-)
-
-data class GlycemiaContextRules(
-    val context: String,
-    val label: String,
-    val thresholds: List<GlycemiaThreshold>
-)
-
-data class GlycemiaClassificationRulesResponse(
-    val contexts: List<GlycemiaContextRules>
-)
-

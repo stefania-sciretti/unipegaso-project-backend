@@ -2,7 +2,7 @@ package com.clinica.controller
 
 import com.clinica.application.service.RecipeService
 import com.clinica.dto.RecipeRequest
-import com.clinica.dto.RecipeResponse
+import com.clinic.model.RecipeResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses

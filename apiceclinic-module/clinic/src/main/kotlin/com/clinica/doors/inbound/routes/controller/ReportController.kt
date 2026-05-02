@@ -2,7 +2,7 @@ package com.clinica.controller
 
 import com.clinica.application.service.ReportService
 import com.clinica.dto.ReportRequest
-import com.clinica.dto.ReportResponse
+import com.clinic.model.ReportResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses

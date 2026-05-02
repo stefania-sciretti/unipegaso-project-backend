@@ -1,7 +1,8 @@
 package com.clinica.doors.inbound.routes.mappers
 
 import com.clinica.application.domain.Patient
-import com.clinica.dto.PatientResponse
+import com.clinic.model.PatientResponse
+import java.time.ZoneOffset
 
 fun Patient.toResponse() = PatientResponse(
     id = this.id,
@@ -11,5 +12,5 @@ fun Patient.toResponse() = PatientResponse(
     birthDate = this.birthDate,
     email = this.email,
     phone = this.phone,
-    createdAt = this.createdAt
+    createdAt = this.createdAt.atOffset(ZoneOffset.UTC)
 )

@@ -2,7 +2,7 @@ package com.clinica.controller
 
 import com.clinica.application.service.TrainingPlanServicePort
 import com.clinica.dto.TrainingPlanRequest
-import com.clinica.dto.TrainingPlanResponse
+import com.clinic.model.TrainingPlanResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses

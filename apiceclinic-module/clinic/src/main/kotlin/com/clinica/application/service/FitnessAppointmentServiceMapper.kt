@@ -1,7 +1,8 @@
 package com.clinica.application.service
 
 import com.clinica.application.domain.FitnessAppointment
-import com.clinica.dto.FitnessAppointmentResponse
+import com.clinic.model.FitnessAppointmentResponse
+import java.time.ZoneOffset
 
 fun FitnessAppointment.toResponse(): FitnessAppointmentResponse =
     FitnessAppointmentResponse(
@@ -11,9 +12,9 @@ fun FitnessAppointment.toResponse(): FitnessAppointmentResponse =
         specialistId = specialist.id,
         specialistFullName = specialist.fullName,
         specialistRole = specialist.role,
-        scheduledAt = scheduledAt,
+        scheduledAt = scheduledAt.atOffset(ZoneOffset.UTC),
         serviceType = serviceType,
         status = status.name,
         notes = notes,
-        createdAt = updatedAt
+        createdAt = updatedAt.atOffset(ZoneOffset.UTC)
     )

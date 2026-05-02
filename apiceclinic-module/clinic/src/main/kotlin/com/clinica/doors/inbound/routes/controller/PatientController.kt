@@ -3,7 +3,7 @@ package com.clinica.doors.inbound.routes.controller
 import com.clinica.application.service.PatientService
 import com.clinica.doors.inbound.routes.mappers.toResponse
 import com.clinica.dto.PatientRequest
-import com.clinica.dto.PatientResponse
+import com.clinic.model.PatientResponse
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
