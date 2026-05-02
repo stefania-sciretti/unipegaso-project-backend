@@ -21,10 +21,12 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ReportResponse"
+        "401":
+          description: Unauthorized
 
     post:
       summary: Create a new report for a COMPLETED appointment
-      description: Creates a clinical report linked to a completed appointment
+      description: Creates a clinical report linked to a completed fitness appointment
       operationId: createReport
       requestBody:
         required: true
@@ -39,6 +41,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReportResponse"
+        "400":
+          description: Validation error (appointment not completed or report already exists)
+        "404":
+          description: Appointment not found
+        "401":
+          description: Unauthorized
 
   /api/reports/{id}:
     get:
@@ -62,6 +70,8 @@ paths:
                 $ref: "#/components/schemas/ReportResponse"
         "404":
           description: Report not found
+        "401":
+          description: Unauthorized
 
     put:
       summary: Update an existing report
@@ -90,6 +100,8 @@ paths:
                 $ref: "#/components/schemas/ReportResponse"
         "404":
           description: Report not found
+        "401":
+          description: Unauthorized
 
   /api/reports/appointment/{appointmentId}:
     get:
@@ -113,6 +125,8 @@ paths:
                 $ref: "#/components/schemas/ReportResponse"
         "404":
           description: Report not found for this appointment
+        "401":
+          description: Unauthorized
 
 components:
   schemas:
@@ -122,23 +136,21 @@ components:
         appointmentId:
           type: integer
           format: int64
-          description: ID of the appointment this report refers to
-        title:
+          description: ID of the fitness appointment this report refers to
+        diagnosis:
           type: string
-          description: Report title
-        summary:
+          description: Clinical diagnosis
+        prescription:
           type: string
-          description: Short summary of the report
-        details:
+          nullable: true
+          description: Prescription or treatment plan
+        specialistNotes:
           type: string
-          description: Detailed clinical notes
-        recommendations:
-          type: string
-          description: Recommended follow-up actions, therapies, or lifestyle changes
+          nullable: true
+          description: Additional notes from the specialist
       required:
         - appointmentId
-        - title
-        - details
+        - diagnosis
 
     ReportResponse:
       type: object
@@ -149,22 +161,44 @@ components:
         appointmentId:
           type: integer
           format: int64
-        title:
+        patientFullName:
           type: string
-        summary:
+          description: Full name of the patient
+          example: "Mario Rossi"
+        specialistFullName:
           type: string
-        details:
+          description: Full name of the specialist
+          example: "Carlo Verdi"
+        visitType:
           type: string
-        recommendations:
-          type: string
-        createdAt:
+          description: Service type of the linked fitness appointment
+          example: "PERSONAL_TRAINING"
+        scheduledAt:
           type: string
           format: date-time
-        updatedAt:
+          description: Date and time of the linked appointment
+        issuedDate:
+          type: string
+          format: date
+          description: Date the report was issued
+        diagnosis:
+          type: string
+        prescription:
+          type: string
+          nullable: true
+        specialistNotes:
+          type: string
+          nullable: true
+        createdAt:
           type: string
           format: date-time
       required:
         - id
         - appointmentId
-        - title
-        - details
+        - patientFullName
+        - specialistFullName
+        - visitType
+        - scheduledAt
+        - issuedDate
+        - diagnosis
+        - createdAt

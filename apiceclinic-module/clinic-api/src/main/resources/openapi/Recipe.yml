@@ -132,24 +132,27 @@ components:
           description: Recipe title
         description:
           type: string
+          nullable: true
           description: Short description of the recipe
         ingredients:
           type: string
+          nullable: true
           description: Ingredients list (free text or structured string)
         instructions:
           type: string
+          nullable: true
           description: Preparation steps
         calories:
           type: integer
           format: int32
+          nullable: true
           description: Approximate calories per serving
         category:
           type: string
+          nullable: true
           description: Recipe category (e.g. BREAKFAST, LUNCH, DINNER, SNACK)
       required:
         - title
-        - ingredients
-        - instructions
 
     RecipeResponse:
       type: object
@@ -161,23 +164,24 @@ components:
           type: string
         description:
           type: string
+          nullable: true
         ingredients:
           type: string
+          nullable: true
         instructions:
           type: string
+          nullable: true
         calories:
           type: integer
           format: int32
+          nullable: true
         category:
           type: string
+          nullable: true
         createdAt:
-          type: string
-          format: date-time
-        updatedAt:
           type: string
           format: date-time
       required:
         - id
         - title
-        - ingredients
-        - instructions
+        - createdAt

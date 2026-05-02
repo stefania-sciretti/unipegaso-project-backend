@@ -8,7 +8,7 @@ paths:
   /api/diet-plans:
     get:
       summary: List all diet plans
-      description: List all diet plans, optionally filtered by clientId
+      description: List all diet plans, optionally filtered by patientId
       operationId: findAllDietPlans
       parameters:
         - name: patientId
@@ -27,9 +27,11 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/DietPlanResponse"
+        '401':
+          description: Unauthorized
     post:
       summary: Create a new diet plan
-      description: Creates a new personalized diet plan
+      description: Creates a new personalized diet plan for a patient, assigned to a specialist
       operationId: createDietPlan
       requestBody:
         required: true
@@ -44,6 +46,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DietPlanResponse"
+        '400':
+          description: Validation error
+        '404':
+          description: Patient or specialist not found
+        '401':
+          description: Unauthorized
 
   /api/diet-plans/{id}:
     get:
@@ -67,6 +75,8 @@ paths:
                 $ref: "#/components/schemas/DietPlanResponse"
         '404':
           description: Diet plan not found
+        '401':
+          description: Unauthorized
     put:
       summary: Update a diet plan
       description: Updates an existing diet plan
@@ -92,8 +102,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DietPlanResponse"
+        '400':
+          description: Validation error
         '404':
           description: Diet plan not found
+        '401':
+          description: Unauthorized
     delete:
       summary: Delete a diet plan
       description: Deletes a diet plan by its ID
@@ -111,6 +125,8 @@ paths:
           description: Diet plan deleted
         '404':
           description: Diet plan not found
+        '401':
+          description: Unauthorized
 
 components:
   schemas:
@@ -120,25 +136,38 @@ components:
         patientId:
           type: integer
           format: int64
+          description: ID of the patient
+        specialistId:
+          type: integer
+          format: int64
+          description: ID of the specialist (nutritionist) assigning the plan
         title:
           type: string
+          description: Title of the diet plan
         description:
           type: string
-        startDate:
-          type: string
-          format: date
-        endDate:
-          type: string
-          format: date
-        totalCaloriesPerDay:
+          nullable: true
+          description: Optional description of the plan
+        calories:
           type: integer
-        notes:
-          type: string
+          description: Daily calorie target (500–5000)
+          minimum: 500
+          maximum: 5000
+          nullable: true
+        durationWeeks:
+          type: integer
+          description: Duration of the plan in weeks (1–52)
+          minimum: 1
+          maximum: 52
+          nullable: true
+        active:
+          type: boolean
+          default: true
+          description: Whether the plan is currently active
       required:
         - patientId
+        - specialistId
         - title
-        - startDate
-        - endDate
 
     DietPlanResponse:
       type: object
@@ -149,20 +178,30 @@ components:
         patientId:
           type: integer
           format: int64
+        specialistId:
+          type: integer
+          format: int64
+        patientFirstName:
+          type: string
+        patientLastName:
+          type: string
+        specialistFirstName:
+          type: string
+        specialistLastName:
+          type: string
         title:
           type: string
         description:
           type: string
-        startDate:
-          type: string
-          format: date
-        endDate:
-          type: string
-          format: date
-        totalCaloriesPerDay:
+          nullable: true
+        calories:
           type: integer
-        notes:
-          type: string
+          nullable: true
+        durationWeeks:
+          type: integer
+          nullable: true
+        active:
+          type: boolean
         createdAt:
           type: string
           format: date-time
@@ -172,6 +211,12 @@ components:
       required:
         - id
         - patientId
+        - specialistId
+        - patientFirstName
+        - patientLastName
+        - specialistFirstName
+        - specialistLastName
         - title
-        - startDate
-        - endDate
+        - active
+        - createdAt
+        - updatedAt
