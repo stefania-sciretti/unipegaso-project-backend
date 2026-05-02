@@ -25,8 +25,8 @@
     </modules>
 
     <properties>
-        <java.version>17</java.version>
-        <kotlin.version>1.9.22</kotlin.version>
+        <java.version>21</java.version>
+        <kotlin.version>2.3.21</kotlin.version>
         <openapi.generator.version>7.5.0</openapi.generator.version>
     </properties>
 
@@ -45,6 +45,20 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+<dependencies>
+    <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-stdlib-jdk8</artifactId>
+        <version>${kotlin.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-test</artifactId>
+        <version>${kotlin.version}</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
 
     <repositories>
         <!-- Maven Central - prioritario per evitare repository custom con problemi SSL -->
@@ -68,6 +82,31 @@
     <build>
         <plugins>
             <!-- parent non dichiara plugin esecutivi per Kotlin; i moduli che compilano Kotlin lo faranno localmente -->
+        <plugin>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-maven-plugin</artifactId>
+            <version>${kotlin.version}</version>
+            <extensions>true</extensions>
+            <executions>
+                <execution>
+                    <id>compile</id>
+                    <phase>compile</phase>
+                    <goals>
+                        <goal>compile</goal>
+                    </goals>
+                </execution>
+                <execution>
+                    <id>test-compile</id>
+                    <phase>test-compile</phase>
+                    <goals>
+                        <goal>test-compile</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <jvmTarget>1.8</jvmTarget>
+            </configuration>
+        </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
