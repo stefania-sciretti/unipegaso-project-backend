@@ -23,7 +23,7 @@ interface RecipeRepository : JpaRepository<RecipeEntity, Long> {
         SELECT r
         FROM RecipeEntity r
         WHERE (:category IS NULL OR r.category = :category)
-          AND (:search   IS NULL OR LOWER(r.title) LIKE LOWER(CONCAT('%', :search, '%')))
+          AND (:search IS NULL OR LOWER(r.title) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
         """
     )
     fun search(

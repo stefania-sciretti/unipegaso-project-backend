@@ -29,8 +29,5 @@ data class SpecialistEntity(
     val createdAt: LocalDateTime = LocalDateTime.now(),
 
     @Column(name = "updated_at", nullable = false)
-    var updatedAt: LocalDateTime = LocalDateTime.now(),
-
-    @OneToMany(mappedBy = "specialist", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val appointments: MutableList<FitnessAppointmentEntity> = mutableListOf()
+    var updatedAt: LocalDateTime = LocalDateTime.now()
 )

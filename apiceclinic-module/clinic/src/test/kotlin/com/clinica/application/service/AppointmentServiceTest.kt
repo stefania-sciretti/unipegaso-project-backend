@@ -57,7 +57,7 @@ class AppointmentServiceTest {
     ) = Appointment(
         id = id, patient = buildPatient(), specialist = buildSpecialist(),
         scheduledAt = fixedTime, visitType = "Routine", status = status,
-        notes = "Note", updatedAt = fixedTime, report = null
+        notes = "Note", updatedAt = fixedTime
     )
 
     private fun buildRequest() = AppointmentRequest(

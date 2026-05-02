@@ -1,4 +1,4 @@
-package com.clinica.controller
+package com.clinica.doors.inbound.routes.controller
 
 import com.clinica.application.service.SpecialistService
 import com.clinica.dto.SpecialistRequest

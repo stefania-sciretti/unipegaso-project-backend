@@ -1,9 +1,9 @@
 package com.clinica.application.service
 
-import com.clinica.application.domain.AppointmentStatus
+import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.doors.outbound.database.dao.ReportDao
 import com.clinica.doors.outbound.database.entities.ReportEntity
-import com.clinica.doors.outbound.database.repositories.AppointmentRepository
+import com.clinica.doors.outbound.database.repositories.FitnessAppointmentRepository
 import com.clinica.dto.ReportRequest
 import com.clinica.dto.ReportResponse
 import org.springframework.stereotype.Service
@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 @Service
 class ReportService(
     private val reportDao: ReportDao,
-    private val appointmentRepository: AppointmentRepository
+    private val fitnessAppointmentRepository: FitnessAppointmentRepository
 ) {
 
     @Transactional(readOnly = true)
@@ -33,24 +33,24 @@ class ReportService(
 
     @Transactional
     fun create(request: ReportRequest): ReportResponse {
-        val appointment = appointmentRepository.findById(request.appointmentId)
+        val appointment = fitnessAppointmentRepository.findById(request.appointmentId)
             .orElseThrow { NoSuchElementException("Appointment ${request.appointmentId} not found") }
 
-        check(appointment.status != AppointmentStatus.COMPLETED.name) {
+        check(appointment.status == AppointmentStatusEnum.COMPLETED) {
             "Report can only be created for COMPLETED appointments"
         }
 
-        check(reportDao.findByAppointmentId(request.appointmentId) != null) {
+        check(reportDao.findByAppointmentId(request.appointmentId) == null) {
             "Report already exists for appointment ${request.appointmentId}"
         }
 
         val report = ReportEntity(
-            id = 0,
-            appointmentEntity = appointment,
+            id = 0L,
+            fitnessAppointmentEntity = appointment,
             issuedDate = LocalDate.now(),
             diagnosis = request.diagnosis,
             prescription = request.prescription,
-            doctorNotes = request.doctorNotes,
+            specialistNotes = request.specialistNotes,
             createdAt = LocalDateTime.now(),
             updatedAt = LocalDateTime.now()
         )
@@ -62,7 +62,7 @@ class ReportService(
         val existing = reportDao.findById(id).orThrow("Report $id not found")
         existing.diagnosis = request.diagnosis
         existing.prescription = request.prescription
-        existing.doctorNotes = request.doctorNotes
+        existing.specialistNotes = request.specialistNotes
         existing.updatedAt = LocalDateTime.now()
         return reportDao.save(existing).toResponse()
     }
@@ -70,15 +70,15 @@ class ReportService(
     private fun ReportEntity.toResponse(): ReportResponse =
         ReportResponse(
             id = id,
-            appointmentId = appointmentEntity.id,
-            patientFullName = "${appointmentEntity.patientEntity.firstName} ${appointmentEntity.patientEntity.lastName}",
-            doctorFullName = "${appointmentEntity.doctor.firstName} ${appointmentEntity.doctor.lastName}",
-            visitType = appointmentEntity.visitType,
-            scheduledAt = appointmentEntity.scheduledAt,
+            appointmentId = fitnessAppointmentEntity.id ?: 0L,
+            patientFullName = "${fitnessAppointmentEntity.patientEntity.firstName} ${fitnessAppointmentEntity.patientEntity.lastName}",
+            specialistFullName = "${fitnessAppointmentEntity.specialist.firstName} ${fitnessAppointmentEntity.specialist.lastName}",
+            visitType = fitnessAppointmentEntity.serviceType,
+            scheduledAt = fitnessAppointmentEntity.scheduledAt,
             issuedDate = issuedDate,
             diagnosis = diagnosis,
             prescription = prescription,
-            doctorNotes = doctorNotes,
+            specialistNotes = specialistNotes,
             createdAt = createdAt
         )
 }

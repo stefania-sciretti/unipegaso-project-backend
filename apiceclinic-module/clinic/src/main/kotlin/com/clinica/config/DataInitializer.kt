@@ -1,6 +1,6 @@
 package com.clinica.config
 
-import com.clinica.application.domain.AppointmentStatus
+import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.doors.outbound.database.entities.*
 import com.clinica.doors.outbound.database.repositories.*
 import org.springframework.boot.CommandLineRunner
@@ -23,8 +23,10 @@ class DataInitializer {
         userRepository: UserRepository,
         patientRepository: PatientRepository,
         specialistRepository: SpecialistRepository,
+        appointmentRepository: AppointmentRepository,
         fitnessAppointmentRepository: FitnessAppointmentRepository,
         dietPlanRepository: DietPlanRepository,
+        reportRepository: ReportRepository,
         passwordEncoder: PasswordEncoder
     ): CommandLineRunner = CommandLineRunner {
 
@@ -192,35 +194,35 @@ class DataInitializer {
                         patientEntity = patients[0], specialist = specialists[0],
                         scheduledAt = LocalDateTime.now().plusDays(2),
                         serviceType = "Consulenza nutrizionale iniziale",
-                        status = AppointmentStatus.BOOKED,
+                        status = AppointmentStatusEnum.BOOKED,
                         notes = "Prima visita. Il paziente vuole perdere peso."
                     ),
                     FitnessAppointmentEntity(
                         patientEntity = patients[1], specialist = specialists[1],
                         scheduledAt = LocalDateTime.now().plusDays(3),
                         serviceType = "Sessione personal training",
-                        status = AppointmentStatus.BOOKED,
+                        status = AppointmentStatusEnum.BOOKED,
                         notes = "Focus su rinforzo muscolare arti inferiori."
                     ),
                     FitnessAppointmentEntity(
                         patientEntity = patients[2], specialist = specialists[2],
                         scheduledAt = LocalDateTime.now().minusDays(5),
                         serviceType = "Fisioterapia post-operatoria",
-                        status = AppointmentStatus.COMPLETED,
+                        status = AppointmentStatusEnum.COMPLETED,
                         notes = "Recupero post intervento al ginocchio."
                     ),
                     FitnessAppointmentEntity(
                         patientEntity = patients[0], specialist = specialists[1],
                         scheduledAt = LocalDateTime.now().plusDays(7),
                         serviceType = "Valutazione posturale",
-                        status = AppointmentStatus.BOOKED,
+                        status = AppointmentStatusEnum.BOOKED,
                         notes = null
                     ),
                     FitnessAppointmentEntity(
                         patientEntity = patients[3], specialist = specialists[0],
                         scheduledAt = LocalDateTime.now().minusDays(2),
                         serviceType = "Piano alimentare personalizzato",
-                        status = AppointmentStatus.COMPLETED,
+                        status = AppointmentStatusEnum.COMPLETED,
                         notes = "Dieta ipocalorica bilanciata. Follow-up tra 30 giorni."
                     )
                 ))
@@ -254,11 +256,71 @@ class DataInitializer {
             }
         }
 
+        // ── Appuntamenti clinici ──────────────────────────────────────────────
+        if (appointmentRepository.count() == 0L) {
+            val patients = patientRepository.findAll()
+            val specialists  = specialistRepository.findAll()
+
+            if (patients.size >= 5 && specialists.size >= 3) {
+                appointmentRepository.saveAll(listOf(
+                    AppointmentEntity(patientEntity = patients[0], specialistEntity = specialists[0],
+                        scheduledAt = LocalDateTime.now().minusDays(30),
+                        visitType = "Visita di controllo",
+                        status = AppointmentStatusEnum.COMPLETED.name,
+                        notes = "Paziente in buone condizioni generali."),
+                    AppointmentEntity(patientEntity = patients[1], specialistEntity = specialists[1],
+                        scheduledAt = LocalDateTime.now().minusDays(20),
+                        visitType = "Elettrocardiogramma",
+                        status = AppointmentStatusEnum.COMPLETED.name,
+                        notes = "ECG nella norma."),
+                    AppointmentEntity(patientEntity = patients[2], specialistEntity = specialists[2],
+                        scheduledAt = LocalDateTime.now().minusDays(15),
+                        visitType = "Visita ortopedica",
+                        status = AppointmentStatusEnum.COMPLETED.name,
+                        notes = "Lieve artrosi al ginocchio destro."),
+                    AppointmentEntity(patientEntity = patients[3], specialistEntity = specialists[0],
+                        scheduledAt = LocalDateTime.now().minusDays(7),
+                        visitType = "Prima visita",
+                        status = AppointmentStatusEnum.COMPLETED.name,
+                        notes = null),
+                    AppointmentEntity(patientEntity = patients[4], specialistEntity = specialists[1],
+                        scheduledAt = LocalDateTime.now().plusDays(5),
+                        visitType = "Visita cardiologica",
+                        status = AppointmentStatusEnum.BOOKED.name,
+                        notes = null)
+                ))
+                println("✓ 5 appuntamenti clinici creati")
+            }
+        }
+
+        // ── Referti ──────────────────────────────────────────────────────────
+        if (reportRepository.count() == 0L) {
+            val completedFitness = fitnessAppointmentRepository.findAll()
+                .filter { it.status == AppointmentStatusEnum.COMPLETED }
+
+            if (completedFitness.isNotEmpty()) {
+                reportRepository.saveAll(completedFitness.map { appt ->
+                    ReportEntity(
+                        id = 0L,
+                        fitnessAppointmentEntity = appt,
+                        issuedDate = appt.scheduledAt.toLocalDate(),
+                        diagnosis = "Referto di controllo — visita del ${appt.scheduledAt.toLocalDate()}",
+                        prescription = null,
+                        specialistNotes = "Nessuna anomalia rilevante."
+                    )
+                })
+                println("✓ ${completedFitness.size} referti creati")
+            }
+        }
+
         println("\n=== Apice Clinic — Dati demo caricati ===")
         println("Pazienti:    ${patientRepository.count()}")
+        println("Medici:      ${specialistRepository.count()}")
         println("Specialisti: ${specialistRepository.count()}")
+        println("Appuntamenti clinici: ${appointmentRepository.count()}")
         println("Appuntamenti fitness: ${fitnessAppointmentRepository.count()}")
         println("Piani dieta: ${dietPlanRepository.count()}")
+        println("Referti:     ${reportRepository.count()}")
         println("=========================================")
     }
 }

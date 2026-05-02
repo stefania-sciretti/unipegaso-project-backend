@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
-@Transactional
 class DietPlanService(
     private val dietPlanDao: DietPlanDao,
     private val patientDao: PatientDao,
@@ -27,6 +26,7 @@ class DietPlanService(
     fun findById(id: Long): DietPlanResponse =
         dietPlanDao.findById(id).orThrow("Diet plan not found with id: $id").toResponse()
 
+    @Transactional
     fun create(request: DietPlanRequest): DietPlanResponse {
         val patient = patientDao.findById(request.patientId)
             .orThrow("Patient not found with id: ${request.patientId}")
@@ -52,6 +52,7 @@ class DietPlanService(
         return dietPlanDao.save(dietPlan).toResponse()
     }
 
+    @Transactional
     fun update(id: Long, request: DietPlanRequest): DietPlanResponse {
         val existing = dietPlanDao.findById(id)
             .orThrow("Diet plan not found with id: $id")
@@ -76,6 +77,7 @@ class DietPlanService(
         return dietPlanDao.save(updated).toResponse()
     }
 
+    @Transactional
     fun delete(id: Long) {
         dietPlanDao.findById(id).orThrow("Diet plan not found with id: $id")
         dietPlanDao.deleteById(id)

@@ -36,13 +36,13 @@ data class SpecialistRequest(
 
 data class FitnessAppointmentRequest(
     @field:NotNull(message = "Patient ID is required")
-    val patientId: Long,
+    var patientId: Long,
 
     @field:NotNull(message = "Specialist ID is required")
-    val specialistId: Long,
+    var specialistId: Long,
 
     @field:NotNull(message = "Scheduled date/time is required")
-    val scheduledAt: LocalDateTime,
+    var scheduledAt: LocalDateTime,
 
     @field:NotBlank(message = "Service type is required")
     val serviceType: String,
@@ -74,10 +74,10 @@ data class FitnessAppointmentResponse(
 
 data class DietPlanRequest(
     @field:NotNull(message = "Patient ID is required")
-    val patientId: Long,
+    var patientId: Long,
 
     @field:NotNull(message = "Specialist ID is required")
-    val specialistId: Long,
+    var specialistId: Long,
 
     @field:NotBlank(message = "Title is required")
     val title: String,
@@ -115,10 +115,10 @@ data class DietPlanResponse(
 
 data class TrainingPlanRequest(
     @field:NotNull(message = "Patient ID is required")
-    val patientId: Long,
+    var patientId: Long,
 
     @field:NotNull(message = "Specialist ID is required")
-    val specialistId: Long,
+    var specialistId: Long,
 
     @field:NotBlank(message = "Title is required")
     val title: String,

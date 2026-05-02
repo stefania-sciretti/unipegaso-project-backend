@@ -9,11 +9,11 @@ import java.time.LocalDateTime
 class ReportEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    var id: Long = 0,
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "appointment_id", nullable = false, unique = true)
-    var appointmentEntity: AppointmentEntity,
+    @JoinColumn(name = "fitness_appointment_id", nullable = false, unique = true)
+    var fitnessAppointmentEntity: FitnessAppointmentEntity,
 
     @Column(name = "issued_date", nullable = false)
     var issuedDate: LocalDate = LocalDate.now(),
@@ -24,11 +24,11 @@ class ReportEntity(
     @Column(columnDefinition = "TEXT")
     var prescription: String? = null,
 
-    @Column(name = "doctor_notes", columnDefinition = "TEXT")
-    var doctorNotes: String? = null,
+    @Column(name = "specialist_notes", columnDefinition = "TEXT")
+    var specialistNotes: String? = null,
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    var createdAt: LocalDateTime = LocalDateTime.now(),
 
     @Column(name = "updated_at", nullable = false)
     var updatedAt: LocalDateTime = LocalDateTime.now(),

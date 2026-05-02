@@ -30,9 +30,6 @@ class AppointmentDao(
     fun findById(id: Long): Appointment? =
         appointmentRepository.findById(id).orElse(null)?.toDomain()
 
-    fun existsById(id: Long): Boolean =
-        appointmentRepository.existsById(id)
-
     fun save(appointment: Appointment): Appointment {
         val patientId = appointment.patient.id
         val specialistId = appointment.specialist.id

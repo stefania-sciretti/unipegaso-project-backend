@@ -10,17 +10,14 @@ class ReportDao(
     private val reportRepository: ReportRepository
 ) {
 
-    @Transactional(readOnly = true)
     fun findAll(): List<ReportEntity> =
         reportRepository.findAll()
 
-    @Transactional(readOnly = true)
     fun findById(id: Long): ReportEntity? =
         reportRepository.findById(id).orElse(null)
 
-    @Transactional(readOnly = true)
     fun findByAppointmentId(appointmentId: Long): ReportEntity? =
-        reportRepository.findByAppointmentEntityId(appointmentId)
+        reportRepository.findByFitnessAppointmentEntityId(appointmentId)
 
     @Transactional
     fun save(report: ReportEntity): ReportEntity =

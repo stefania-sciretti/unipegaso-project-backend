@@ -32,9 +32,6 @@ class DietPlanDao(
     fun findById(id: Long): DietPlan? =
         dietPlanRepository.findById(id).orElse(null)?.toDomain()
 
-    fun existsById(id: Long): Boolean =
-        dietPlanRepository.existsById(id)
-
     fun save(dietPlan: DietPlan): DietPlan {
         val patientId = dietPlan.patient.id
         val specialistId = dietPlan.specialist.id

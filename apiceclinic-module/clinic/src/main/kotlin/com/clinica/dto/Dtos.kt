@@ -1,10 +1,6 @@
 package com.clinica.dto
 
-import jakarta.validation.constraints.Email
-import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
-import jakarta.validation.constraints.Pattern
-import jakarta.validation.constraints.Size
+import jakarta.validation.constraints.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -46,9 +42,9 @@ data class PatientResponse(
     val createdAt: LocalDateTime
 )
 
-// ─── Doctor ────────────────────────────────────────────────
+// ─── specialist ────────────────────────────────────────────────
 
-data class DoctorRequest(
+data class specialistRequest(
     @field:NotBlank(message = "First name is required")
     val firstName: String,
 
@@ -66,7 +62,7 @@ data class DoctorRequest(
     val licenseNumber: String
 )
 
-data class DoctorResponse(
+data class specialistResponse(
     val id: Long,
     val firstName: String,
     val lastName: String,
@@ -82,8 +78,8 @@ data class AppointmentRequest(
     @field:NotNull(message = "Patient ID is required")
     val patientId: Long,
 
-    @field:NotNull(message = "Doctor ID is required")
-    val doctorId: Long,
+    @field:NotNull(message = "specialist ID is required")
+    val specialistId: Long,
 
     @field:NotNull(message = "Scheduled date/time is required")
     val scheduledAt: LocalDateTime,
@@ -103,9 +99,9 @@ data class AppointmentResponse(
     val id: Long,
     val patientId: Long,
     val patientFullName: String,
-    val doctorId: Long,
-    val doctorFullName: String,
-    val doctorSpecialization: String,
+    val specialistId: Long,
+    val specialistFullName: String,
+    val specialistSpecialization: String,
     val scheduledAt: LocalDateTime,
     val visitType: String,
     val status: String,
@@ -118,26 +114,26 @@ data class AppointmentResponse(
 
 data class ReportRequest(
     @field:NotNull(message = "Appointment ID is required")
-    val appointmentId: Long,
+    var appointmentId: Long,
 
     @field:NotBlank(message = "Diagnosis is required")
     val diagnosis: String,
 
     val prescription: String? = null,
-    val doctorNotes: String? = null
+    val specialistNotes: String? = null
 )
 
 data class ReportResponse(
     val id: Long,
     val appointmentId: Long,
     val patientFullName: String,
-    val doctorFullName: String,
+    val specialistFullName: String,
     val visitType: String,
     val scheduledAt: LocalDateTime,
     val issuedDate: LocalDate,
     val diagnosis: String,
     val prescription: String?,
-    val doctorNotes: String?,
+    val specialistNotes: String?,
     val createdAt: LocalDateTime
 )
 
