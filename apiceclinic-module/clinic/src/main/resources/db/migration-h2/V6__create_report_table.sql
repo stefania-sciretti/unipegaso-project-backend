@@ -5,7 +5,7 @@ CREATE TABLE report (
     issued_date    DATE      NOT NULL DEFAULT CURRENT_DATE,
     diagnosis      TEXT      NOT NULL,
     prescription   TEXT,
-    doctor_notes   TEXT,
+    specialist_notes   TEXT,
     created_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
