@@ -1,4 +1,4 @@
--- V106_1 H2: Seed services for each specialist, area_id derived from specialist
+-- V106_1: Seed services for each specialist, area_id derived from specialist
 
 -- ── Area 1: Alimentazione ── Simona Ruberti (NUTRITIONIST) ─────────────────
 INSERT INTO services (service, price, specialist_id, area_id)

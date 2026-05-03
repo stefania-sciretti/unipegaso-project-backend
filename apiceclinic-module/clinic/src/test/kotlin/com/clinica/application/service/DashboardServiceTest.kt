@@ -32,7 +32,11 @@ class DashboardServiceTest {
             ),
             revenueByMonth = listOf(RevenueByMonth("2025-01", 160.0)),
             appointmentsByMonth = listOf(AppointmentsByMonth("2025-01", 1L, 2L, 1L)),
-            revenueByService = listOf(RevenueByService("Visita medica", 200.0))
+            revenueByArea = listOf(
+                RevenueByArea(AreaInfo(1L, "Alimentazione"), 200.0),
+                RevenueByArea(AreaInfo(2L, "Sport"), 150.0),
+                RevenueByArea(AreaInfo(3L, "Clinica"), 300.0)
+            )
         )
         every { dashboardDao.getDashboardStats() } returns stats
 
@@ -47,7 +51,7 @@ class DashboardServiceTest {
             kpi = KpiStats(0.0, 0.0, 0L, 0L, 0L, 0.0, 0.0),
             revenueByMonth = emptyList(),
             appointmentsByMonth = emptyList(),
-            revenueByService = emptyList()
+            revenueByArea = emptyList()
         )
         every { dashboardDao.getDashboardStats() } returns stats
 
@@ -56,5 +60,6 @@ class DashboardServiceTest {
         assertEquals(0.0, result.kpi.revenueMonth)
         assertEquals(0L, result.kpi.appointmentsMonth)
         assertEquals(0, result.revenueByMonth.size)
+        assertEquals(0, result.revenueByArea.size)
     }
 }

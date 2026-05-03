@@ -82,6 +82,7 @@ interface AppointmentRepository : JpaRepository<AppointmentEntity, Long> {
     @Query("""
         SELECT a
         FROM AppointmentEntity a
+        LEFT JOIN FETCH a.area
         WHERE a.scheduledAt >= :from
         ORDER BY a.scheduledAt
     """)

@@ -26,5 +26,7 @@ interface PatientRepository : JpaRepository<PatientEntity, Long> {
 
     fun existsByFiscalCode(fiscalCode: String): Boolean
 
+    fun existsByEmail(email: String): Boolean
+
     fun countByCreatedAtBetween(from: LocalDateTime, to: LocalDateTime): Long
 }

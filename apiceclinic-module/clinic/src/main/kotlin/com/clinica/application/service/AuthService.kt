@@ -1,37 +1,70 @@
 package com.clinica.application.service
 
+import com.clinica.doors.outbound.database.entities.PatientEntity
 import com.clinica.doors.outbound.database.entities.UserEntity
+import com.clinica.doors.outbound.database.repositories.PatientRepository
 import com.clinica.doors.outbound.database.repositories.UserRepository
 import com.clinica.dto.LoginRequest
 import com.clinica.dto.RegisterRequest
+import com.clinica.dto.RegisterResponse
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Service
 class AuthService(
     private val userRepository: UserRepository,
+    private val patientRepository: PatientRepository,
     private val passwordEncoder: PasswordEncoder
 ) {
 
-    fun registerUser(registerRequest: RegisterRequest): UserEntity {
+    @Transactional
+    fun registerUser(registerRequest: RegisterRequest): RegisterResponse {
         require(!userRepository.existsByUsername(registerRequest.username)) {
             "Username '${registerRequest.username}' già esistente"
         }
-
-        registerRequest.email?.takeIf { it.isNotEmpty() }?.let { email ->
-            require(!userRepository.existsByEmail(email)) {
-                "Email '$email' già registrata"
-            }
+        require(!userRepository.existsByEmail(registerRequest.email)) {
+            "Email '${registerRequest.email}' già registrata"
+        }
+        require(!patientRepository.existsByFiscalCode(registerRequest.fiscalCode)) {
+            "Codice fiscale '${registerRequest.fiscalCode}' già registrato"
+        }
+        require(!patientRepository.existsByEmail(registerRequest.email)) {
+            "Email '${registerRequest.email}' già associata a un paziente"
         }
 
-        val user = UserEntity(
-            username = registerRequest.username,
-            password = passwordEncoder.encode(registerRequest.password),
-            email = registerRequest.email,
-            enabled = true
+        val user = userRepository.save(
+            UserEntity(
+                username = registerRequest.username,
+                password = passwordEncoder.encode(registerRequest.password),
+                email = registerRequest.email,
+                role = "ROLE_USER",
+                enabled = true
+            )
         )
 
-        return userRepository.save(user)
+        val patient = patientRepository.save(
+            PatientEntity(
+                id = 0L,
+                firstName = registerRequest.firstName,
+                lastName = registerRequest.lastName,
+                fiscalCode = registerRequest.fiscalCode,
+                birthDate = registerRequest.birthDate,
+                email = registerRequest.email,
+                phone = registerRequest.phone,
+                createdAt = LocalDateTime.now(),
+                updatedAt = LocalDateTime.now()
+            )
+        )
+
+        return RegisterResponse(
+            message = "Registrazione completata con successo",
+            success = true,
+            username = user.username,
+            email = user.email ?: "",
+            patientId = patient.id
+        )
     }
 
     fun validateCredentials(loginRequest: LoginRequest): Boolean {

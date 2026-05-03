@@ -4,6 +4,7 @@ import com.clinica.application.service.AuthService
 import com.clinica.dto.LoginRequest
 import com.clinica.dto.LoginResponse
 import com.clinica.dto.RegisterRequest
+import com.clinica.dto.RegisterResponse
 import com.clinica.security.JwtTokenProvider
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -34,25 +35,24 @@ class AuthController {
     private lateinit var authService: AuthService
 
     @PostMapping("/register")
-    @Operation(summary = "Registra nuovo utente", description = "Crea un nuovo account utente")
+    @Operation(
+        summary = "Registra nuovo paziente",
+        description = "Crea un nuovo account utente e il relativo profilo paziente"
+    )
     @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Utente registrato"),
-        ApiResponse(responseCode = "400", description = "Dati non validi")
+        ApiResponse(responseCode = "201", description = "Paziente registrato con successo"),
+        ApiResponse(responseCode = "400", description = "Dati non validi o duplicati"),
+        ApiResponse(responseCode = "500", description = "Errore interno del server")
     ])
     fun register(@RequestBody registerRequest: RegisterRequest): ResponseEntity<Any> {
         return try {
-            val user = authService.registerUser(registerRequest)
-            ResponseEntity.status(HttpStatus.CREATED)
-                .body(mapOf(
-                    "message" to "Utente registrato con successo",
-                    "success" to true,
-                    "username" to user.username,
-                    "email" to user.email
-                ))
+            val response: RegisterResponse = authService.registerUser(registerRequest)
+            ResponseEntity.status(HttpStatus.CREATED).body(response)
         } catch (e: IllegalArgumentException) {
             ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(mapOf("message" to e.message, "success" to false))
         } catch (e: Exception) {
+            logger.error("Registration error", e)
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(mapOf("message" to "Errore durante la registrazione", "success" to false))
         }

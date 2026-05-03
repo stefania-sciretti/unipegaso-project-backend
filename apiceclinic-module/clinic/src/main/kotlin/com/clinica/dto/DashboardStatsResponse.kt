@@ -4,7 +4,7 @@ data class DashboardStatsResponse(
     val kpi: KpiStats,
     val revenueByMonth: List<RevenueByMonth>,
     val appointmentsByMonth: List<AppointmentsByMonth>,
-    val revenueByService: List<RevenueByService>
+    val revenueByArea: List<RevenueByArea>
 )
 
 data class KpiStats(
@@ -19,4 +19,5 @@ data class KpiStats(
 
 data class RevenueByMonth(val month: String, val total: Double)
 data class AppointmentsByMonth(val month: String, val booked: Long, val completed: Long, val cancelled: Long)
-data class RevenueByService(val service: String, val total: Double)
+data class AreaInfo(val areaId: Long, val areaName: String)
+data class RevenueByArea(val area: AreaInfo, val total: Double)

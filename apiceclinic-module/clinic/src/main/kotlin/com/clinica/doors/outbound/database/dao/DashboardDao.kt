@@ -1,15 +1,18 @@
 package com.clinica.doors.outbound.database.dao
 
 import com.clinica.dto.AppointmentsByMonth
+import com.clinica.dto.AreaInfo
 import com.clinica.dto.DashboardStatsResponse
 import com.clinica.dto.KpiStats
+import com.clinica.dto.RevenueByArea
 import com.clinica.dto.RevenueByMonth
-import com.clinica.dto.RevenueByService
 import com.clinica.doors.outbound.database.entities.AppointmentEntity
 import com.clinica.doors.outbound.database.repositories.AppointmentRepository
 import com.clinica.doors.outbound.database.repositories.PatientRepository
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -34,7 +37,7 @@ class DashboardDao(
             kpi = computeKpi(now, startOfMonth, startOfNextMonth, startOfPrevMonth),
             revenueByMonth = computeRevenueByMonth(allFromDate),
             appointmentsByMonth = computeAppointmentsByMonth(allFromDate),
-            revenueByService = computeRevenueByService(allFromDate)
+            revenueByArea = computeRevenueByArea(allFromDate)
         )
     }
 
@@ -46,10 +49,10 @@ class DashboardDao(
     ): KpiStats {
         val revenueMonth = appointmentRepository
             .sumPriceByStatusBetween("COMPLETED", startOfMonth, startOfNextMonth)
-            .toDouble()
+            .toDouble().round2()
         val revenuePrevMonth = appointmentRepository
             .sumPriceByStatusBetween("COMPLETED", startOfPrevMonth, startOfMonth)
-            .toDouble()
+            .toDouble().round2()
         val activePatients = appointmentRepository
             .countDistinctPatientsByStatusIn(listOf("BOOKED", "CONFIRMED"), startOfMonth, startOfNextMonth)
         val newPatients = patientRepository.countByCreatedAtBetween(startOfMonth, now)
@@ -62,10 +65,10 @@ class DashboardDao(
             appointmentRepository.countByStatusBetween("CONFIRMED", startOfMonth, startOfNextMonth)
 
         val cancellationRate = if (appointmentsMonth > 0)
-            cancelledMonth.toDouble() / appointmentsMonth * 100.0
+            (cancelledMonth.toDouble() / appointmentsMonth * 100.0).round2()
         else 0.0
         val agendaOccupancy = if (appointmentsMonth > 0)
-            completedOrConfirmedMonth.toDouble() / appointmentsMonth * 100.0
+            (completedOrConfirmedMonth.toDouble() / appointmentsMonth * 100.0).round2()
         else 0.0
 
         return KpiStats(
@@ -83,7 +86,7 @@ class DashboardDao(
         appointments
             .filter { it.status == "COMPLETED" }
             .groupBy { it.scheduledAt.format(monthFormatter) }
-            .map { (month, appts) -> RevenueByMonth(month, appts.sumOf { it.price }.toDouble()) }
+            .map { (month, appts) -> RevenueByMonth(month, appts.sumOf { it.price }.toDouble().round2()) }
             .sortedBy { it.month }
 
     private fun computeAppointmentsByMonth(appointments: List<AppointmentEntity>): List<AppointmentsByMonth> =
@@ -99,10 +102,18 @@ class DashboardDao(
             }
             .sortedBy { it.month }
 
-    private fun computeRevenueByService(appointments: List<AppointmentEntity>): List<RevenueByService> =
+    private fun computeRevenueByArea(appointments: List<AppointmentEntity>): List<RevenueByArea> =
         appointments
-            .filter { it.status == "COMPLETED" }
-            .groupBy { it.serviceType }
-            .map { (service, appts) -> RevenueByService(service, appts.sumOf { it.price }.toDouble()) }
-            .sortedByDescending { it.total }
+            .filter { it.status == "COMPLETED" && it.area != null }
+            .groupBy { it.area!! }
+            .map { (area, appts) ->
+                RevenueByArea(
+                    area = AreaInfo(areaId = area.id, areaName = area.name),
+                    total = appts.sumOf { it.price }.toDouble().round2()
+                )
+            }
+            .sortedBy { it.area.areaId }
+
+    private fun Double.round2(): Double =
+        BigDecimal(this).setScale(2, RoundingMode.HALF_UP).toDouble()
 }
