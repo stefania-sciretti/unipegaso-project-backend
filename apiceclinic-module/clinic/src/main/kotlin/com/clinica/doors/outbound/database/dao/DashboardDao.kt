@@ -1,0 +1,105 @@
+package com.clinica.doors.outbound.database.dao
+
+import com.clinica.dto.AppointmentsByMonth
+import com.clinica.dto.DashboardStatsResponse
+import com.clinica.dto.KpiStats
+import com.clinica.dto.RevenueByMonth
+import com.clinica.dto.RevenueByService
+import com.clinica.doors.outbound.database.repositories.AppointmentRepository
+import com.clinica.doors.outbound.database.repositories.PatientRepository
+import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+@Component
+class DashboardDao(
+    private val appointmentRepository: AppointmentRepository,
+    private val patientRepository: PatientRepository
+) {
+    private val monthFormatter = DateTimeFormatter.ofPattern("yyyy-MM")
+
+    @Transactional(readOnly = true)
+    fun getDashboardStats(): DashboardStatsResponse {
+        val now = LocalDateTime.now()
+        val startOfMonth = now.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0)
+        val startOfNextMonth = startOfMonth.plusMonths(1)
+        val startOfPrevMonth = startOfMonth.minusMonths(1)
+        val startOf12MonthsAgo = startOfMonth.minusMonths(11)
+
+        return DashboardStatsResponse(
+            kpi = computeKpi(now, startOfMonth, startOfNextMonth, startOfPrevMonth),
+            revenueByMonth = computeRevenueByMonth(startOf12MonthsAgo),
+            appointmentsByMonth = computeAppointmentsByMonth(startOf12MonthsAgo),
+            revenueByService = computeRevenueByService(startOf12MonthsAgo)
+        )
+    }
+
+    private fun computeKpi(
+        now: LocalDateTime,
+        startOfMonth: LocalDateTime,
+        startOfNextMonth: LocalDateTime,
+        startOfPrevMonth: LocalDateTime
+    ): KpiStats {
+        val revenueMonth = appointmentRepository
+            .sumPriceByStatusBetween("COMPLETED", startOfMonth, startOfNextMonth)
+            .toDouble()
+        val revenuePrevMonth = appointmentRepository
+            .sumPriceByStatusBetween("COMPLETED", startOfPrevMonth, startOfMonth)
+            .toDouble()
+        val activePatients = appointmentRepository
+            .countDistinctPatientsByStatusIn(listOf("BOOKED", "CONFIRMED"), startOfMonth, startOfNextMonth)
+        val newPatients = patientRepository.countByCreatedAtBetween(startOfMonth, now)
+        val appointmentsMonth = appointmentRepository
+            .countByScheduledAtBetween(startOfMonth, startOfNextMonth)
+        val cancelledMonth = appointmentRepository
+            .countByStatusBetween("CANCELLED", startOfMonth, startOfNextMonth)
+        val completedOrConfirmedMonth = appointmentRepository
+            .countByStatusBetween("COMPLETED", startOfMonth, startOfNextMonth) +
+            appointmentRepository.countByStatusBetween("CONFIRMED", startOfMonth, startOfNextMonth)
+
+        val cancellationRate = if (appointmentsMonth > 0)
+            cancelledMonth.toDouble() / appointmentsMonth * 100.0
+        else 0.0
+        val agendaOccupancy = if (appointmentsMonth > 0)
+            completedOrConfirmedMonth.toDouble() / appointmentsMonth * 100.0
+        else 0.0
+
+        return KpiStats(
+            revenueMonth = revenueMonth,
+            revenuePrevMonth = revenuePrevMonth,
+            activePatients = activePatients,
+            newPatients = newPatients,
+            appointmentsMonth = appointmentsMonth,
+            cancellationRate = cancellationRate,
+            agendaOccupancy = agendaOccupancy
+        )
+    }
+
+    private fun computeRevenueByMonth(from: LocalDateTime): List<RevenueByMonth> =
+        appointmentRepository.findAllFromDate(from)
+            .filter { it.status == "COMPLETED" }
+            .groupBy { it.scheduledAt.format(monthFormatter) }
+            .map { (month, appts) -> RevenueByMonth(month, appts.sumOf { it.price }.toDouble()) }
+            .sortedBy { it.month }
+
+    private fun computeAppointmentsByMonth(from: LocalDateTime): List<AppointmentsByMonth> =
+        appointmentRepository.findAllFromDate(from)
+            .groupBy { it.scheduledAt.format(monthFormatter) }
+            .map { (month, appts) ->
+                AppointmentsByMonth(
+                    month = month,
+                    booked = appts.count { it.status == "BOOKED" }.toLong(),
+                    completed = appts.count { it.status == "COMPLETED" }.toLong(),
+                    cancelled = appts.count { it.status == "CANCELLED" }.toLong()
+                )
+            }
+            .sortedBy { it.month }
+
+    private fun computeRevenueByService(from: LocalDateTime): List<RevenueByService> =
+        appointmentRepository.findAllFromDate(from)
+            .filter { it.status == "COMPLETED" }
+            .groupBy { it.visitType }
+            .map { (service, appts) -> RevenueByService(service, appts.sumOf { it.price }.toDouble()) }
+            .sortedByDescending { it.total }
+}

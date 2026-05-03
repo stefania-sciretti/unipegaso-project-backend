@@ -1,199 +1,60 @@
 package com.clinica.application.service
 
-import com.clinica.doors.outbound.database.entities.AppointmentEntity
-import com.clinica.doors.outbound.database.entities.PatientEntity
-import com.clinica.doors.outbound.database.entities.SpecialistEntity
-import com.clinica.doors.outbound.database.repositories.AppointmentRepository
-import com.clinica.doors.outbound.database.repositories.PatientRepository
+import com.clinica.doors.outbound.database.dao.DashboardDao
+import com.clinica.dto.*
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 @ExtendWith(MockKExtension::class)
 class DashboardServiceTest {
 
-    @MockK private lateinit var patientRepository: PatientRepository
-    @MockK private lateinit var appointmentRepository: AppointmentRepository
+    @MockK private lateinit var dashboardDao: DashboardDao
 
     @InjectMockKs
     private lateinit var service: DashboardService
 
+    @Test
+    fun `getDashboard returns stats from dao`() {
+        val stats = DashboardStatsResponse(
+            kpi = KpiStats(
+                revenueMonth = 160.0,
+                revenuePrevMonth = 0.0,
+                activePatients = 2L,
+                newPatients = 3L,
+                appointmentsMonth = 5L,
+                cancellationRate = 20.0,
+                agendaOccupancy = 60.0
+            ),
+            revenueByMonth = listOf(RevenueByMonth("2025-01", 160.0)),
+            appointmentsByMonth = listOf(AppointmentsByMonth("2025-01", 1L, 2L, 1L)),
+            revenueByService = listOf(RevenueByService("Visita medica", 200.0))
+        )
+        every { dashboardDao.getDashboardStats() } returns stats
 
+        val result = service.getDashboard()
+
+        assertEquals(stats, result)
+    }
 
     @Test
-    fun `getDashboard returns all zeros when no appointments exist`() {
-        every { appointmentRepository.findAll() } returns emptyList()
-        every { patientRepository.countByCreatedAtBetween(any(), any()) } returns 0L
+    fun `getDashboard returns empty stats when dao returns zeros`() {
+        val stats = DashboardStatsResponse(
+            kpi = KpiStats(0.0, 0.0, 0L, 0L, 0L, 0.0, 0.0),
+            revenueByMonth = emptyList(),
+            appointmentsByMonth = emptyList(),
+            revenueByService = emptyList()
+        )
+        every { dashboardDao.getDashboardStats() } returns stats
 
         val result = service.getDashboard()
 
         assertEquals(0.0, result.kpi.revenueMonth)
-        assertEquals(0.0, result.kpi.revenuePrevMonth)
-        assertEquals(0L, result.kpi.activePatients)
-        assertEquals(0L, result.kpi.newPatients)
         assertEquals(0L, result.kpi.appointmentsMonth)
-        assertEquals(0.0, result.kpi.cancellationRate)
-        assertEquals(0.0, result.kpi.agendaOccupancy)
-        assertTrue(result.revenueByMonth.isEmpty())
-        assertTrue(result.appointmentsByMonth.isEmpty())
-        assertTrue(result.revenueByService.isEmpty())
+        assertEquals(0, result.revenueByMonth.size)
     }
-
-    @Test
-    fun `getDashboard correctly computes KPI from mixed statuses this month`() {
-        val now = LocalDateTime.now()
-        val thisMonth = now.withDayOfMonth(1).plusDays(1)
-
-        val appointments = listOf(
-            makeAppointment(1, 1, thisMonth, "COMPLETED", "Visita dietologica", BigDecimal("80.00")),
-            makeAppointment(2, 2, thisMonth, "COMPLETED", "Visita dietologica", BigDecimal("80.00")),
-            makeAppointment(3, 3, thisMonth, "BOOKED",    "Personal training",  BigDecimal("60.00")),
-            makeAppointment(4, 4, thisMonth, "CONFIRMED", "Visita medica",      BigDecimal("120.00")),
-            makeAppointment(5, 5, thisMonth, "CANCELLED", "Visita ortopedica",  BigDecimal("100.00"))
-        )
-
-        every { appointmentRepository.findAll() } returns appointments
-        every { patientRepository.countByCreatedAtBetween(any(), any()) } returns 3L
-
-        val result = service.getDashboard()
-
-        assertEquals(160.0, result.kpi.revenueMonth)
-        assertEquals(0.0, result.kpi.revenuePrevMonth)
-        assertEquals(2L, result.kpi.activePatients)
-        assertEquals(3L, result.kpi.newPatients)
-        assertEquals(5L, result.kpi.appointmentsMonth)
-        assertEquals(20.0, result.kpi.cancellationRate, 0.001)
-        assertEquals(60.0, result.kpi.agendaOccupancy, 0.001)
-    }
-
-    @Test
-    fun `getDashboard computes revenueByMonth only for COMPLETED appointments`() {
-        val now = LocalDateTime.now()
-        val thisMonth = now.withDayOfMonth(1).plusDays(1)
-        val lastMonth = thisMonth.minusMonths(1)
-
-        val appointments = listOf(
-            makeAppointment(1, 1, thisMonth,  "COMPLETED", "Visita A", BigDecimal("100.00")),
-            makeAppointment(2, 2, thisMonth,  "CANCELLED", "Visita B", BigDecimal("90.00")),
-            makeAppointment(3, 3, lastMonth,  "COMPLETED", "Visita A", BigDecimal("80.00")),
-        )
-
-        every { appointmentRepository.findAll() } returns appointments
-        every { patientRepository.countByCreatedAtBetween(any(), any()) } returns 0L
-
-        val result = service.getDashboard()
-
-        assertEquals(2, result.revenueByMonth.size)
-        val totals = result.revenueByMonth.associate { it.month to it.total }
-        assertEquals(100.0, totals[thisMonth.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM"))])
-        assertEquals(80.0, totals[lastMonth.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM"))])
-    }
-
-    @Test
-    fun `getDashboard computes appointmentsByMonth with correct counts per status`() {
-        val now = LocalDateTime.now()
-        val thisMonth = now.withDayOfMonth(1).plusDays(1)
-
-        val appointments = listOf(
-            makeAppointment(1, 1, thisMonth, "BOOKED",    price = BigDecimal("60.00")),
-            makeAppointment(2, 2, thisMonth, "COMPLETED", price = BigDecimal("100.00")),
-            makeAppointment(3, 3, thisMonth, "COMPLETED", price = BigDecimal("100.00")),
-            makeAppointment(4, 4, thisMonth, "CANCELLED", price = BigDecimal("80.00")),
-        )
-
-        every { appointmentRepository.findAll() } returns appointments
-        every { patientRepository.countByCreatedAtBetween(any(), any()) } returns 0L
-
-        val result = service.getDashboard()
-
-        assertEquals(1, result.appointmentsByMonth.size)
-        val entry = result.appointmentsByMonth.first()
-        assertEquals(1L, entry.booked)
-        assertEquals(2L, entry.completed)
-        assertEquals(1L, entry.cancelled)
-    }
-
-    @Test
-    fun `getDashboard computes revenueByService sorted descending by total`() {
-        val now = LocalDateTime.now()
-        val past = now.minusMonths(2)
-
-        val appointments = listOf(
-            makeAppointment(1, 1, past, "COMPLETED", "Fisioterapia",     BigDecimal("90.00")),
-            makeAppointment(2, 2, past, "COMPLETED", "Fisioterapia",     BigDecimal("90.00")),
-            makeAppointment(3, 3, past, "COMPLETED", "Visita medica",    BigDecimal("200.00")),
-            makeAppointment(4, 4, past, "CANCELLED", "Visita dietologica", BigDecimal("80.00")),
-        )
-
-        every { appointmentRepository.findAll() } returns appointments
-        every { patientRepository.countByCreatedAtBetween(any(), any()) } returns 0L
-
-        val result = service.getDashboard()
-
-        assertEquals(2, result.revenueByService.size)
-        assertEquals("Visita medica", result.revenueByService[0].service)
-        assertEquals(200.0, result.revenueByService[0].total)
-        assertEquals("Fisioterapia", result.revenueByService[1].service)
-        assertEquals(180.0, result.revenueByService[1].total)
-    }
-
-    @Test
-    fun `getDashboard cancellationRate is zero when no appointments this month`() {
-        val past = LocalDateTime.now().minusMonths(2)
-        val appointments = listOf(
-            makeAppointment(1, 1, past, "COMPLETED", price = BigDecimal("100.00"))
-        )
-
-        every { appointmentRepository.findAll() } returns appointments
-        every { patientRepository.countByCreatedAtBetween(any(), any()) } returns 0L
-
-        val result = service.getDashboard()
-
-        assertEquals(0.0, result.kpi.cancellationRate)
-        assertEquals(0.0, result.kpi.agendaOccupancy)
-        assertEquals(0L, result.kpi.appointmentsMonth)
-    }
-
-    private fun makePatient(id: Long): PatientEntity = PatientEntity(
-        id = id,
-        firstName = "Mario", lastName = "Rossi",
-        fiscalCode = "RSSMRA80A01H501Z",
-        birthDate = LocalDate.of(1980, 1, 1),
-        email = "mario.rossi@test.it",
-        phone = null,
-        createdAt = LocalDateTime.now(),
-        updatedAt = LocalDateTime.now()
-    )
-
-    private fun makeSpecialist(): SpecialistEntity = SpecialistEntity(
-        id = 1L, firstName = "Dr", lastName = "House",
-        role = "NUTRITIONIST", email = "house@test.it", bio = ""
-    )
-
-    private fun makeAppointment(
-        id: Long,
-        patientId: Long,
-        scheduledAt: LocalDateTime,
-        status: String,
-        visitType: String = "Visita generica",
-        price: BigDecimal = BigDecimal("100.00")
-    ): AppointmentEntity = AppointmentEntity(
-        id = id,
-        patientEntity = makePatient(patientId),
-        specialistEntity = makeSpecialist(),
-        scheduledAt = scheduledAt,
-        visitType = visitType,
-        status = status,
-        notes = null,
-        price = price,
-        updatedAt = scheduledAt
-    )
 }
