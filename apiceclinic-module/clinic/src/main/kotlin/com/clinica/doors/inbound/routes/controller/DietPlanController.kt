@@ -1,6 +1,7 @@
 package com.clinica.doors.inbound.routes.controller
 
 import com.clinica.application.service.DietPlanService
+import com.clinica.application.mappers.toResponse
 import com.clinic.model.DietPlanRequest
 import com.clinic.model.DietPlanResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -23,7 +24,7 @@ class DietPlanController(private val dietPlanService: DietPlanService) {
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun findAll(@RequestParam(required = false) patientId: Long?): List<DietPlanResponse> =
-        dietPlanService.findAll(patientId)
+        dietPlanService.findAll(patientId).map { it.toResponse() }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get diet plan by ID")
@@ -33,7 +34,7 @@ class DietPlanController(private val dietPlanService: DietPlanService) {
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun findById(@PathVariable id: Long): DietPlanResponse =
-        dietPlanService.findById(id)
+        dietPlanService.findById(id).toResponse()
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -44,7 +45,7 @@ class DietPlanController(private val dietPlanService: DietPlanService) {
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun create(@Valid @RequestBody request: DietPlanRequest): DietPlanResponse =
-        dietPlanService.create(request)
+        dietPlanService.create(request).toResponse()
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a diet plan")
@@ -55,7 +56,7 @@ class DietPlanController(private val dietPlanService: DietPlanService) {
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun update(@PathVariable id: Long, @Valid @RequestBody request: DietPlanRequest): DietPlanResponse =
-        dietPlanService.update(id, request)
+        dietPlanService.update(id, request).toResponse()
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

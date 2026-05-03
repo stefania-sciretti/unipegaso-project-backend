@@ -1,6 +1,7 @@
 package com.clinica.doors.inbound.routes.controller
 
 import com.clinica.application.service.SpecialistService
+import com.clinica.application.mappers.toResponse
 import com.clinic.model.SpecialistRequest
 import com.clinic.model.SpecialistResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -27,8 +28,8 @@ class SpecialistController(private val specialistService: SpecialistService) {
         @Parameter(description = "Filter by role (e.g. TRAINER, NUTRITIONIST)")
         @RequestParam(required = false) role: String?
     ): List<SpecialistResponse> =
-        if (!role.isNullOrBlank()) specialistService.findByRole(role)
-        else specialistService.findAll()
+        if (!role.isNullOrBlank()) specialistService.findByRole(role).map { it.toResponse() }
+        else specialistService.findAll().map { it.toResponse() }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get specialist by ID")
@@ -40,7 +41,7 @@ class SpecialistController(private val specialistService: SpecialistService) {
     fun findById(
         @Parameter(description = "Specialist ID") @PathVariable id: Long
     ): SpecialistResponse =
-        specialistService.findById(id)
+        specialistService.findById(id).toResponse()
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -52,7 +53,7 @@ class SpecialistController(private val specialistService: SpecialistService) {
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun create(@Valid @RequestBody request: SpecialistRequest): SpecialistResponse =
-        specialistService.create(request)
+        specialistService.create(request).toResponse()
 
     @PutMapping("/{id}")
     @Operation(summary = "Update specialist information")
@@ -67,7 +68,7 @@ class SpecialistController(private val specialistService: SpecialistService) {
         @Parameter(description = "Specialist ID") @PathVariable id: Long,
         @Valid @RequestBody request: SpecialistRequest
     ): SpecialistResponse =
-        specialistService.update(id, request)
+        specialistService.update(id, request).toResponse()
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

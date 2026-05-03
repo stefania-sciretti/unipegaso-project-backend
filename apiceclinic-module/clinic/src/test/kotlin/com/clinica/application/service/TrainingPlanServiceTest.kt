@@ -74,8 +74,8 @@ class TrainingPlanServiceTest {
 
         assertEquals(1L, result.id)
         assertEquals("Strength Plan", result.title)
-        assertEquals("Rossi Mario", result.patientFullName)
-        assertEquals("Anna Verdi", result.specialistFullName)
+        assertEquals("Rossi Mario", result.patient.fullName)
+        assertEquals("Anna Verdi", result.specialist.fullName)
     }
 
     @Test

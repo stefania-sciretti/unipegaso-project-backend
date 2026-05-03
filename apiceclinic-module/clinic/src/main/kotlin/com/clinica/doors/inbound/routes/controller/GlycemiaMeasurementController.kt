@@ -1,6 +1,7 @@
 package com.clinica.doors.inbound.routes.controller
 
 import com.clinica.application.service.GlycemiaMeasurementService
+import com.clinica.application.mappers.toResponse
 import com.clinic.model.GlycemiaMeasurementRequest
 import com.clinic.model.GlycemiaClassificationRulesResponse
 import com.clinic.model.GlycemiaContextRules
@@ -35,7 +36,7 @@ class GlycemiaMeasurementController(
         @Parameter(description = "Filter by patient ID")
         @RequestParam(required = false) patientId: Long?
     ): List<GlycemiaMeasurementResponse> =
-        glycemiaMeasurementService.findAll(patientId)
+        glycemiaMeasurementService.findAll(patientId).map { it.toResponse() }
 
     @GetMapping("/classification-rules")
     @Operation(
@@ -86,7 +87,7 @@ class GlycemiaMeasurementController(
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun findById(@PathVariable id: Long): GlycemiaMeasurementResponse =
-        glycemiaMeasurementService.findById(id)
+        glycemiaMeasurementService.findById(id).toResponse()
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -98,7 +99,7 @@ class GlycemiaMeasurementController(
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun create(@Valid @RequestBody request: GlycemiaMeasurementRequest): GlycemiaMeasurementResponse =
-        glycemiaMeasurementService.create(request)
+        glycemiaMeasurementService.create(request).toResponse()
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a glycemia measurement")
@@ -112,7 +113,7 @@ class GlycemiaMeasurementController(
         @PathVariable id: Long,
         @Valid @RequestBody request: GlycemiaMeasurementRequest
     ): GlycemiaMeasurementResponse =
-        glycemiaMeasurementService.update(id, request)
+        glycemiaMeasurementService.update(id, request).toResponse()
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -1,6 +1,7 @@
 package com.clinica.doors.inbound.routes.controller
 
 import com.clinica.application.service.FitnessAppointmentService
+import com.clinica.application.mappers.toResponse
 import com.clinic.model.FitnessAppointmentRequest
 import com.clinic.model.FitnessAppointmentResponse
 import com.clinic.model.FitnessAppointmentStatusRequest
@@ -27,7 +28,7 @@ class FitnessAppointmentController(private val fitnessAppointmentService: Fitnes
         @RequestParam(required = false) patientId: Long?,
         @RequestParam(required = false) specialistId: Long?,
         @RequestParam(required = false) status: String?
-    ): List<FitnessAppointmentResponse> = fitnessAppointmentService.findAll(patientId, specialistId, status)
+    ): List<FitnessAppointmentResponse> = fitnessAppointmentService.findAll(patientId, specialistId, status).map { it.toResponse() }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -38,7 +39,7 @@ class FitnessAppointmentController(private val fitnessAppointmentService: Fitnes
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun create(@Valid @RequestBody request: FitnessAppointmentRequest): FitnessAppointmentResponse =
-        fitnessAppointmentService.create(request)
+        fitnessAppointmentService.create(request).toResponse()
 
     @GetMapping("/{id}")
     @Operation(summary = "Get appointment by ID")
@@ -48,7 +49,7 @@ class FitnessAppointmentController(private val fitnessAppointmentService: Fitnes
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun findById(@PathVariable id: Long): FitnessAppointmentResponse =
-        fitnessAppointmentService.findById(id)
+        fitnessAppointmentService.findById(id).toResponse()
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -71,5 +72,5 @@ class FitnessAppointmentController(private val fitnessAppointmentService: Fitnes
     fun updateStatus(
         @PathVariable id: Long,
         @Valid @RequestBody request: FitnessAppointmentStatusRequest
-    ): FitnessAppointmentResponse = fitnessAppointmentService.updateStatus(id, request)
+    ): FitnessAppointmentResponse = fitnessAppointmentService.updateStatus(id, request).toResponse()
 }

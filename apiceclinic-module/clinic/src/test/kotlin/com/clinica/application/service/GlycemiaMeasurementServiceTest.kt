@@ -1,7 +1,7 @@
 package com.clinica.application.service
 
 import com.clinic.model.GlycemiaMeasurementRequest
-import com.clinic.model.GlycemiaMeasurementResponse
+import com.clinica.application.domain.GlycemiaClassification
 import com.clinica.application.domain.GlycemiaContext
 import com.clinica.application.domain.GlycemiaMeasurement
 import com.clinica.application.domain.Patient
@@ -93,7 +93,7 @@ class GlycemiaMeasurementServiceTest {
         val result = service.findAll(3L)
 
         assertEquals(1, result.size)
-        assertEquals(3L, result[0].patientId)
+        assertEquals(3L, result[0].patient.id)
     }
 
     @Test
@@ -103,9 +103,9 @@ class GlycemiaMeasurementServiceTest {
         val result = service.findById(1L)
 
         assertEquals(1L, result.id)
-        assertEquals(GlycemiaMeasurementResponse.Context.A_DIGIUNO, result.context)
-        assertEquals(GlycemiaMeasurementResponse.Classification.NORMALE, result.classification)
-        assertEquals("Giulia", result.patientFirstName)
+        assertEquals(GlycemiaContext.A_DIGIUNO, result.context)
+        assertEquals(GlycemiaClassification.NORMALE, result.classification)
+        assertEquals("Giulia", result.patient.firstName)
     }
 
     @Test
@@ -126,8 +126,8 @@ class GlycemiaMeasurementServiceTest {
         val result = service.create(buildRequest())
 
         assertEquals(5L, result.id)
-        assertEquals(GlycemiaMeasurementResponse.Context.A_DIGIUNO, result.context)
-        assertEquals(GlycemiaMeasurementResponse.Classification.NORMALE, result.classification)
+        assertEquals(GlycemiaContext.A_DIGIUNO, result.context)
+        assertEquals(GlycemiaClassification.NORMALE, result.classification)
         verify { glycemiaMeasurementDao.save(any()) }
     }
 

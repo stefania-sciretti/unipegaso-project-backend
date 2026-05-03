@@ -25,6 +25,10 @@ class SpecialistEntity(
     @Column(nullable = false, unique = true, length = 255)
     var email: String,
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "area_id")
+    var area: AreaEntity? = null,
+
     @Column(name = "created_at", nullable = false, updatable = false)
     var createdAt: LocalDateTime = LocalDateTime.now(),
 

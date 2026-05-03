@@ -2,6 +2,7 @@ package com.clinica.doors.inbound.routes.controller
 
 import com.clinic.model.ReportRequest
 import com.clinic.model.ReportResponse
+import com.clinica.application.mappers.toResponse
 import com.clinica.application.service.ReportService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -25,7 +26,7 @@ class ReportController(
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun findAll(): List<ReportResponse> =
-        reportService.findAll()
+        reportService.findAll().map { it.toResponse() }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get report by ID")
@@ -35,7 +36,7 @@ class ReportController(
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun findById(@PathVariable id: Long): ReportResponse =
-        reportService.findById(id)
+        reportService.findById(id).toResponse()
 
     @GetMapping("/appointment/{appointmentId}")
     @Operation(summary = "Get report by appointment ID")
@@ -45,7 +46,7 @@ class ReportController(
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun findByAppointmentId(@PathVariable appointmentId: Long): ReportResponse =
-        reportService.findByAppointmentId(appointmentId)
+        reportService.findByAppointmentId(appointmentId).toResponse()
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -56,7 +57,7 @@ class ReportController(
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun create(@Valid @RequestBody request: ReportRequest): ReportResponse =
-        reportService.create(request)
+        reportService.create(request).toResponse()
 
     @PutMapping("/{id}")
     @Operation(summary = "Update an existing report")
@@ -70,5 +71,5 @@ class ReportController(
         @PathVariable id: Long,
         @Valid @RequestBody request: ReportRequest
     ): ReportResponse =
-        reportService.update(id, request)
+        reportService.update(id, request).toResponse()
 }

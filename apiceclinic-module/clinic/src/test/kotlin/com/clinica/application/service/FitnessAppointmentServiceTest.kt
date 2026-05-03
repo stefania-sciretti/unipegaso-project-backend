@@ -74,9 +74,9 @@ class FitnessAppointmentServiceTest {
         val result = service.findById(1L)
 
         assertEquals(1L, result.id)
-        assertEquals("BOOKED", result.status)
+        assertEquals(AppointmentStatusEnum.BOOKED, result.status)
         assertEquals("Personal Training", result.serviceType)
-        assertEquals("Rossi Mario", result.patientFullName)
+        assertEquals("Rossi Mario", result.patient.fullName)
     }
 
     @Test
@@ -95,7 +95,7 @@ class FitnessAppointmentServiceTest {
         val result = service.create(buildRequest())
 
         assertEquals(5L, result.id)
-        assertEquals("BOOKED", result.status)
+        assertEquals(AppointmentStatusEnum.BOOKED, result.status)
     }
 
     @Test
@@ -124,7 +124,7 @@ class FitnessAppointmentServiceTest {
 
         val result = service.updateStatus(1L, FitnessAppointmentStatusRequest("CONFIRMED"))
 
-        assertEquals("CONFIRMED", result.status)
+        assertEquals("CONFIRMED", result.status.name)
     }
 
     @Test

@@ -1,8 +1,6 @@
 package com.clinica.application.service
 
-import com.clinic.model.RecipeResponse
 import com.clinica.application.domain.Recipe
-import com.clinica.application.mappers.toResponse
 import com.clinica.doors.outbound.database.dao.RecipeDao
 import com.clinic.model.RecipeRequest
 import org.springframework.stereotype.Service
@@ -15,15 +13,15 @@ class RecipeService(
 ) {
 
     @Transactional(readOnly = true)
-    fun findAll(category: String?, search: String?): List<RecipeResponse> =
-        recipeDao.findAll(category, search).map { it.toResponse() }
+    fun findAll(category: String?, search: String?): List<Recipe> =
+        recipeDao.findAll(category, search)
 
     @Transactional(readOnly = true)
-    fun findById(id: Long): RecipeResponse =
-        recipeDao.findById(id).orThrow("Recipe $id not found").toResponse()
+    fun findById(id: Long): Recipe =
+        recipeDao.findById(id).orThrow("Recipe $id not found")
 
     @Transactional
-    fun create(request: RecipeRequest): RecipeResponse {
+    fun create(request: RecipeRequest): Recipe {
         val now = LocalDateTime.now()
         val recipe = Recipe(
             id = 0,
@@ -36,11 +34,11 @@ class RecipeService(
             createdAt = now,
             updatedAt = now
         )
-        return recipeDao.save(recipe).toResponse()
+        return recipeDao.save(recipe)
     }
 
     @Transactional
-    fun update(id: Long, request: RecipeRequest): RecipeResponse {
+    fun update(id: Long, request: RecipeRequest): Recipe {
         val existing = recipeDao.findById(id).orThrow("Recipe $id not found")
         val updated = existing.copy(
             title = request.title,
@@ -51,7 +49,7 @@ class RecipeService(
             category = request.category,
             updatedAt = LocalDateTime.now()
         )
-        return recipeDao.save(updated).toResponse()
+        return recipeDao.save(updated)
     }
 
     @Transactional

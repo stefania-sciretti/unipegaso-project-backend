@@ -10,5 +10,6 @@ data class Report(
     val diagnosis: String,
     val prescription: String? = null,
     val specialistNotes: String? = null,
+    val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime = LocalDateTime.now()
 )

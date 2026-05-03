@@ -2,6 +2,7 @@ package com.clinica.doors.inbound.routes.controller
 
 import com.clinic.model.TrainingPlanRequest
 import com.clinic.model.TrainingPlanResponse
+import com.clinica.application.mappers.toResponse
 import com.clinica.application.service.TrainingPlanServicePort
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -23,7 +24,7 @@ class StaffPlanController(private val trainingPlanService: TrainingPlanServicePo
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun findAll(@RequestParam(required = false) patientId: Long?): List<TrainingPlanResponse> =
-        trainingPlanService.findAll(patientId)
+        trainingPlanService.findAll(patientId).map { it.toResponse() }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get training plan by ID")
@@ -33,7 +34,7 @@ class StaffPlanController(private val trainingPlanService: TrainingPlanServicePo
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun findById(@PathVariable id: Long): TrainingPlanResponse =
-        trainingPlanService.findById(id)
+        trainingPlanService.findById(id).toResponse()
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -44,7 +45,7 @@ class StaffPlanController(private val trainingPlanService: TrainingPlanServicePo
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun create(@Valid @RequestBody request: TrainingPlanRequest): TrainingPlanResponse =
-        trainingPlanService.create(request)
+        trainingPlanService.create(request).toResponse()
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a training plan")
@@ -55,7 +56,7 @@ class StaffPlanController(private val trainingPlanService: TrainingPlanServicePo
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun update(@PathVariable id: Long, @Valid @RequestBody request: TrainingPlanRequest): TrainingPlanResponse =
-        trainingPlanService.update(id, request)
+        trainingPlanService.update(id, request).toResponse()
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

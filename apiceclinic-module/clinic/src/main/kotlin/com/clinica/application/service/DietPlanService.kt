@@ -1,8 +1,6 @@
 package com.clinica.application.service
 
-import com.clinic.model.DietPlanResponse
 import com.clinica.application.domain.DietPlan
-import com.clinica.application.mappers.toResponse
 import com.clinica.doors.outbound.database.dao.DietPlanDao
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
@@ -19,16 +17,15 @@ class DietPlanService(
 )  {
 
     @Transactional(readOnly = true)
-    fun findAll(patientId: Long?): List<DietPlanResponse> =
+    fun findAll(patientId: Long?): List<DietPlan> =
         dietPlanDao.findAll(patientId)
-            .map { it.toResponse() }
 
     @Transactional(readOnly = true)
-    fun findById(id: Long): DietPlanResponse =
-        dietPlanDao.findById(id).orThrow("Diet plan not found with id: $id").toResponse()
+    fun findById(id: Long): DietPlan =
+        dietPlanDao.findById(id).orThrow("Diet plan not found with id: $id")
 
     @Transactional
-    fun create(request: DietPlanRequest): DietPlanResponse {
+    fun create(request: DietPlanRequest): DietPlan {
         val patient = patientDao.findById(request.patientId)
             .orThrow("Patient not found with id: ${request.patientId}")
 
@@ -50,11 +47,11 @@ class DietPlanService(
             updatedAt = now
         )
 
-        return dietPlanDao.save(dietPlan).toResponse()
+        return dietPlanDao.save(dietPlan)
     }
 
     @Transactional
-    fun update(id: Long, request: DietPlanRequest): DietPlanResponse {
+    fun update(id: Long, request: DietPlanRequest): DietPlan {
         val existing = dietPlanDao.findById(id)
             .orThrow("Diet plan not found with id: $id")
 
@@ -75,7 +72,7 @@ class DietPlanService(
             updatedAt = LocalDateTime.now()
         )
 
-        return dietPlanDao.save(updated).toResponse()
+        return dietPlanDao.save(updated)
     }
 
     @Transactional

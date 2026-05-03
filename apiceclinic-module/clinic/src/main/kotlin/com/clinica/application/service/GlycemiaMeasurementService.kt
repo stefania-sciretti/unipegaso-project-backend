@@ -1,9 +1,7 @@
 package com.clinica.application.service
 
-import com.clinic.model.GlycemiaMeasurementResponse
 import com.clinica.application.domain.GlycemiaContext
 import com.clinica.application.domain.GlycemiaMeasurement
-import com.clinica.application.mappers.toResponse
 import com.clinica.doors.outbound.database.dao.GlycemiaMeasurementDao
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
@@ -20,17 +18,16 @@ class GlycemiaMeasurementService(
 ) {
 
     @Transactional(readOnly = true)
-    fun findAll(patientId: Long?): List<GlycemiaMeasurementResponse> =
-        glycemiaMeasurementDao.findAll(patientId).map { it.toResponse() }
+    fun findAll(patientId: Long?): List<GlycemiaMeasurement> =
+        glycemiaMeasurementDao.findAll(patientId)
 
     @Transactional(readOnly = true)
-    fun findById(id: Long): GlycemiaMeasurementResponse =
+    fun findById(id: Long): GlycemiaMeasurement =
         glycemiaMeasurementDao.findById(id)
             .orThrow("Glycemia measurement not found with id: $id")
-            .toResponse()
 
     @Transactional
-    fun create(request: GlycemiaMeasurementRequest): GlycemiaMeasurementResponse {
+    fun create(request: GlycemiaMeasurementRequest): GlycemiaMeasurement {
         val patient = patientDao.findById(request.patientId)
             .orThrow("Patient not found with id: ${request.patientId}")
 
@@ -50,11 +47,11 @@ class GlycemiaMeasurementService(
             createdAt = now,
             updatedAt = now
         )
-        return glycemiaMeasurementDao.save(measurement).toResponse()
+        return glycemiaMeasurementDao.save(measurement)
     }
 
     @Transactional
-    fun update(id: Long, request: GlycemiaMeasurementRequest): GlycemiaMeasurementResponse {
+    fun update(id: Long, request: GlycemiaMeasurementRequest): GlycemiaMeasurement {
         val existing = glycemiaMeasurementDao.findById(id)
             .orThrow("Glycemia measurement not found with id: $id")
 
@@ -75,7 +72,7 @@ class GlycemiaMeasurementService(
             notes = request.notes,
             updatedAt = LocalDateTime.now()
         )
-        return glycemiaMeasurementDao.save(updated).toResponse()
+        return glycemiaMeasurementDao.save(updated)
     }
 
     @Transactional

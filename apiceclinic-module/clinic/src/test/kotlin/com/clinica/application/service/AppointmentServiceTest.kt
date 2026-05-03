@@ -74,7 +74,7 @@ class AppointmentServiceTest {
         val result = service.findAll(null, null, null)
 
         assertEquals(2, result.size)
-        assertEquals(1L, result[0].patientId)
+        assertEquals(1L, result[0].patient.id)
     }
 
     @Test
@@ -94,9 +94,9 @@ class AppointmentServiceTest {
         val result = service.findById(1L)
 
         assertEquals(1L, result.id)
-        assertEquals("BOOKED", result.status)
-        assertEquals("Rossi Mario", result.patientFullName)
-        assertEquals("Luigi Bianchi", result.specialistFullName)
+        assertEquals(AppointmentStatusEnum.BOOKED, result.status)
+        assertEquals("Rossi Mario", result.patient.fullName)
+        assertEquals("Luigi Bianchi", result.specialist.fullName)
     }
 
     @Test
@@ -117,7 +117,7 @@ class AppointmentServiceTest {
         val result = service.create(buildRequest())
 
         assertEquals(5L, result.id)
-        assertEquals("BOOKED", result.status)
+        assertEquals(AppointmentStatusEnum.BOOKED, result.status)
         verify { appointmentDao.save(any()) }
     }
 
@@ -147,7 +147,7 @@ class AppointmentServiceTest {
 
         val result = service.updateStatus(1L, AppointmentStatusRequest("CONFIRMED"))
 
-        assertEquals("CONFIRMED", result.status)
+        assertEquals("CONFIRMED", result.status.name)
     }
 
     @Test

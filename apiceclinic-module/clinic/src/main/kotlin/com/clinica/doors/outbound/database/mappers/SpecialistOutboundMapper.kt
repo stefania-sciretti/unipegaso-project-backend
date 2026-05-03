@@ -1,6 +1,7 @@
 package com.clinica.doors.outbound.database.mappers
 
 import com.clinica.application.domain.Specialist
+import com.clinica.doors.outbound.database.entities.AreaEntity
 import com.clinica.doors.outbound.database.entities.SpecialistEntity
 
 fun SpecialistEntity.toDomain(): Specialist =
@@ -11,11 +12,13 @@ fun SpecialistEntity.toDomain(): Specialist =
         role = this.role,
         bio = this.bio,
         email = this.email,
+        areaId = this.area?.id,
+        areaName = this.area?.name,
         createdAt = this.createdAt,
         updatedAt = this.updatedAt
     )
 
-fun Specialist.toEntity(): SpecialistEntity =
+fun Specialist.toEntity(areaEntity: AreaEntity? = null): SpecialistEntity =
     SpecialistEntity(
         id = this.id,
         firstName = this.firstName,
@@ -23,6 +26,7 @@ fun Specialist.toEntity(): SpecialistEntity =
         role = this.role,
         bio = this.bio,
         email = this.email,
+        area = areaEntity,
         createdAt = this.createdAt,
         updatedAt = this.updatedAt
     )

@@ -2,6 +2,7 @@ package com.clinica.doors.inbound.routes.controller
 
 import com.clinic.model.RecipeRequest
 import com.clinic.model.RecipeResponse
+import com.clinica.application.mappers.toResponse
 import com.clinica.application.service.RecipeService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -25,7 +26,7 @@ class RecipeController(private val recipeService: RecipeService) {
     fun findAll(
         @RequestParam(required = false) category: String?,
         @RequestParam(required = false) search: String?
-    ): List<RecipeResponse> = recipeService.findAll(category, search)
+    ): List<RecipeResponse> = recipeService.findAll(category, search).map { it.toResponse() }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get recipe by ID")
@@ -35,7 +36,7 @@ class RecipeController(private val recipeService: RecipeService) {
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun findById(@PathVariable id: Long): RecipeResponse =
-        recipeService.findById(id)
+        recipeService.findById(id).toResponse()
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -46,7 +47,7 @@ class RecipeController(private val recipeService: RecipeService) {
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun create(@Valid @RequestBody request: RecipeRequest): RecipeResponse =
-        recipeService.create(request)
+        recipeService.create(request).toResponse()
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a recipe")
@@ -57,7 +58,7 @@ class RecipeController(private val recipeService: RecipeService) {
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
     fun update(@PathVariable id: Long, @Valid @RequestBody request: RecipeRequest): RecipeResponse =
-        recipeService.update(id, request)
+        recipeService.update(id, request).toResponse()
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

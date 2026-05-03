@@ -1,11 +1,9 @@
 package com.clinica.application.service
 
-import com.clinic.model.AppointmentResponse
 import com.clinic.model.AppointmentRequest
 import com.clinic.model.AppointmentStatusRequest
 import com.clinica.application.domain.Appointment
 import com.clinica.application.domain.AppointmentStatusEnum
-import com.clinica.application.mappers.toResponse
 import com.clinica.doors.outbound.database.dao.AppointmentDao
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
@@ -25,16 +23,15 @@ class AppointmentService(
         patientId: Long?,
         specialist: Long?,
         status: AppointmentStatusEnum?
-    ): List<AppointmentResponse> =
+    ): List<Appointment> =
         appointmentDao.findAll(patientId, specialist, status)
-            .map { it.toResponse() }
 
     @Transactional(readOnly = true)
-    fun findById(id: Long): AppointmentResponse =
-        appointmentDao.findById(id).orThrow("Appointment not found with id: $id").toResponse()
+    fun findById(id: Long): Appointment =
+        appointmentDao.findById(id).orThrow("Appointment not found with id: $id")
 
     @Transactional
-    fun create(request: AppointmentRequest): AppointmentResponse {
+    fun create(request: AppointmentRequest): Appointment {
         val patient = patientDao.findById(request.patientId)
             .orThrow("Patient not found with id: ${request.patientId}")
 
@@ -52,18 +49,18 @@ class AppointmentService(
             updatedAt = LocalDateTime.now()
         )
 
-        return appointmentDao.save(appointment).toResponse()
+        return appointmentDao.save(appointment)
     }
 
     @Transactional
-    fun updateStatus(id: Long, request: AppointmentStatusRequest): AppointmentResponse {
+    fun updateStatus(id: Long, request: AppointmentStatusRequest): Appointment {
         val appointment = appointmentDao.findById(id)
             .orThrow("Appointment not found with id: $id")
         val updated = appointment.copy(
             status = AppointmentStatusEnum.parse(request.status),
             updatedAt = LocalDateTime.now()
         )
-        return appointmentDao.save(updated).toResponse()
+        return appointmentDao.save(updated)
     }
 
     @Transactional

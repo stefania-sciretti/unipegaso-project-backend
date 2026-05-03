@@ -69,7 +69,7 @@ class DietPlanServiceTest {
         val result = service.findAll(1L)
 
         assertEquals(1, result.size)
-        assertEquals(1L, result[0].patientId)
+        assertEquals(1L, result[0].patient.id)
     }
 
     @Test
@@ -80,8 +80,8 @@ class DietPlanServiceTest {
 
         assertEquals(1L, result.id)
         assertEquals("Low-carb plan", result.title)
-        assertEquals("Mario", result.patientFirstName)
-        assertEquals("Anna", result.specialistFirstName)
+        assertEquals("Mario", result.patient.firstName)
+        assertEquals("Anna", result.specialist.firstName)
     }
 
     @Test

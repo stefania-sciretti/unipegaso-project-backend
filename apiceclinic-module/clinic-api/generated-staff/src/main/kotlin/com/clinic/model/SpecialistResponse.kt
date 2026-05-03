@@ -15,6 +15,7 @@
 
 package com.clinic.model
 
+import com.clinic.model.AreaResponse
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
@@ -28,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param email 
  * @param createdAt 
  * @param bio 
+ * @param area 
  */
 
 
@@ -52,7 +54,10 @@ data class SpecialistResponse (
     val createdAt: java.time.OffsetDateTime,
 
     @field:JsonProperty("bio")
-    val bio: kotlin.String? = null
+    val bio: kotlin.String? = null,
+
+    @field:JsonProperty("area")
+    val area: AreaResponse? = null
 
 )
 

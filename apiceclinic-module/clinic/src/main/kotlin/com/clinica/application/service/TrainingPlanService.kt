@@ -1,8 +1,6 @@
 package com.clinica.application.service
 
-import com.clinic.model.TrainingPlanResponse
 import com.clinica.application.domain.TrainingPlan
-import com.clinica.application.mappers.toResponse
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.doors.outbound.database.dao.TrainingPlanDao
@@ -19,14 +17,14 @@ class TrainingPlanService(
 ) : TrainingPlanServicePort {
 
     @Transactional(readOnly = true)
-    override fun findAll(patientId: Long?): List<TrainingPlanResponse> =
-        trainingPlanDao.findAll(patientId).map { it.toResponse() }
+    override fun findAll(patientId: Long?): List<TrainingPlan> =
+        trainingPlanDao.findAll(patientId)
 
     @Transactional(readOnly = true)
-    override fun findById(id: Long): TrainingPlanResponse =
-        trainingPlanDao.findById(id).orThrow("Training plan not found with id: $id").toResponse()
+    override fun findById(id: Long): TrainingPlan =
+        trainingPlanDao.findById(id).orThrow("Training plan not found with id: $id")
 
-    override fun create(request: TrainingPlanRequest): TrainingPlanResponse {
+    override fun create(request: TrainingPlanRequest): TrainingPlan {
         val patient = patientDao.findById(request.patientId)
             .orThrow("Patient not found with id: ${request.patientId}")
         val specialist = specialistDao.findById(request.specialistId)
@@ -41,10 +39,10 @@ class TrainingPlanService(
             sessionsPerWeek = request.sessionsPerWeek,
             active = request.active ?: true
         )
-        return trainingPlanDao.save(plan).toResponse()
+        return trainingPlanDao.save(plan)
     }
 
-    override fun update(id: Long, request: TrainingPlanRequest): TrainingPlanResponse {
+    override fun update(id: Long, request: TrainingPlanRequest): TrainingPlan {
         trainingPlanDao.findById(id).orThrow("Training plan not found with id: $id")
 
         val patient = patientDao.findById(request.patientId)
@@ -62,7 +60,7 @@ class TrainingPlanService(
             sessionsPerWeek = request.sessionsPerWeek,
             active = request.active ?: true
         )
-        return trainingPlanDao.save(updated).toResponse()
+        return trainingPlanDao.save(updated)
     }
 
     override fun delete(id: Long) {

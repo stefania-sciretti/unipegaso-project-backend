@@ -290,6 +290,35 @@
                         </configuration>
                     </execution>
 
+                    <execution>
+                        <id>generate-service-models</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/Service.yml</inputSpec>
+                            <output>${project.basedir}/generated-service</output>
+
+                            <generatorName>kotlin</generatorName>
+                            <modelPackage>com.clinic.model</modelPackage>
+                            <modelOnly>true</modelOnly>
+
+                            <apiPackage>ignore.api</apiPackage>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiTests>false</generateApiTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <supportingFilesToGenerate/>
+
+                            <configOptions>
+                                <dateLibrary>java8</dateLibrary>
+                                <serializationLibrary>jackson</serializationLibrary>
+                                <useBeanValidation>true</useBeanValidation>
+                                <useSpringBoot3>true</useSpringBoot3>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
                     <!-- TrainingPlan -->
                     <execution>
                         <id>generate-trainingplan-models</id>
@@ -342,6 +371,7 @@
                                 <source>${project.basedir}/generated-staff/src/main/kotlin/com/clinic/model</source>
                                 <source>${project.basedir}/generated-recipe/src/main/kotlin/com/clinic/model</source>
                                 <source>${project.basedir}/generated-report/src/main/kotlin/com/clinic/model</source>
+                                <source>${project.basedir}/generated-service/src/main/kotlin/com/clinic/model</source>
                                 <source>${project.basedir}/generated-trainingplan/src/main/kotlin/com/clinic/model</source>
                             </sources>
                         </configuration>

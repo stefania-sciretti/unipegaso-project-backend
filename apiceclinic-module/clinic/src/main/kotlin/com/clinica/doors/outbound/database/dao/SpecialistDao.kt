@@ -3,13 +3,15 @@ package com.clinica.doors.outbound.database.dao
 import com.clinica.application.domain.Specialist
 import com.clinica.doors.outbound.database.mappers.toDomain
 import com.clinica.doors.outbound.database.mappers.toEntity
+import com.clinica.doors.outbound.database.repositories.AreaRepository
 import com.clinica.doors.outbound.database.repositories.SpecialistRepository
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
 @Component
 class SpecialistDao(
-    private val specialistRepository: SpecialistRepository
+    private val specialistRepository: SpecialistRepository,
+    private val areaRepository: AreaRepository
 ) {
 
     @Transactional(readOnly = true)
@@ -31,7 +33,8 @@ class SpecialistDao(
         specialistRepository.existsByEmailAndIdNot(email, id)
 
     fun save(specialist: Specialist): Specialist {
-        val entity = specialist.toEntity()
+        val areaEntity = specialist.areaId?.let { areaRepository.findById(it).orElse(null) }
+        val entity = specialist.toEntity(areaEntity)
         return specialistRepository.save(entity).toDomain()
     }
 

@@ -1,12 +1,12 @@
 package com.clinica.application.service
 
 import com.clinic.model.TrainingPlanRequest
-import com.clinic.model.TrainingPlanResponse
+import com.clinica.application.domain.TrainingPlan
 
 interface TrainingPlanServicePort {
-    fun findAll(patientId: Long?): List<TrainingPlanResponse>
-    fun findById(id: Long): TrainingPlanResponse
-    fun create(request: TrainingPlanRequest): TrainingPlanResponse
-    fun update(id: Long, request: TrainingPlanRequest): TrainingPlanResponse
+    fun findAll(patientId: Long?): List<TrainingPlan>
+    fun findById(id: Long): TrainingPlan
+    fun create(request: TrainingPlanRequest): TrainingPlan
+    fun update(id: Long, request: TrainingPlanRequest): TrainingPlan
     fun delete(id: Long)
 }
