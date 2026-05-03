@@ -24,14 +24,14 @@ class DashboardDao(
     private val monthFormatter = DateTimeFormatter.ofPattern("yyyy-MM")
 
     @Transactional(readOnly = true)
-    fun getDashboardStats(): DashboardStatsResponse {
+    fun getDashboardStats(months: Int): DashboardStatsResponse {
         val now = LocalDateTime.now()
         val startOfMonth = now.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0)
         val startOfNextMonth = startOfMonth.plusMonths(1)
         val startOfPrevMonth = startOfMonth.minusMonths(1)
-        val startOf12MonthsAgo = startOfMonth.minusMonths(11)
+        val startOfPeriod = startOfMonth.minusMonths(months.toLong() - 1)
 
-        val allFromDate = appointmentRepository.findAllFromDate(startOf12MonthsAgo)
+        val allFromDate = appointmentRepository.findAllFromDate(startOfPeriod)
 
         return DashboardStatsResponse(
             kpi = computeKpi(now, startOfMonth, startOfNextMonth, startOfPrevMonth),
