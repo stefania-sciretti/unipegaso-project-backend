@@ -26,6 +26,9 @@ class ReportDao(
     fun existsByAppointmentId(appointmentId: Long): Boolean =
         reportRepository.existsByAppointmentEntityId(appointmentId)
 
+    fun findAppointmentIdsWithReports(appointmentIds: List<Long>): Set<Long> =
+        reportRepository.findAppointmentIdsWithReports(appointmentIds).toSet()
+
     @Transactional
     fun save(report: Report): Report {
         val entity = if (report.id == 0L) {

@@ -23,9 +23,10 @@ class AppointmentService(
 
     @Transactional(readOnly = true)
     fun findAll(patientId: Long?, specialistId: Long?, status: String?): List<Appointment> {
-        val statusEnum = status?.let { AppointmentStatusEnum.parse(it) }
-        return appointmentDao.findAll(patientId, specialistId, statusEnum)
-            .map { it.copy(hasReport = reportDao.existsByAppointmentId(it.id)) }
+        val appointments = appointmentDao.findAll(patientId, specialistId, status?.let { AppointmentStatusEnum.parse(it) })
+        if (appointments.isEmpty()) return emptyList()
+        val withReport = reportDao.findAppointmentIdsWithReports(appointments.map { it.id })
+        return appointments.map { it.copy(hasReport = it.id in withReport) }
     }
 
     @Transactional(readOnly = true)
@@ -64,12 +65,13 @@ class AppointmentService(
     fun updateStatus(id: Long, request: AppointmentStatusRequest): Appointment {
         val appointment = appointmentDao.findById(id)
             ?: throw NoSuchElementException("Appointment not found with id: $id")
-        return appointmentDao.save(
+        val updated = appointmentDao.save(
             appointment.copy(
                 status = AppointmentStatusEnum.parse(request.status),
                 updatedAt = LocalDateTime.now()
             )
         )
+        return updated.copy(hasReport = reportDao.existsByAppointmentId(updated.id))
     }
 
     @Transactional

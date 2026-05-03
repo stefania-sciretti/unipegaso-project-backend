@@ -67,7 +67,7 @@ class AppointmentServiceTest {
     fun `findAll returns mapped appointments`() {
         every { appointmentDao.findAll(null, null, null) } returns
             listOf(buildAppointment(1L), buildAppointment(2L))
-        every { reportDao.existsByAppointmentId(any()) } returns false
+        every { reportDao.findAppointmentIdsWithReports(any()) } returns emptySet()
 
         val result = service.findAll(null, null, null)
 
@@ -79,7 +79,7 @@ class AppointmentServiceTest {
     @Test
     fun `findAll filters by patientId`() {
         every { appointmentDao.findAll(1L, null, null) } returns listOf(buildAppointment())
-        every { reportDao.existsByAppointmentId(any()) } returns false
+        every { reportDao.findAppointmentIdsWithReports(any()) } returns emptySet()
 
         val result = service.findAll(1L, null, null)
 
@@ -90,7 +90,7 @@ class AppointmentServiceTest {
     @Test
     fun `findAll parses status string to enum`() {
         every { appointmentDao.findAll(null, null, AppointmentStatusEnum.BOOKED) } returns listOf(buildAppointment())
-        every { reportDao.existsByAppointmentId(any()) } returns false
+        every { reportDao.findAppointmentIdsWithReports(any()) } returns emptySet()
 
         val result = service.findAll(null, null, "BOOKED")
 
@@ -101,7 +101,7 @@ class AppointmentServiceTest {
     @Test
     fun `findAll sets hasReport true when report exists`() {
         every { appointmentDao.findAll(null, null, null) } returns listOf(buildAppointment(1L))
-        every { reportDao.existsByAppointmentId(1L) } returns true
+        every { reportDao.findAppointmentIdsWithReports(any()) } returns setOf(1L)
 
         val result = service.findAll(null, null, null)
 
@@ -177,10 +177,24 @@ class AppointmentServiceTest {
         val updated = appointment.copy(status = AppointmentStatusEnum.CONFIRMED)
         every { appointmentDao.findById(1L) } returns appointment
         every { appointmentDao.save(any()) } returns updated
+        every { reportDao.existsByAppointmentId(any()) } returns false
 
         val result = service.updateStatus(1L, AppointmentStatusRequest("CONFIRMED"))
 
         assertEquals("CONFIRMED", result.status.name)
+    }
+
+    @Test
+    fun `updateStatus preserves hasReport=true when report exists`() {
+        val appointment = buildAppointment(status = AppointmentStatusEnum.BOOKED)
+        val updated = appointment.copy(status = AppointmentStatusEnum.COMPLETED)
+        every { appointmentDao.findById(1L) } returns appointment
+        every { appointmentDao.save(any()) } returns updated
+        every { reportDao.existsByAppointmentId(1L) } returns true
+
+        val result = service.updateStatus(1L, AppointmentStatusRequest("COMPLETED"))
+
+        assertEquals(true, result.hasReport)
     }
 
     @Test

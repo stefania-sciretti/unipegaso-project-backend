@@ -26,7 +26,7 @@ paths:
 
     post:
       summary: Create a new report for a COMPLETED appointment
-      description: Creates a clinical report linked to a completed fitness appointment
+      description: Creates a clinical report linked to a completed appointment
       operationId: createReport
       requestBody:
         required: true
