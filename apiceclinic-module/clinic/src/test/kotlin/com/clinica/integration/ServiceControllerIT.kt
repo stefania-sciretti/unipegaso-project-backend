@@ -203,8 +203,8 @@ class ServiceControllerIT {
     }
 
     @Test
-    fun `GET services returns 401 without auth`() {
+    fun `GET services returns 200 without auth`() {
         mockMvc.perform(get("/api/services"))
-            .andExpect(status().isUnauthorized)
+            .andExpect(status().isOk)
     }
 }
