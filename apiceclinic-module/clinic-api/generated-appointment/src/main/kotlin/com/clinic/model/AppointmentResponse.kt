@@ -23,16 +23,19 @@ import com.fasterxml.jackson.annotation.JsonProperty
  *
  * @param id 
  * @param patientId 
- * @param patientFullName Full name of the patient
+ * @param patientFullName 
  * @param specialistId 
- * @param specialistFullName Full name of the specialist
- * @param specialistSpecialization Specialization of the specialist
+ * @param specialistFullName 
+ * @param specialistRole 
  * @param scheduledAt 
- * @param visitType 
- * @param status Appointment status (BOOKED, COMPLETED, CANCELLED)
- * @param hasReport Whether a clinical report has been filed for this appointment
+ * @param serviceType 
+ * @param status 
+ * @param hasReport 
+ * @param price 
  * @param createdAt 
  * @param notes 
+ * @param areaId 
+ * @param areaName 
  */
 
 
@@ -44,40 +47,44 @@ data class AppointmentResponse (
     @field:JsonProperty("patientId")
     val patientId: kotlin.Long,
 
-    /* Full name of the patient */
     @field:JsonProperty("patientFullName")
     val patientFullName: kotlin.String,
 
     @field:JsonProperty("specialistId")
     val specialistId: kotlin.Long,
 
-    /* Full name of the specialist */
     @field:JsonProperty("specialistFullName")
     val specialistFullName: kotlin.String,
 
-    /* Specialization of the specialist */
-    @field:JsonProperty("specialistSpecialization")
-    val specialistSpecialization: kotlin.String,
+    @field:JsonProperty("specialistRole")
+    val specialistRole: kotlin.String,
 
     @field:JsonProperty("scheduledAt")
     val scheduledAt: java.time.OffsetDateTime,
 
-    @field:JsonProperty("visitType")
-    val visitType: kotlin.String,
+    @field:JsonProperty("serviceType")
+    val serviceType: kotlin.String,
 
-    /* Appointment status (BOOKED, COMPLETED, CANCELLED) */
     @field:JsonProperty("status")
     val status: kotlin.String,
 
-    /* Whether a clinical report has been filed for this appointment */
     @field:JsonProperty("hasReport")
     val hasReport: kotlin.Boolean,
+
+    @field:JsonProperty("price")
+    val price: kotlin.Double,
 
     @field:JsonProperty("createdAt")
     val createdAt: java.time.OffsetDateTime,
 
     @field:JsonProperty("notes")
-    val notes: kotlin.String? = null
+    val notes: kotlin.String? = null,
+
+    @field:JsonProperty("areaId")
+    val areaId: kotlin.Long? = null,
+
+    @field:JsonProperty("areaName")
+    val areaName: kotlin.String? = null
 
 )
 

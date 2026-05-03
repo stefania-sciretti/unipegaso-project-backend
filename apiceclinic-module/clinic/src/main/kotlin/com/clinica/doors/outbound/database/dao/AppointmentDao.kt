@@ -31,32 +31,23 @@ class AppointmentDao(
         appointmentRepository.findById(id).orElse(null)?.toDomain()
 
     fun save(appointment: Appointment): Appointment {
-        val patientId = appointment.patient.id
-        val specialistId = appointment.specialist.id
+        val patientEntity: PatientEntity = patientRepository.findById(appointment.patient.id)
+            .orElseThrow { IllegalArgumentException("Patient not found with id: ${appointment.patient.id}") }
 
-        val patientEntity: PatientEntity = patientRepository.findById(patientId)
-            .orElseThrow { IllegalArgumentException("Patient not found with id: $patientId") }
-
-        val specialistEntity: SpecialistEntity = specialistRepository.findById(specialistId)
-            .orElseThrow { IllegalArgumentException("Specialist not found with id: $specialistId") }
+        val specialistEntity: SpecialistEntity = specialistRepository.findById(appointment.specialist.id)
+            .orElseThrow { IllegalArgumentException("Specialist not found with id: ${appointment.specialist.id}") }
 
         val existing: AppointmentEntity? =
-            if (appointment.id != 0L) {
-                appointmentRepository.findById(appointment.id).orElse(null)
-            } else {
-                null
-            }
+            if (appointment.id != 0L) appointmentRepository.findById(appointment.id).orElse(null)
+            else null
 
         val entityToSave = appointment.toEntity(
             patientEntityProvider = { patientEntity },
             specialistEntityProvider = { specialistEntity },
+            areaEntityProvider = { specialistEntity.area },
             existingEntity = existing
         )
 
-        val saved = appointmentRepository.save(entityToSave)
-        return saved.toDomain()
+        return appointmentRepository.save(entityToSave).toDomain()
     }
-
-    fun deleteById(id: Long) =
-        appointmentRepository.deleteById(id)
 }

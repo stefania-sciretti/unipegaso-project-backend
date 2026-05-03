@@ -102,7 +102,7 @@ class DashboardDao(
     private fun computeRevenueByService(appointments: List<AppointmentEntity>): List<RevenueByService> =
         appointments
             .filter { it.status == "COMPLETED" }
-            .groupBy { it.visitType }
+            .groupBy { it.serviceType }
             .map { (service, appts) -> RevenueByService(service, appts.sumOf { it.price }.toDouble()) }
             .sortedByDescending { it.total }
 }

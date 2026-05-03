@@ -21,35 +21,34 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  * 
  *
- * @param patientId ID of the patient
- * @param specialistId ID of the specialist
- * @param scheduledAt Scheduled date and time of the appointment
- * @param visitType Type of medical visit (e.g. CARDIOLOGY, DERMATOLOGY, GENERAL)
- * @param notes Optional notes for the appointment
+ * @param patientId 
+ * @param specialistId 
+ * @param scheduledAt 
+ * @param serviceType 
+ * @param notes 
+ * @param price 
  */
 
 
 data class AppointmentRequest (
 
-    /* ID of the patient */
     @field:JsonProperty("patientId")
     val patientId: kotlin.Long,
 
-    /* ID of the specialist */
     @field:JsonProperty("specialistId")
     val specialistId: kotlin.Long,
 
-    /* Scheduled date and time of the appointment */
     @field:JsonProperty("scheduledAt")
     val scheduledAt: java.time.OffsetDateTime,
 
-    /* Type of medical visit (e.g. CARDIOLOGY, DERMATOLOGY, GENERAL) */
-    @field:JsonProperty("visitType")
-    val visitType: kotlin.String,
+    @field:JsonProperty("serviceType")
+    val serviceType: kotlin.String,
 
-    /* Optional notes for the appointment */
     @field:JsonProperty("notes")
-    val notes: kotlin.String? = null
+    val notes: kotlin.String? = null,
+
+    @field:JsonProperty("price")
+    val price: kotlin.Double? = 0.0
 
 )
 

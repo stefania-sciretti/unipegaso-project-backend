@@ -1,42 +1,31 @@
 openapi: 3.0.0
 info:
-  title: Medical Appointment API
-  description: >
-    Clinical appointment booking and management (medical visits).
-    NOTE: This endpoint is planned but not yet active.
-    The active appointment endpoint is /api/appointments (FitnessAppointment).
+  title: Appointment API
+  description: Unified appointment booking and management
   version: "1.0.0"
 servers:
   - url: "http://localhost:8080"
 
 paths:
-  /api/medical-appointments:
+  /api/appointments:
     get:
-      summary: List all medical appointments
-      description: Returns all medical appointments, optionally filtered by patientId, specialistId or status
+      summary: List all appointments
+      description: Returns all appointments, optionally filtered by patientId, specialistId or status
       operationId: findAllAppointments
       tags: [Appointments]
       parameters:
         - name: patientId
           in: query
           required: false
-          description: Filter by patient ID
-          schema:
-            type: integer
-            format: int64
+          schema: { type: integer, format: int64 }
         - name: specialistId
           in: query
           required: false
-          description: Filter by specialist ID
-          schema:
-            type: integer
-            format: int64
+          schema: { type: integer, format: int64 }
         - name: status
           in: query
           required: false
-          description: Filter by appointment status (e.g. BOOKED, COMPLETED, CANCELLED)
-          schema:
-            type: string
+          schema: { type: string }
       responses:
         "200":
           description: List of appointments
@@ -50,8 +39,7 @@ paths:
           description: Unauthorized
 
     post:
-      summary: Book a new medical appointment
-      description: Creates a new clinical appointment
+      summary: Book a new appointment
       operationId: createAppointment
       tags: [Appointments]
       requestBody:
@@ -72,19 +60,16 @@ paths:
         "401":
           description: Unauthorized
 
-  /api/medical-appointments/{id}:
+  /api/appointments/{id}:
     get:
-      summary: Get medical appointment by ID
+      summary: Get appointment by ID
       operationId: getAppointmentById
       tags: [Appointments]
       parameters:
         - name: id
           in: path
           required: true
-          description: Appointment ID
-          schema:
-            type: integer
-            format: int64
+          schema: { type: integer, format: int64 }
       responses:
         "200":
           description: Appointment found
@@ -98,17 +83,14 @@ paths:
           description: Unauthorized
 
     delete:
-      summary: Cancel a medical appointment
+      summary: Cancel an appointment (soft cancel — sets status to CANCELLED)
       operationId: deleteAppointment
       tags: [Appointments]
       parameters:
         - name: id
           in: path
           required: true
-          description: Appointment ID
-          schema:
-            type: integer
-            format: int64
+          schema: { type: integer, format: int64 }
       responses:
         "204":
           description: Appointment cancelled
@@ -117,20 +99,16 @@ paths:
         "401":
           description: Unauthorized
 
-  /api/medical-appointments/{id}/status:
+  /api/appointments/{id}/status:
     put:
-      summary: Update medical appointment status
-      description: Updates the status of an existing medical appointment
+      summary: Update appointment status
       operationId: updateAppointmentStatus
       tags: [Appointments]
       parameters:
         - name: id
           in: path
           required: true
-          description: Appointment ID
-          schema:
-            type: integer
-            format: int64
+          schema: { type: integer, format: int64 }
       requestBody:
         required: true
         content:
@@ -139,7 +117,7 @@ paths:
               $ref: "#/components/schemas/AppointmentStatusRequest"
       responses:
         "200":
-          description: Appointment status updated
+          description: Status updated
           content:
             application/json:
               schema:
@@ -159,32 +137,33 @@ components:
         - patientId
         - specialistId
         - scheduledAt
-        - visitType
+        - serviceType
       properties:
         patientId:
           type: integer
           format: int64
-          description: ID of the patient
           example: 1
         specialistId:
           type: integer
           format: int64
-          description: ID of the specialist
           example: 2
         scheduledAt:
           type: string
           format: date-time
-          description: Scheduled date and time of the appointment
           example: "2026-06-15T10:30:00"
-        visitType:
+        serviceType:
           type: string
-          description: Type of medical visit (e.g. CARDIOLOGY, DERMATOLOGY, GENERAL)
-          example: "CARDIOLOGY"
+          minLength: 1
+          example: "PERSONAL_TRAINING"
         notes:
           type: string
           nullable: true
-          description: Optional notes for the appointment
-          example: "First visit"
+        price:
+          type: number
+          format: double
+          nullable: true
+          default: 0
+          example: 50.0
 
     AppointmentStatusRequest:
       type: object
@@ -193,7 +172,7 @@ components:
       properties:
         status:
           type: string
-          description: New appointment status (e.g. BOOKED, COMPLETED, CANCELLED)
+          minLength: 1
           example: "COMPLETED"
 
     AppointmentResponse:
@@ -204,57 +183,51 @@ components:
         - patientFullName
         - specialistId
         - specialistFullName
-        - specialistSpecialization
+        - specialistRole
         - scheduledAt
-        - visitType
+        - serviceType
         - status
         - hasReport
+        - price
         - createdAt
       properties:
         id:
           type: integer
           format: int64
-          example: 1
         patientId:
           type: integer
           format: int64
-          example: 1
         patientFullName:
           type: string
-          description: Full name of the patient
-          example: "Mario Rossi"
         specialistId:
           type: integer
           format: int64
-          example: 2
         specialistFullName:
           type: string
-          description: Full name of the specialist
-          example: "Dott. Luca Bianchi"
-        specialistSpecialization:
+        specialistRole:
           type: string
-          description: Specialization of the specialist
-          example: "CARDIOLOGY"
         scheduledAt:
           type: string
           format: date-time
-          example: "2026-06-15T10:30:00"
-        visitType:
+        serviceType:
           type: string
-          example: "CARDIOLOGY"
         status:
           type: string
-          description: Appointment status (BOOKED, COMPLETED, CANCELLED)
-          example: "BOOKED"
         notes:
           type: string
           nullable: true
-          example: "First visit"
         hasReport:
           type: boolean
-          description: Whether a clinical report has been filed for this appointment
-          example: false
+        areaId:
+          type: integer
+          format: int64
+          nullable: true
+        areaName:
+          type: string
+          nullable: true
+        price:
+          type: number
+          format: double
         createdAt:
           type: string
           format: date-time
-          example: "2026-05-01T09:00:00"

@@ -21,13 +21,12 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  * 
  *
- * @param status New appointment status (e.g. BOOKED, COMPLETED, CANCELLED)
+ * @param status 
  */
 
 
 data class AppointmentStatusRequest (
 
-    /* New appointment status (e.g. BOOKED, COMPLETED, CANCELLED) */
     @field:JsonProperty("status")
     val status: kotlin.String
 

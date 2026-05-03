@@ -9,6 +9,7 @@ import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Service
@@ -19,53 +20,61 @@ class AppointmentService(
 ) {
 
     @Transactional(readOnly = true)
-    fun findAll(
-        patientId: Long?,
-        specialist: Long?,
-        status: AppointmentStatusEnum?
-    ): List<Appointment> =
-        appointmentDao.findAll(patientId, specialist, status)
+    fun findAll(patientId: Long?, specialistId: Long?, status: String?): List<Appointment> {
+        val statusEnum = status?.let { AppointmentStatusEnum.parse(it) }
+        return appointmentDao.findAll(patientId, specialistId, statusEnum)
+    }
 
     @Transactional(readOnly = true)
     fun findById(id: Long): Appointment =
-        appointmentDao.findById(id).orThrow("Appointment not found with id: $id")
+        appointmentDao.findById(id) ?: throw NoSuchElementException("Appointment not found with id: $id")
 
     @Transactional
     fun create(request: AppointmentRequest): Appointment {
         val patient = patientDao.findById(request.patientId)
-            .orThrow("Patient not found with id: ${request.patientId}")
+            ?: throw NoSuchElementException("Patient not found with id: ${request.patientId}")
 
         val specialist = specialistDao.findById(request.specialistId)
-            .orThrow("Specialist not found with id: ${request.specialistId}")
+            ?: throw NoSuchElementException("Specialist not found with id: ${request.specialistId}")
 
-        val appointment = Appointment(
-            id = 0L,
-            patient = patient,
-            specialist = specialist,
-            scheduledAt = request.scheduledAt.toLocalDateTime(),
-            visitType = request.visitType,
-            status = AppointmentStatusEnum.BOOKED,
-            notes = request.notes,
-            updatedAt = LocalDateTime.now()
+        val now = LocalDateTime.now()
+        return appointmentDao.save(
+            Appointment(
+                id = 0L,
+                patient = patient,
+                specialist = specialist,
+                scheduledAt = request.scheduledAt.toLocalDateTime(),
+                serviceType = request.serviceType,
+                status = AppointmentStatusEnum.BOOKED,
+                notes = request.notes,
+                price = request.price?.let { BigDecimal.valueOf(it) } ?: BigDecimal.ZERO,
+                createdAt = now,
+                updatedAt = now
+            )
         )
-
-        return appointmentDao.save(appointment)
     }
 
     @Transactional
     fun updateStatus(id: Long, request: AppointmentStatusRequest): Appointment {
         val appointment = appointmentDao.findById(id)
-            .orThrow("Appointment not found with id: $id")
-        val updated = appointment.copy(
-            status = AppointmentStatusEnum.parse(request.status),
-            updatedAt = LocalDateTime.now()
+            ?: throw NoSuchElementException("Appointment not found with id: $id")
+        return appointmentDao.save(
+            appointment.copy(
+                status = AppointmentStatusEnum.parse(request.status),
+                updatedAt = LocalDateTime.now()
+            )
         )
-        return appointmentDao.save(updated)
     }
 
     @Transactional
     fun delete(id: Long) {
-        appointmentDao.findById(id).orThrow("Appointment not found with id: $id")
-        appointmentDao.deleteById(id)
+        val appointment = appointmentDao.findById(id)
+            ?: throw NoSuchElementException("Appointment not found with id: $id")
+        appointmentDao.save(
+            appointment.copy(
+                status = AppointmentStatusEnum.CANCELLED,
+                updatedAt = LocalDateTime.now()
+            )
+        )
     }
 }

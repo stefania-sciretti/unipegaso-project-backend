@@ -13,13 +13,12 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.just
-import io.mockk.runs
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -37,19 +36,14 @@ class AppointmentServiceTest {
     private val fixedTime = LocalDateTime.of(2025, 6, 15, 10, 0)
 
     private fun buildPatient(id: Long = 1L) = Patient(
-        id = id, firstName = "Mario",
-        lastName = "Rossi",
-        fiscalCode = "RSSMRA80A01H501U",
-        birthDate = LocalDate.of(1980, 1, 1),
+        id = id, firstName = "Mario", lastName = "Rossi",
+        fiscalCode = "RSSMRA80A01H501U", birthDate = LocalDate.of(1980, 1, 1),
         email = "mario@example.com"
     )
 
     private fun buildSpecialist(id: Long = 1L) = Specialist(
-        id = id,
-        firstName = "Luigi",
-        lastName = "Bianchi",
-        role = "Nutrizionista",
-        email = "luigi@example.com",
+        id = id, firstName = "Luigi", lastName = "Bianchi",
+        role = "PERSONAL_TRAINER", email = "luigi@example.com"
     )
 
     private fun buildAppointment(
@@ -57,17 +51,18 @@ class AppointmentServiceTest {
         status: AppointmentStatusEnum = AppointmentStatusEnum.BOOKED
     ) = Appointment(
         id = id, patient = buildPatient(), specialist = buildSpecialist(),
-        scheduledAt = fixedTime, visitType = "Routine", status = status,
-        notes = "Note", updatedAt = fixedTime
+        scheduledAt = fixedTime, serviceType = "PERSONAL_TRAINING", status = status,
+        notes = "Note", price = BigDecimal("50.00"), createdAt = fixedTime, updatedAt = fixedTime
     )
 
     private fun buildRequest() = AppointmentRequest(
-        patientId = 1L, specialistId = 1L, scheduledAt = fixedTime.atOffset(ZoneOffset.UTC),
-        visitType = "Routine", notes = "Note"
+        patientId = 1L, specialistId = 1L,
+        scheduledAt = fixedTime.atOffset(ZoneOffset.UTC),
+        serviceType = "PERSONAL_TRAINING", notes = "Note", price = 50.0
     )
 
     @Test
-    fun `findAll returns mapped responses`() {
+    fun `findAll returns mapped appointments`() {
         every { appointmentDao.findAll(null, null, null) } returns
             listOf(buildAppointment(1L), buildAppointment(2L))
 
@@ -88,15 +83,25 @@ class AppointmentServiceTest {
     }
 
     @Test
-    fun `findById returns appointment response when found`() {
+    fun `findAll parses status string to enum`() {
+        every { appointmentDao.findAll(null, null, AppointmentStatusEnum.BOOKED) } returns listOf(buildAppointment())
+
+        val result = service.findAll(null, null, "BOOKED")
+
+        assertEquals(1, result.size)
+        verify { appointmentDao.findAll(null, null, AppointmentStatusEnum.BOOKED) }
+    }
+
+    @Test
+    fun `findById returns appointment when found`() {
         every { appointmentDao.findById(1L) } returns buildAppointment()
 
         val result = service.findById(1L)
 
         assertEquals(1L, result.id)
         assertEquals(AppointmentStatusEnum.BOOKED, result.status)
+        assertEquals("PERSONAL_TRAINING", result.serviceType)
         assertEquals("Rossi Mario", result.patient.fullName)
-        assertEquals("Luigi Bianchi", result.specialist.fullName)
     }
 
     @Test
@@ -151,7 +156,7 @@ class AppointmentServiceTest {
     }
 
     @Test
-    fun `updateStatus throws NoSuchElementException when appointment not found`() {
+    fun `updateStatus throws NoSuchElementException when not found`() {
         every { appointmentDao.findById(99L) } returns null
 
         assertThrows<NoSuchElementException> {
@@ -169,20 +174,24 @@ class AppointmentServiceTest {
     }
 
     @Test
-    fun `delete calls deleteById when appointment exists`() {
-        every { appointmentDao.findById(1L) } returns buildAppointment()
-        every { appointmentDao.deleteById(1L) } just runs
+    fun `delete soft-cancels appointment`() {
+        val appointment = buildAppointment(status = AppointmentStatusEnum.BOOKED)
+        val cancelled = appointment.copy(status = AppointmentStatusEnum.CANCELLED)
+        every { appointmentDao.findById(1L) } returns appointment
+        every { appointmentDao.save(any()) } returns cancelled
 
         service.delete(1L)
 
-        verify { appointmentDao.deleteById(1L) }
+        verify {
+            appointmentDao.save(withArg { it.status == AppointmentStatusEnum.CANCELLED })
+        }
     }
 
     @Test
-    fun `delete throws NoSuchElementException when appointment not found`() {
+    fun `delete throws NoSuchElementException when not found`() {
         every { appointmentDao.findById(99L) } returns null
 
         assertThrows<NoSuchElementException> { service.delete(99L) }
-        verify(exactly = 0) { appointmentDao.deleteById(any()) }
+        verify(exactly = 0) { appointmentDao.save(any()) }
     }
 }

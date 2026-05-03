@@ -1,10 +1,10 @@
 package com.clinica.doors.inbound.routes.controller
 
-import com.clinica.application.service.FitnessAppointmentService
+import com.clinic.model.AppointmentRequest
+import com.clinic.model.AppointmentResponse
+import com.clinic.model.AppointmentStatusRequest
 import com.clinica.application.mappers.toResponse
-import com.clinic.model.FitnessAppointmentRequest
-import com.clinic.model.FitnessAppointmentResponse
-import com.clinic.model.FitnessAppointmentStatusRequest
+import com.clinica.application.service.AppointmentService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/appointments")
-@Tag(name = "Fitness Appointments", description = "Fitness appointment booking and management")
-class FitnessAppointmentController(private val fitnessAppointmentService: FitnessAppointmentService) {
+@Tag(name = "Appointments", description = "Appointment booking and management")
+class AppointmentController(private val appointmentService: AppointmentService) {
 
     @GetMapping
-    @Operation(summary = "List appointments")
+    @Operation(summary = "List all appointments")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "List returned"),
         ApiResponse(responseCode = "401", description = "Unauthorized")
@@ -28,7 +28,8 @@ class FitnessAppointmentController(private val fitnessAppointmentService: Fitnes
         @RequestParam(required = false) patientId: Long?,
         @RequestParam(required = false) specialistId: Long?,
         @RequestParam(required = false) status: String?
-    ): List<FitnessAppointmentResponse> = fitnessAppointmentService.findAll(patientId, specialistId, status).map { it.toResponse() }
+    ): List<AppointmentResponse> =
+        appointmentService.findAll(patientId, specialistId, status).map { it.toResponse() }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -38,8 +39,8 @@ class FitnessAppointmentController(private val fitnessAppointmentService: Fitnes
         ApiResponse(responseCode = "400", description = "Validation error"),
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
-    fun create(@Valid @RequestBody request: FitnessAppointmentRequest): FitnessAppointmentResponse =
-        fitnessAppointmentService.create(request).toResponse()
+    fun create(@Valid @RequestBody request: AppointmentRequest): AppointmentResponse =
+        appointmentService.create(request).toResponse()
 
     @GetMapping("/{id}")
     @Operation(summary = "Get appointment by ID")
@@ -48,8 +49,8 @@ class FitnessAppointmentController(private val fitnessAppointmentService: Fitnes
         ApiResponse(responseCode = "404", description = "Appointment not found"),
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
-    fun findById(@PathVariable id: Long): FitnessAppointmentResponse =
-        fitnessAppointmentService.findById(id).toResponse()
+    fun findById(@PathVariable id: Long): AppointmentResponse =
+        appointmentService.findById(id).toResponse()
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -59,7 +60,7 @@ class FitnessAppointmentController(private val fitnessAppointmentService: Fitnes
         ApiResponse(responseCode = "404", description = "Appointment not found"),
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
-    fun delete(@PathVariable id: Long) = fitnessAppointmentService.delete(id)
+    fun delete(@PathVariable id: Long) = appointmentService.delete(id)
 
     @PutMapping("/{id}/status")
     @Operation(summary = "Update appointment status")
@@ -71,6 +72,6 @@ class FitnessAppointmentController(private val fitnessAppointmentService: Fitnes
     ])
     fun updateStatus(
         @PathVariable id: Long,
-        @Valid @RequestBody request: FitnessAppointmentStatusRequest
-    ): FitnessAppointmentResponse = fitnessAppointmentService.updateStatus(id, request).toResponse()
+        @Valid @RequestBody request: AppointmentStatusRequest
+    ): AppointmentResponse = appointmentService.updateStatus(id, request).toResponse()
 }

@@ -3,6 +3,7 @@ package com.clinica.doors.outbound.database.mappers
 import com.clinica.application.domain.Appointment
 import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.doors.outbound.database.entities.AppointmentEntity
+import com.clinica.doors.outbound.database.entities.AreaEntity
 import com.clinica.doors.outbound.database.entities.PatientEntity
 import com.clinica.doors.outbound.database.entities.SpecialistEntity
 
@@ -12,37 +13,42 @@ fun AppointmentEntity.toDomain(): Appointment =
         patient = this.patientEntity.toDomain(),
         specialist = this.specialistEntity.toDomain(),
         scheduledAt = this.scheduledAt,
-        visitType = this.visitType,
+        serviceType = this.serviceType,
         status = AppointmentStatusEnum.valueOf(this.status),
         notes = this.notes,
+        price = this.price,
+        createdAt = this.createdAt,
+        areaId = this.area?.id,
+        areaName = this.area?.name,
         updatedAt = this.updatedAt
     )
 
 fun Appointment.toEntity(
     patientEntityProvider: () -> PatientEntity,
     specialistEntityProvider: () -> SpecialistEntity,
+    areaEntityProvider: () -> AreaEntity?,
     existingEntity: AppointmentEntity? = null
-): AppointmentEntity {
-    val entity = existingEntity ?: AppointmentEntity(
-        id = this.id,
+): AppointmentEntity =
+    existingEntity?.apply {
+        patientEntity = patientEntityProvider()
+        specialistEntity = specialistEntityProvider()
+        scheduledAt = this@toEntity.scheduledAt
+        serviceType = this@toEntity.serviceType
+        status = this@toEntity.status.name
+        notes = this@toEntity.notes
+        price = this@toEntity.price
+        area = areaEntityProvider()
+        updatedAt = this@toEntity.updatedAt
+    } ?: AppointmentEntity(
+        id = id,
         patientEntity = patientEntityProvider(),
         specialistEntity = specialistEntityProvider(),
-        scheduledAt = this.scheduledAt,
-        visitType = this.visitType,
-        status = this.status.name,
-        notes = this.notes,
-        updatedAt = this.updatedAt
+        scheduledAt = scheduledAt,
+        serviceType = serviceType,
+        status = status.name,
+        notes = notes,
+        price = price,
+        createdAt = createdAt,
+        area = areaEntityProvider(),
+        updatedAt = updatedAt
     )
-    existingEntity?.let {
-        it.patientEntity = patientEntityProvider()
-        it.specialistEntity = specialistEntityProvider()
-        it.scheduledAt = this.scheduledAt
-        it.visitType = this.visitType
-        it.status = this.status.name
-        it.notes = this.notes
-        it.updatedAt = this.updatedAt
-    }
-    return entity
-}
-
-

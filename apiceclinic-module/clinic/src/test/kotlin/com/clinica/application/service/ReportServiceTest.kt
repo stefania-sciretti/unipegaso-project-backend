@@ -45,7 +45,7 @@ class ReportServiceTest {
 
     private fun buildAppointment(id: Long = 5L) = Appointment(
         id = id, patient = buildPatient(), specialist = buildSpecialist(),
-        scheduledAt = fixedTime, visitType = "Personal Training",
+        scheduledAt = fixedTime, serviceType = "Personal Training",
         status = AppointmentStatusEnum.COMPLETED, notes = null, updatedAt = fixedTime
     )
 
@@ -168,7 +168,7 @@ class ReportServiceTest {
         verify {
             reportDao.save(withArg { report ->
                 assertEquals(7L, report.appointment.id)
-                assertEquals("Personal Training", report.appointment.visitType)
+                assertEquals("Personal Training", report.appointment.serviceType)
                 assertEquals(1L, report.appointment.patient.id)
                 assertEquals(10L, report.appointment.specialist.id)
             })
