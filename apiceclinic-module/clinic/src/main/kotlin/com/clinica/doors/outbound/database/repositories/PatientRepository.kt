@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 @Repository
 interface PatientRepository : JpaRepository<PatientEntity, Long> {
@@ -24,4 +25,6 @@ interface PatientRepository : JpaRepository<PatientEntity, Long> {
     fun searchByNameOrLastName(@Param("term") term: String): List<PatientEntity>
 
     fun existsByFiscalCode(fiscalCode: String): Boolean
+
+    fun countByCreatedAtBetween(from: LocalDateTime, to: LocalDateTime): Long
 }

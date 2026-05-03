@@ -1,6 +1,7 @@
 package com.clinica.doors.outbound.database.entities
 
 import jakarta.persistence.*
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 
@@ -30,6 +31,9 @@ class AppointmentEntity(
 
     @Column(columnDefinition = "TEXT")
     var notes: String? = null,
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    var price: BigDecimal = BigDecimal.ZERO,
 
     @Column(name = "updated_at", nullable = false)
     var updatedAt: LocalDateTime = LocalDateTime.now(),

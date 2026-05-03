@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.security.crypto.password.PasswordEncoder
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -267,27 +268,32 @@ class DataInitializer {
                         scheduledAt = LocalDateTime.now().minusDays(30),
                         visitType = "Visita di controllo",
                         status = AppointmentStatusEnum.COMPLETED.name,
-                        notes = "Paziente in buone condizioni generali."),
+                        notes = "Paziente in buone condizioni generali.",
+                        price = BigDecimal("80.00")),
                     AppointmentEntity(patientEntity = patients[1], specialistEntity = specialists[1],
                         scheduledAt = LocalDateTime.now().minusDays(20),
                         visitType = "Elettrocardiogramma",
                         status = AppointmentStatusEnum.COMPLETED.name,
-                        notes = "ECG nella norma."),
+                        notes = "ECG nella norma.",
+                        price = BigDecimal("120.00")),
                     AppointmentEntity(patientEntity = patients[2], specialistEntity = specialists[2],
                         scheduledAt = LocalDateTime.now().minusDays(15),
                         visitType = "Visita ortopedica",
                         status = AppointmentStatusEnum.COMPLETED.name,
-                        notes = "Lieve artrosi al ginocchio destro."),
+                        notes = "Lieve artrosi al ginocchio destro.",
+                        price = BigDecimal("100.00")),
                     AppointmentEntity(patientEntity = patients[3], specialistEntity = specialists[0],
                         scheduledAt = LocalDateTime.now().minusDays(7),
                         visitType = "Prima visita",
                         status = AppointmentStatusEnum.COMPLETED.name,
-                        notes = null),
+                        notes = null,
+                        price = BigDecimal("60.00")),
                     AppointmentEntity(patientEntity = patients[4], specialistEntity = specialists[1],
                         scheduledAt = LocalDateTime.now().plusDays(5),
                         visitType = "Visita cardiologica",
                         status = AppointmentStatusEnum.BOOKED.name,
-                        notes = null)
+                        notes = null,
+                        price = BigDecimal("150.00"))
                 ))
                 println("✓ 5 appuntamenti clinici creati")
             }

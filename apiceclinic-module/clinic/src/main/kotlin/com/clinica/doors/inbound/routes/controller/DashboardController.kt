@@ -1,7 +1,7 @@
 package com.clinica.controller
 
 import com.clinica.application.service.DashboardService
-import com.clinica.dto.DashboardResponse
+import com.clinica.dto.DashboardStatsResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -21,5 +21,5 @@ class DashboardController(private val dashboardService: DashboardService) {
         ApiResponse(responseCode = "200", description = "Statistics returned"),
         ApiResponse(responseCode = "401", description = "Unauthorized")
     ])
-    fun getDashboard(): DashboardResponse = dashboardService.getDashboard()
+    fun getDashboard(): DashboardStatsResponse = dashboardService.getDashboard()
 }
