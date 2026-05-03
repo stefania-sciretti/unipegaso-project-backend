@@ -156,7 +156,6 @@ class SpecialistControllerIT {
 
     @Test
     fun `GET specialists returns 200 without auth because endpoint is public`() {
-        // GET /api/specialists is explicitly permitted without authentication (permitAll in SecurityConfig)
         mockMvc.perform(get("/api/specialists"))
             .andExpect(status().isOk)
     }

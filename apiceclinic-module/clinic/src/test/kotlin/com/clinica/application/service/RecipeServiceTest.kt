@@ -1,8 +1,8 @@
 package com.clinica.application.service
 
+import com.clinic.model.RecipeRequest
 import com.clinica.application.domain.Recipe
 import com.clinica.doors.outbound.database.dao.RecipeDao
-import com.clinica.dto.RecipeRequest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -47,8 +47,6 @@ class RecipeServiceTest {
         category = "Lunch"
     )
 
-    // findAll
-
     @Test
     fun `findAll returns all recipes when no filters`() {
         every { recipeDao.findAll(null, null) } returns listOf(buildRecipe(1L), buildRecipe(2L))
@@ -79,8 +77,6 @@ class RecipeServiceTest {
         assertEquals("Pasta al Pomodoro", result[0].title)
     }
 
-    // findById
-
     @Test
     fun `findById returns recipe response when found`() {
         every { recipeDao.findById(1L) } returns buildRecipe()
@@ -100,9 +96,6 @@ class RecipeServiceTest {
         val ex = assertThrows<NoSuchElementException> { service.findById(99L) }
         assert(ex.message!!.contains("99"))
     }
-
-    // create
-
     @Test
     fun `create saves and returns new recipe`() {
         val saved = buildRecipe(id = 5L)
@@ -114,8 +107,6 @@ class RecipeServiceTest {
         assertEquals("Pasta al Pomodoro", result.title)
         verify { recipeDao.save(any()) }
     }
-
-    // update
 
     @Test
     fun `update saves and returns updated recipe`() {
@@ -137,8 +128,6 @@ class RecipeServiceTest {
         assertThrows<NoSuchElementException> { service.update(99L, buildRequest()) }
         verify(exactly = 0) { recipeDao.save(any()) }
     }
-
-    // delete
 
     @Test
     fun `delete calls deleteById`() {

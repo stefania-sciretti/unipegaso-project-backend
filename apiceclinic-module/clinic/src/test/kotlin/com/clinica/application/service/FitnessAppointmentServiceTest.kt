@@ -1,5 +1,7 @@
 package com.clinica.application.service
 
+import com.clinic.model.FitnessAppointmentRequest
+import com.clinic.model.FitnessAppointmentStatusRequest
 import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.application.domain.FitnessAppointment
 import com.clinica.application.domain.Patient
@@ -7,8 +9,6 @@ import com.clinica.application.domain.Specialist
 import com.clinica.doors.outbound.database.dao.FitnessAppointmentDao
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
-import com.clinica.dto.FitnessAppointmentRequest
-import com.clinica.dto.FitnessAppointmentStatusRequest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -20,6 +20,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @ExtendWith(MockKExtension::class)
 class FitnessAppointmentServiceTest {
@@ -54,11 +55,9 @@ class FitnessAppointmentServiceTest {
     )
 
     private fun buildRequest() = FitnessAppointmentRequest(
-        patientId = 1L, specialistId = 10L, scheduledAt = fixedTime,
+        patientId = 1L, specialistId = 10L, scheduledAt = fixedTime.atOffset(ZoneOffset.UTC),
         serviceType = "Personal Training", notes = "Note"
     )
-
-    // findAll
 
     @Test
     fun `findAll returns mapped responses`() {
@@ -67,8 +66,6 @@ class FitnessAppointmentServiceTest {
 
         assertEquals(2, service.findAll(null, null, null).size)
     }
-
-    // findById
 
     @Test
     fun `findById returns response when found`() {
@@ -79,7 +76,7 @@ class FitnessAppointmentServiceTest {
         assertEquals(1L, result.id)
         assertEquals("BOOKED", result.status)
         assertEquals("Personal Training", result.serviceType)
-        assertEquals("Mario Rossi", result.patientFullName)
+        assertEquals("Rossi Mario", result.patientFullName)
     }
 
     @Test
@@ -87,8 +84,6 @@ class FitnessAppointmentServiceTest {
         every { appointmentDao.findById(99L) } returns null
         assertThrows<NoSuchElementException> { service.findById(99L) }
     }
-
-    // create
 
     @Test
     fun `create saves appointment with BOOKED status`() {
@@ -120,8 +115,6 @@ class FitnessAppointmentServiceTest {
         verify(exactly = 0) { appointmentDao.save(any()) }
     }
 
-    // updateStatus
-
     @Test
     fun `updateStatus changes appointment status`() {
         val appointment = buildFitnessAppointment(status = AppointmentStatusEnum.BOOKED)
@@ -151,8 +144,6 @@ class FitnessAppointmentServiceTest {
             service.updateStatus(1L, FitnessAppointmentStatusRequest("INVALID"))
         }
     }
-
-    // delete (soft cancel)
 
     @Test
     fun `delete cancels appointment instead of physically deleting`() {

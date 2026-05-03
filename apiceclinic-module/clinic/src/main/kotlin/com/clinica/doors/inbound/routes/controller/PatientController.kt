@@ -61,7 +61,7 @@ class PatientController(
     fun findById(@PathVariable id: Long): PatientResponse =
         patientService.findById(id).toResponse()
 
-    @PutMapping("/{id}")
+    @RequestMapping("/{id}", method = [RequestMethod.PUT, RequestMethod.PATCH])
     @Operation(summary = "Update patient information")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Patient updated"),

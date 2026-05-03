@@ -9,14 +9,12 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.security.crypto.password.PasswordEncoder
-import java.util.Optional
+import java.util.*
 
 @ExtendWith(MockKExtension::class)
 class AuthServiceTest {
@@ -32,8 +30,6 @@ class AuthServiceTest {
 
     private fun buildUserEntity(username: String = "mario", email: String? = "mario@example.com") =
         UserEntity(id = 1L, username = username, password = "encoded_password", email = email, enabled = true)
-
-    // registerUser
 
     @Test
     fun `registerUser saves new user when username and email are unique`() {
@@ -94,8 +90,6 @@ class AuthServiceTest {
 
         verify { passwordEncoder.encode("plaintext") }
     }
-
-    // validateCredentials
 
     @Test
     fun `validateCredentials returns true for correct username and password`() {

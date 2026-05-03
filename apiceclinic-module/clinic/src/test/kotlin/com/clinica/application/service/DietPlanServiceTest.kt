@@ -1,12 +1,12 @@
 package com.clinica.application.service
 
+import com.clinic.model.DietPlanRequest
 import com.clinica.application.domain.DietPlan
 import com.clinica.application.domain.Patient
 import com.clinica.application.domain.Specialist
 import com.clinica.doors.outbound.database.dao.DietPlanDao
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
-import com.clinica.dto.DietPlanRequest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -56,8 +56,6 @@ class DietPlanServiceTest {
         description = "Lose 5kg", calories = 1800, durationWeeks = 8, active = true
     )
 
-    // findAll
-
     @Test
     fun `findAll returns all plans when patientId is null`() {
         every { dietPlanDao.findAll(null) } returns listOf(buildDietPlan(1L), buildDietPlan(2L))
@@ -73,8 +71,6 @@ class DietPlanServiceTest {
         assertEquals(1, result.size)
         assertEquals(1L, result[0].patientId)
     }
-
-    // findById
 
     @Test
     fun `findById returns diet plan response`() {
@@ -95,8 +91,6 @@ class DietPlanServiceTest {
         val ex = assertThrows<NoSuchElementException> { service.findById(99L) }
         assert(ex.message!!.contains("99"))
     }
-
-    // create
 
     @Test
     fun `create saves and returns new diet plan`() {
@@ -129,8 +123,6 @@ class DietPlanServiceTest {
         verify(exactly = 0) { dietPlanDao.save(any()) }
     }
 
-    // update
-
     @Test
     fun `update saves and returns updated diet plan`() {
         val existing = buildDietPlan(1L)
@@ -162,8 +154,6 @@ class DietPlanServiceTest {
         assertThrows<NoSuchElementException> { service.update(1L, buildRequest()) }
         verify(exactly = 0) { dietPlanDao.save(any()) }
     }
-
-    // delete
 
     @Test
     fun `delete calls deleteById when diet plan exists`() {

@@ -1,5 +1,7 @@
 package com.clinica.application.service
 
+import com.clinic.model.AppointmentRequest
+import com.clinic.model.AppointmentStatusRequest
 import com.clinica.application.domain.Appointment
 import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.application.domain.Patient
@@ -7,8 +9,6 @@ import com.clinica.application.domain.Specialist
 import com.clinica.doors.outbound.database.dao.AppointmentDao
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
-import com.clinica.dto.AppointmentRequest
-import com.clinica.dto.AppointmentStatusRequest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -22,6 +22,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @ExtendWith(MockKExtension::class)
 class AppointmentServiceTest {
@@ -61,11 +62,9 @@ class AppointmentServiceTest {
     )
 
     private fun buildRequest() = AppointmentRequest(
-        patientId = 1L, specialistId = 1L, scheduledAt = fixedTime,
+        patientId = 1L, specialistId = 1L, scheduledAt = fixedTime.atOffset(ZoneOffset.UTC),
         visitType = "Routine", notes = "Note"
     )
-
-    // findAll
 
     @Test
     fun `findAll returns mapped responses`() {
@@ -88,8 +87,6 @@ class AppointmentServiceTest {
         verify { appointmentDao.findAll(1L, null, null) }
     }
 
-    // findById
-
     @Test
     fun `findById returns appointment response when found`() {
         every { appointmentDao.findById(1L) } returns buildAppointment()
@@ -98,7 +95,7 @@ class AppointmentServiceTest {
 
         assertEquals(1L, result.id)
         assertEquals("BOOKED", result.status)
-        assertEquals("Mario Rossi", result.patientFullName)
+        assertEquals("Rossi Mario", result.patientFullName)
         assertEquals("Luigi Bianchi", result.specialistFullName)
     }
 
@@ -109,8 +106,6 @@ class AppointmentServiceTest {
         val ex = assertThrows<NoSuchElementException> { service.findById(99L) }
         assert(ex.message!!.contains("99"))
     }
-
-    // create
 
     @Test
     fun `create saves appointment with BOOKED status`() {
@@ -143,8 +138,6 @@ class AppointmentServiceTest {
         verify(exactly = 0) { appointmentDao.save(any()) }
     }
 
-    // updateStatus
-
     @Test
     fun `updateStatus changes appointment status`() {
         val appointment = buildAppointment(status = AppointmentStatusEnum.BOOKED)
@@ -174,8 +167,6 @@ class AppointmentServiceTest {
             service.updateStatus(1L, AppointmentStatusRequest("INVALID_STATUS"))
         }
     }
-
-    // delete
 
     @Test
     fun `delete calls deleteById when appointment exists`() {

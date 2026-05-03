@@ -1,5 +1,7 @@
 package com.clinica.application.service
 
+import com.clinic.model.GlycemiaMeasurementRequest
+import com.clinic.model.GlycemiaMeasurementResponse
 import com.clinica.application.domain.GlycemiaContext
 import com.clinica.application.domain.GlycemiaMeasurement
 import com.clinica.application.domain.Patient
@@ -7,7 +9,6 @@ import com.clinica.application.domain.Specialist
 import com.clinica.doors.outbound.database.dao.GlycemiaMeasurementDao
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
-import com.clinica.dto.GlycemiaMeasurementRequest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @ExtendWith(MockKExtension::class)
 class GlycemiaMeasurementServiceTest {
@@ -62,18 +64,16 @@ class GlycemiaMeasurementServiceTest {
     )
 
     private fun buildRequest(
-        context: String = "A_DIGIUNO",
+        context: GlycemiaMeasurementRequest.Context = GlycemiaMeasurementRequest.Context.A_DIGIUNO,
         valueMgDl: Int = 92
     ) = GlycemiaMeasurementRequest(
         patientId = 3L,
         specialistId = 1L,
-        measuredAt = fixedTime,
+        measuredAt = fixedTime.atOffset(ZoneOffset.UTC),
         valueMgDl = valueMgDl,
         context = context,
         notes = null
     )
-
-    // findAll
 
     @Test
     fun `findAll returns all measurements when patientId is null`() {
@@ -96,8 +96,6 @@ class GlycemiaMeasurementServiceTest {
         assertEquals(3L, result[0].patientId)
     }
 
-    // findById
-
     @Test
     fun `findById returns measurement response when found`() {
         every { glycemiaMeasurementDao.findById(1L) } returns buildMeasurement()
@@ -105,8 +103,8 @@ class GlycemiaMeasurementServiceTest {
         val result = service.findById(1L)
 
         assertEquals(1L, result.id)
-        assertEquals("A_DIGIUNO", result.context)
-        assertEquals("NORMALE", result.classification)
+        assertEquals(GlycemiaMeasurementResponse.Context.A_DIGIUNO, result.context)
+        assertEquals(GlycemiaMeasurementResponse.Classification.NORMALE, result.classification)
         assertEquals("Giulia", result.patientFirstName)
     }
 
@@ -118,8 +116,6 @@ class GlycemiaMeasurementServiceTest {
         assert(ex.message!!.contains("99"))
     }
 
-    // create
-
     @Test
     fun `create saves measurement with correct context and classification`() {
         val saved = buildMeasurement(id = 5L, context = GlycemiaContext.A_DIGIUNO, valueMgDl = 92)
@@ -130,8 +126,8 @@ class GlycemiaMeasurementServiceTest {
         val result = service.create(buildRequest())
 
         assertEquals(5L, result.id)
-        assertEquals("A_DIGIUNO", result.context)
-        assertEquals("NORMALE", result.classification)
+        assertEquals(GlycemiaMeasurementResponse.Context.A_DIGIUNO, result.context)
+        assertEquals(GlycemiaMeasurementResponse.Classification.NORMALE, result.classification)
         verify { glycemiaMeasurementDao.save(any()) }
     }
 
@@ -151,20 +147,6 @@ class GlycemiaMeasurementServiceTest {
         assertThrows<NoSuchElementException> { service.create(buildRequest()) }
         verify(exactly = 0) { glycemiaMeasurementDao.save(any()) }
     }
-
-    @Test
-    fun `create throws IllegalArgumentException for invalid context`() {
-        every { patientDao.findById(3L) } returns buildPatient()
-        every { specialistDao.findById(1L) } returns buildSpecialist()
-
-        val ex = assertThrows<IllegalArgumentException> {
-            service.create(buildRequest(context = "INVALID_CONTEXT"))
-        }
-        assert(ex.message!!.contains("INVALID_CONTEXT"))
-        verify(exactly = 0) { glycemiaMeasurementDao.save(any()) }
-    }
-
-    // update
 
     @Test
     fun `update saves measurement with updated values`() {
@@ -188,8 +170,6 @@ class GlycemiaMeasurementServiceTest {
         assertThrows<NoSuchElementException> { service.update(99L, buildRequest()) }
         verify(exactly = 0) { glycemiaMeasurementDao.save(any()) }
     }
-
-    // delete
 
     @Test
     fun `delete calls deleteById when measurement exists`() {

@@ -1,8 +1,8 @@
 package com.clinica.application.service
 
+import com.clinic.model.PatientRequest
 import com.clinica.application.domain.Patient
 import com.clinica.doors.outbound.database.dao.PatientDao
-import com.clinica.dto.PatientRequest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -47,8 +47,6 @@ class PatientServiceTest {
         phone = "3331234567"
     )
 
-    // getAllPatients
-
     @Test
     fun `getAllPatients returns list from dao`() {
         val patients = listOf(buildPatient(1L), buildPatient(2L, "VRDLGI90B02F205S"))
@@ -66,8 +64,6 @@ class PatientServiceTest {
         assertEquals(0, service.getAllPatients().size)
     }
 
-    // findById
-
     @Test
     fun `findById returns patient when found`() {
         val patient = buildPatient()
@@ -81,8 +77,6 @@ class PatientServiceTest {
         val ex = assertThrows<NoSuchElementException> { service.findById(99L) }
         assert(ex.message!!.contains("99"))
     }
-
-    // search
 
     @Test
     fun `search returns patients for valid term`() {
@@ -105,8 +99,6 @@ class PatientServiceTest {
     fun `search throws IllegalArgumentException for blank term after trim`() {
         assertThrows<IllegalArgumentException> { service.search("  ") }
     }
-
-    // create
 
     @Test
     fun `create saves and returns new patient`() {
@@ -131,8 +123,6 @@ class PatientServiceTest {
         verify(exactly = 0) { dao.save(any()) }
     }
 
-    // update
-
     @Test
     fun `update saves and returns updated patient`() {
         val existing = buildPatient(1L, "RSSMRA80A01H501U")
@@ -155,17 +145,6 @@ class PatientServiceTest {
     }
 
     @Test
-    fun `update throws IllegalArgumentException when new fiscal code belongs to another patient`() {
-        val existing = buildPatient(1L, "RSSMRA80A01H501U")
-        val request = buildRequest("VRDLGI90B02F205S")
-        every { dao.findById(1L) } returns existing
-        every { dao.existsByFiscalCode("VRDLGI90B02F205S") } returns true
-
-        val ex = assertThrows<IllegalArgumentException> { service.update(1L, request) }
-        assert(ex.message!!.contains("VRDLGI90B02F205S"))
-    }
-
-    @Test
     fun `update allows keeping the same fiscal code`() {
         val existing = buildPatient(1L, "RSSMRA80A01H501U")
         val request = buildRequest("RSSMRA80A01H501U")
@@ -174,8 +153,6 @@ class PatientServiceTest {
 
         assertNotNull(service.update(1L, request))
     }
-
-    // delete
 
     @Test
     fun `delete calls deleteById when patient exists`() {

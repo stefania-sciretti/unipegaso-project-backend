@@ -1,4 +1,4 @@
-//package com.clinica.controller
+package com.clinica.doors.inbound.routes.controller//package com.clinica.controller
 //
 //import com.clinica.application.service.AppointmentService
 //import com.clinica.application.service.FitnessAppointmentService

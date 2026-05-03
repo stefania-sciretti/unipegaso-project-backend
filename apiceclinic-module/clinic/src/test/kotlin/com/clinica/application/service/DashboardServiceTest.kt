@@ -26,44 +26,7 @@ class DashboardServiceTest {
     @InjectMockKs
     private lateinit var service: DashboardService
 
-    // ── helpers ──────────────────────────────────────────────────────────────
 
-    private fun makePatient(id: Long): PatientEntity = PatientEntity(
-        id = id,
-        firstName = "Mario", lastName = "Rossi",
-        fiscalCode = "RSSMRA80A01H501Z",
-        birthDate = LocalDate.of(1980, 1, 1),
-        email = "mario.rossi@test.it",
-        phone = null,
-        createdAt = LocalDateTime.now(),
-        updatedAt = LocalDateTime.now()
-    )
-
-    private fun makeSpecialist(): SpecialistEntity = SpecialistEntity(
-        id = 1L, firstName = "Dr", lastName = "House",
-        role = "NUTRITIONIST", email = "house@test.it", bio = ""
-    )
-
-    private fun makeAppointment(
-        id: Long,
-        patientId: Long,
-        scheduledAt: LocalDateTime,
-        status: String,
-        visitType: String = "Visita generica",
-        price: BigDecimal = BigDecimal("100.00")
-    ): AppointmentEntity = AppointmentEntity(
-        id = id,
-        patientEntity = makePatient(patientId),
-        specialistEntity = makeSpecialist(),
-        scheduledAt = scheduledAt,
-        visitType = visitType,
-        status = status,
-        notes = null,
-        price = price,
-        updatedAt = scheduledAt
-    )
-
-    // ── tests ─────────────────────────────────────────────────────────────────
 
     @Test
     fun `getDashboard returns all zeros when no appointments exist`() {
@@ -102,19 +65,12 @@ class DashboardServiceTest {
 
         val result = service.getDashboard()
 
-        // revenueMonth = 80 + 80 = 160 (only COMPLETED)
         assertEquals(160.0, result.kpi.revenueMonth)
-        // revenuePrevMonth = 0 (no appointments last month)
         assertEquals(0.0, result.kpi.revenuePrevMonth)
-        // activePatients: BOOKED(id=3) + CONFIRMED(id=4) → 2 distinct patients
         assertEquals(2L, result.kpi.activePatients)
-        // newPatients from mock
         assertEquals(3L, result.kpi.newPatients)
-        // appointmentsMonth = 5
         assertEquals(5L, result.kpi.appointmentsMonth)
-        // cancellationRate = 1/5 * 100 = 20.0
         assertEquals(20.0, result.kpi.cancellationRate, 0.001)
-        // agendaOccupancy = (COMPLETED=2 + CONFIRMED=1) / 5 * 100 = 60.0
         assertEquals(60.0, result.kpi.agendaOccupancy, 0.001)
     }
 
@@ -135,7 +91,6 @@ class DashboardServiceTest {
 
         val result = service.getDashboard()
 
-        // Only COMPLETED entries appear in revenueByMonth
         assertEquals(2, result.revenueByMonth.size)
         val totals = result.revenueByMonth.associate { it.month to it.total }
         assertEquals(100.0, totals[thisMonth.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM"))])
@@ -183,7 +138,6 @@ class DashboardServiceTest {
 
         val result = service.getDashboard()
 
-        // CANCELLED should not appear in revenueByService
         assertEquals(2, result.revenueByService.size)
         assertEquals("Visita medica", result.revenueByService[0].service)
         assertEquals(200.0, result.revenueByService[0].total)
@@ -207,4 +161,39 @@ class DashboardServiceTest {
         assertEquals(0.0, result.kpi.agendaOccupancy)
         assertEquals(0L, result.kpi.appointmentsMonth)
     }
+
+    private fun makePatient(id: Long): PatientEntity = PatientEntity(
+        id = id,
+        firstName = "Mario", lastName = "Rossi",
+        fiscalCode = "RSSMRA80A01H501Z",
+        birthDate = LocalDate.of(1980, 1, 1),
+        email = "mario.rossi@test.it",
+        phone = null,
+        createdAt = LocalDateTime.now(),
+        updatedAt = LocalDateTime.now()
+    )
+
+    private fun makeSpecialist(): SpecialistEntity = SpecialistEntity(
+        id = 1L, firstName = "Dr", lastName = "House",
+        role = "NUTRITIONIST", email = "house@test.it", bio = ""
+    )
+
+    private fun makeAppointment(
+        id: Long,
+        patientId: Long,
+        scheduledAt: LocalDateTime,
+        status: String,
+        visitType: String = "Visita generica",
+        price: BigDecimal = BigDecimal("100.00")
+    ): AppointmentEntity = AppointmentEntity(
+        id = id,
+        patientEntity = makePatient(patientId),
+        specialistEntity = makeSpecialist(),
+        scheduledAt = scheduledAt,
+        visitType = visitType,
+        status = status,
+        notes = null,
+        price = price,
+        updatedAt = scheduledAt
+    )
 }

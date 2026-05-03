@@ -1,12 +1,12 @@
 package com.clinica.application.service
 
+import com.clinic.model.TrainingPlanRequest
 import com.clinica.application.domain.Patient
 import com.clinica.application.domain.Specialist
 import com.clinica.application.domain.TrainingPlan
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.doors.outbound.database.dao.TrainingPlanDao
-import com.clinica.dto.TrainingPlanRequest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -54,8 +54,6 @@ class TrainingPlanServiceTest {
         description = "12-week strength", weeks = 12, sessionsPerWeek = 3, active = true
     )
 
-    // findAll
-
     @Test
     fun `findAll returns all plans`() {
         every { trainingPlanDao.findAll(null) } returns listOf(buildPlan(1L), buildPlan(2L))
@@ -68,8 +66,6 @@ class TrainingPlanServiceTest {
         assertEquals(1, service.findAll(1L).size)
     }
 
-    // findById
-
     @Test
     fun `findById returns training plan response`() {
         every { trainingPlanDao.findById(1L) } returns buildPlan()
@@ -78,7 +74,7 @@ class TrainingPlanServiceTest {
 
         assertEquals(1L, result.id)
         assertEquals("Strength Plan", result.title)
-        assertEquals("Mario Rossi", result.patientFullName)
+        assertEquals("Rossi Mario", result.patientFullName)
         assertEquals("Anna Verdi", result.specialistFullName)
     }
 
@@ -89,8 +85,6 @@ class TrainingPlanServiceTest {
         val ex = assertThrows<NoSuchElementException> { service.findById(99L) }
         assert(ex.message!!.contains("99"))
     }
-
-    // create
 
     @Test
     fun `create saves and returns new training plan`() {
@@ -122,8 +116,6 @@ class TrainingPlanServiceTest {
         verify(exactly = 0) { trainingPlanDao.save(any()) }
     }
 
-    // update
-
     @Test
     fun `update saves updated training plan`() {
         val existing = buildPlan(1L)
@@ -145,8 +137,6 @@ class TrainingPlanServiceTest {
         assertThrows<NoSuchElementException> { service.update(99L, buildRequest()) }
         verify(exactly = 0) { trainingPlanDao.save(any()) }
     }
-
-    // delete
 
     @Test
     fun `delete calls deleteById when plan exists`() {

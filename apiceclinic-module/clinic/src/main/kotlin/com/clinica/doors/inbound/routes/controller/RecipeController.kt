@@ -1,8 +1,8 @@
-package com.clinica.controller
+package com.clinica.doors.inbound.routes.controller
 
-import com.clinica.application.service.RecipeService
 import com.clinic.model.RecipeRequest
 import com.clinic.model.RecipeResponse
+import com.clinica.application.service.RecipeService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses

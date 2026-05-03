@@ -1,8 +1,8 @@
 package com.clinica.application.service
 
+import com.clinic.model.SpecialistRequest
 import com.clinica.application.domain.Specialist
 import com.clinica.doors.outbound.database.dao.SpecialistDao
-import com.clinica.dto.SpecialistRequest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -28,8 +28,6 @@ class SpecialistServiceTest {
         createdAt = LocalDateTime.now(), updatedAt = LocalDateTime.now()
     )
 
-    // findAll
-
     @Test
     fun `findAll returns all specialists`() {
         every { specialistDao.findAll() } returns listOf(buildSpecialist(1L), buildSpecialist(2L, "TRAINER"))
@@ -47,8 +45,6 @@ class SpecialistServiceTest {
         assertEquals(0, service.findAll().size)
     }
 
-    // findByRole
-
     @Test
     fun `findByRole returns specialists matching role`() {
         every { specialistDao.findByRole("TRAINER") } returns listOf(buildSpecialist(2L, "TRAINER"))
@@ -64,8 +60,6 @@ class SpecialistServiceTest {
         every { specialistDao.findByRole("UNKNOWN") } returns emptyList()
         assertEquals(0, service.findByRole("UNKNOWN").size)
     }
-
-    // findById
 
     @Test
     fun `findById returns specialist response`() {
@@ -85,8 +79,6 @@ class SpecialistServiceTest {
         val ex = assertThrows<NoSuchElementException> { service.findById(99L) }
         assert(ex.message!!.contains("99"))
     }
-
-    // create
 
     @Test
     fun `create saves and returns specialist response`() {
@@ -115,8 +107,6 @@ class SpecialistServiceTest {
         assertThrows<IllegalStateException> { service.create(request) }
     }
 
-    // update
-
     @Test
     fun `update returns updated specialist`() {
         val request = SpecialistRequest(
@@ -135,7 +125,7 @@ class SpecialistServiceTest {
 
     @Test
     fun `update throws when not found`() {
-        val request = SpecialistRequest("A", "B", "TRAINER", null, "x@x.com")
+        val request = SpecialistRequest(firstName = "A", lastName = "B", role = "TRAINER", email = "x@x.com", bio = null)
         every { specialistDao.findById(99L) } returns null
 
         assertThrows<NoSuchElementException> { service.update(99L, request) }
@@ -143,14 +133,12 @@ class SpecialistServiceTest {
 
     @Test
     fun `update throws when email already taken by another specialist`() {
-        val request = SpecialistRequest("A", "B", "TRAINER", null, "other@example.com")
+        val request = SpecialistRequest(firstName = "A", lastName = "B", role = "TRAINER", email = "other@example.com", bio = null)
         every { specialistDao.findById(1L) } returns buildSpecialist(1L)
         every { specialistDao.existsByEmailAndIdNot("other@example.com", 1L) } returns true
 
         assertThrows<IllegalArgumentException> { service.update(1L, request) }
     }
-
-    // delete
 
     @Test
     fun `delete removes specialist`() {

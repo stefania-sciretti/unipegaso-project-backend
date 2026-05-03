@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 class AppointmentServiceMapperTest {
 
@@ -46,12 +47,12 @@ class AppointmentServiceMapperTest {
         assertEquals(2L, response.specialistId)
         assertEquals("Luigi Bianchi", response.specialistFullName)
         assertEquals("Nutrizionista", response.specialistSpecialization)
-        assertEquals(fixedTime, response.scheduledAt)
+        assertEquals(fixedTime.atOffset(ZoneOffset.UTC), response.scheduledAt)
         assertEquals("Routine", response.visitType)
         assertEquals("CONFIRMED", response.status)
         assertEquals("Test note", response.notes)
         assertFalse(response.hasReport)
-        assertEquals(fixedTime, response.createdAt)
+        assertEquals(fixedTime.atOffset(ZoneOffset.UTC), response.createdAt)
     }
 
     @Test

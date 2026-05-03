@@ -1,8 +1,8 @@
-package com.clinica.controller
+package com.clinica.doors.inbound.routes.controller
 
-import com.clinica.application.service.TrainingPlanServicePort
 import com.clinic.model.TrainingPlanRequest
 import com.clinic.model.TrainingPlanResponse
+import com.clinica.application.service.TrainingPlanServicePort
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses

@@ -1,5 +1,6 @@
 package com.clinica.application.service
 
+import com.clinic.model.GlycemiaMeasurementResponse
 import com.clinica.application.domain.*
 import com.clinica.application.mappers.toResponse
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 class GlycemiaMeasurementServiceMapperTest {
 
@@ -41,13 +43,13 @@ class GlycemiaMeasurementServiceMapperTest {
         assertEquals(1L, response.specialistId)
         assertEquals("Simona", response.specialistFirstName)
         assertEquals("Ruberti", response.specialistLastName)
-        assertEquals(fixedTime, response.measuredAt)
+        assertEquals(fixedTime.atOffset(ZoneOffset.UTC), response.measuredAt)
         assertEquals(92, response.valueMgDl)
-        assertEquals("A_DIGIUNO", response.context)
-        assertEquals(GlycemiaClassification.NORMALE.name, response.classification)
+        assertEquals(GlycemiaMeasurementResponse.Context.A_DIGIUNO, response.context)
+        assertEquals(GlycemiaMeasurementResponse.Classification.NORMALE, response.classification)
         assertNull(response.notes)
-        assertEquals(fixedTime, response.createdAt)
-        assertEquals(fixedTime, response.updatedAt)
+        assertEquals(fixedTime.atOffset(ZoneOffset.UTC), response.createdAt)
+        assertEquals(fixedTime.atOffset(ZoneOffset.UTC), response.updatedAt)
     }
 
     @Test
@@ -61,7 +63,7 @@ class GlycemiaMeasurementServiceMapperTest {
 
         val response = measurement.toResponse()
 
-        assertEquals(GlycemiaClassification.ATTENZIONE.name, response.classification)
+        assertEquals(GlycemiaMeasurementResponse.Classification.ATTENZIONE, response.classification)
         assertEquals("Borderline", response.notes)
     }
 
@@ -76,7 +78,7 @@ class GlycemiaMeasurementServiceMapperTest {
 
         val response = measurement.toResponse()
 
-        assertEquals(GlycemiaClassification.ELEVATA.name, response.classification)
+        assertEquals(GlycemiaMeasurementResponse.Classification.ELEVATA, response.classification)
     }
 
     @Test
@@ -90,7 +92,7 @@ class GlycemiaMeasurementServiceMapperTest {
 
         val response = measurement.toResponse()
 
-        assertEquals("POST_PASTO_2H", response.context)
-        assertEquals(GlycemiaClassification.NORMALE.name, response.classification)
+        assertEquals(GlycemiaMeasurementResponse.Context.POST_PASTO_2H, response.context)
+        assertEquals(GlycemiaMeasurementResponse.Classification.NORMALE, response.classification)
     }
 }
