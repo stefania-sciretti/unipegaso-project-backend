@@ -1,14 +1,14 @@
 package com.clinica.doors.outbound.database.entities
 
-import java.time.LocalDateTime
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "specialist")
-data class SpecialistEntity(
+class SpecialistEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    var id: Long = 0,
 
     @Column(name = "first_name", nullable = false, length = 100)
     var firstName: String,
@@ -26,7 +26,7 @@ data class SpecialistEntity(
     var email: String,
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    var createdAt: LocalDateTime = LocalDateTime.now(),
 
     @Column(name = "updated_at", nullable = false)
     var updatedAt: LocalDateTime = LocalDateTime.now()
