@@ -50,6 +50,7 @@ class SecurityConfig {
                     .requestMatchers("/actuator/**").permitAll()
                     .requestMatchers("/h2-console/**").permitAll()   // H2 console dev
                     .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/specialists", "/api/specialists/**").permitAll()
+                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/services", "/api/services/**").permitAll()
                     .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/glycemia-measurements/classification-rules").permitAll()
                     .anyRequest().authenticated()
             }
