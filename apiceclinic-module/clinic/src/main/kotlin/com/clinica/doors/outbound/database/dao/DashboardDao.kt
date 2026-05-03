@@ -5,6 +5,7 @@ import com.clinica.dto.DashboardStatsResponse
 import com.clinica.dto.KpiStats
 import com.clinica.dto.RevenueByMonth
 import com.clinica.dto.RevenueByService
+import com.clinica.doors.outbound.database.entities.AppointmentEntity
 import com.clinica.doors.outbound.database.repositories.AppointmentRepository
 import com.clinica.doors.outbound.database.repositories.PatientRepository
 import org.springframework.stereotype.Component
@@ -27,11 +28,13 @@ class DashboardDao(
         val startOfPrevMonth = startOfMonth.minusMonths(1)
         val startOf12MonthsAgo = startOfMonth.minusMonths(11)
 
+        val allFromDate = appointmentRepository.findAllFromDate(startOf12MonthsAgo)
+
         return DashboardStatsResponse(
             kpi = computeKpi(now, startOfMonth, startOfNextMonth, startOfPrevMonth),
-            revenueByMonth = computeRevenueByMonth(startOf12MonthsAgo),
-            appointmentsByMonth = computeAppointmentsByMonth(startOf12MonthsAgo),
-            revenueByService = computeRevenueByService(startOf12MonthsAgo)
+            revenueByMonth = computeRevenueByMonth(allFromDate),
+            appointmentsByMonth = computeAppointmentsByMonth(allFromDate),
+            revenueByService = computeRevenueByService(allFromDate)
         )
     }
 
@@ -76,15 +79,15 @@ class DashboardDao(
         )
     }
 
-    private fun computeRevenueByMonth(from: LocalDateTime): List<RevenueByMonth> =
-        appointmentRepository.findAllFromDate(from)
+    private fun computeRevenueByMonth(appointments: List<AppointmentEntity>): List<RevenueByMonth> =
+        appointments
             .filter { it.status == "COMPLETED" }
             .groupBy { it.scheduledAt.format(monthFormatter) }
             .map { (month, appts) -> RevenueByMonth(month, appts.sumOf { it.price }.toDouble()) }
             .sortedBy { it.month }
 
-    private fun computeAppointmentsByMonth(from: LocalDateTime): List<AppointmentsByMonth> =
-        appointmentRepository.findAllFromDate(from)
+    private fun computeAppointmentsByMonth(appointments: List<AppointmentEntity>): List<AppointmentsByMonth> =
+        appointments
             .groupBy { it.scheduledAt.format(monthFormatter) }
             .map { (month, appts) ->
                 AppointmentsByMonth(
@@ -96,8 +99,8 @@ class DashboardDao(
             }
             .sortedBy { it.month }
 
-    private fun computeRevenueByService(from: LocalDateTime): List<RevenueByService> =
-        appointmentRepository.findAllFromDate(from)
+    private fun computeRevenueByService(appointments: List<AppointmentEntity>): List<RevenueByService> =
+        appointments
             .filter { it.status == "COMPLETED" }
             .groupBy { it.visitType }
             .map { (service, appts) -> RevenueByService(service, appts.sumOf { it.price }.toDouble()) }
