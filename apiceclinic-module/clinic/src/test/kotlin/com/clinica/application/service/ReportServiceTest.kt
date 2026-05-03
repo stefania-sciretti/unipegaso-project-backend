@@ -92,7 +92,10 @@ class ReportServiceTest {
     fun `findAll returns empty list when no reports exist`() {
         every { reportDao.findAll() } returns emptyList()
 
-        assertEquals(0, service.findAll().size)
+        val result = service.findAll()
+
+        assertEquals(0, result.size)
+        verify { reportDao.findAll() }
     }
 
     // ── findById ───────────────────────────────────────────────────────────────
@@ -206,14 +209,18 @@ class ReportServiceTest {
     @Test
     fun `update saves report with updated fields`() {
         val existing = buildReport(1L)
-        val updated = existing.copy(diagnosis = "Updated diagnosis")
         every { reportDao.findById(1L) } returns existing
-        every { reportDao.save(any()) } returns updated
+        every { reportDao.save(any()) } returns existing
 
-        val result = service.update(1L, buildRequest())
+        service.update(1L, buildRequest())
 
-        assertEquals("Updated diagnosis", result.diagnosis)
-        verify { reportDao.save(any()) }
+        verify {
+            reportDao.save(withArg { report ->
+                assertEquals("Healthy", report.diagnosis)
+                assertEquals("Rest", report.prescription)
+                assertEquals("Good progress", report.specialistNotes)
+            })
+        }
     }
 
     @Test
