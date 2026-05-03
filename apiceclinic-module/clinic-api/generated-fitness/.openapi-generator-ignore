@@ -1,3 +1,0 @@
-# Ignore all API client files — only model classes are needed
-**/*Api.kt
-**/infrastructure/**

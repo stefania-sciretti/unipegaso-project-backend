@@ -25,7 +25,6 @@ class DataInitializer {
         patientRepository: PatientRepository,
         specialistRepository: SpecialistRepository,
         appointmentRepository: AppointmentRepository,
-        fitnessAppointmentRepository: FitnessAppointmentRepository,
         dietPlanRepository: DietPlanRepository,
         reportRepository: ReportRepository,
         passwordEncoder: PasswordEncoder
@@ -184,53 +183,6 @@ class DataInitializer {
             println("✓ ${seeds.size} pazienti creati")
         }
 
-        // ── Appuntamenti fitness ──────────────────────────────────────────────
-        if (fitnessAppointmentRepository.count() == 0L) {
-            val patients = patientRepository.findAll()
-            val specialists = specialistRepository.findAll()
-
-            if (patients.size >= 3 && specialists.size >= 2) {
-                fitnessAppointmentRepository.saveAll(listOf(
-                    FitnessAppointmentEntity(
-                        patientEntity = patients[0], specialist = specialists[0],
-                        scheduledAt = LocalDateTime.now().plusDays(2),
-                        serviceType = "Consulenza nutrizionale iniziale",
-                        status = AppointmentStatusEnum.BOOKED,
-                        notes = "Prima visita. Il paziente vuole perdere peso."
-                    ),
-                    FitnessAppointmentEntity(
-                        patientEntity = patients[1], specialist = specialists[1],
-                        scheduledAt = LocalDateTime.now().plusDays(3),
-                        serviceType = "Sessione personal training",
-                        status = AppointmentStatusEnum.BOOKED,
-                        notes = "Focus su rinforzo muscolare arti inferiori."
-                    ),
-                    FitnessAppointmentEntity(
-                        patientEntity = patients[2], specialist = specialists[2],
-                        scheduledAt = LocalDateTime.now().minusDays(5),
-                        serviceType = "Fisioterapia post-operatoria",
-                        status = AppointmentStatusEnum.COMPLETED,
-                        notes = "Recupero post intervento al ginocchio."
-                    ),
-                    FitnessAppointmentEntity(
-                        patientEntity = patients[0], specialist = specialists[1],
-                        scheduledAt = LocalDateTime.now().plusDays(7),
-                        serviceType = "Valutazione posturale",
-                        status = AppointmentStatusEnum.BOOKED,
-                        notes = null
-                    ),
-                    FitnessAppointmentEntity(
-                        patientEntity = patients[3], specialist = specialists[0],
-                        scheduledAt = LocalDateTime.now().minusDays(2),
-                        serviceType = "Piano alimentare personalizzato",
-                        status = AppointmentStatusEnum.COMPLETED,
-                        notes = "Dieta ipocalorica bilanciata. Follow-up tra 30 giorni."
-                    )
-                ))
-                println("✓ 5 appuntamenti fitness creati")
-            }
-        }
-
         // ── Piani dieta ───────────────────────────────────────────────────────
         if (dietPlanRepository.count() == 0L) {
             val patients = patientRepository.findAll()
@@ -323,7 +275,6 @@ class DataInitializer {
         println("Medici:      ${specialistRepository.count()}")
         println("Specialisti: ${specialistRepository.count()}")
         println("Appuntamenti clinici: ${appointmentRepository.count()}")
-        println("Appuntamenti fitness: ${fitnessAppointmentRepository.count()}")
         println("Piani dieta: ${dietPlanRepository.count()}")
         println("Referti:     ${reportRepository.count()}")
         println("=========================================")
