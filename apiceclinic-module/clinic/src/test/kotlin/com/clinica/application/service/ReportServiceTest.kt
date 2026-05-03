@@ -208,7 +208,11 @@ class ReportServiceTest {
 
     @Test
     fun `update saves report with updated fields`() {
-        val existing = buildReport(1L)
+        val existing = buildReport(1L).copy(
+            diagnosis = "Old diagnosis",
+            prescription = "Old prescription",
+            specialistNotes = "Old notes"
+        )
         every { reportDao.findById(1L) } returns existing
         every { reportDao.save(any()) } returns existing
 
