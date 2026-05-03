@@ -6,6 +6,7 @@ import com.clinic.model.LoginResponse
 import com.clinic.model.RegisterRequest
 import com.clinic.model.RegisterResponse
 import com.clinic.model.TokenValidationResponse
+import com.clinica.doors.outbound.database.repositories.UserRepository
 import com.clinica.security.JwtTokenProvider
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -34,6 +35,9 @@ class AuthController {
 
     @Autowired
     private lateinit var authService: AuthService
+
+    @Autowired
+    private lateinit var userRepository: UserRepository
 
     @PostMapping("/register")
     @Operation(
@@ -81,15 +85,19 @@ class AuthController {
 
             val token = jwtTokenProvider.generateToken(authentication)
 
-            // Legge il ruolo effettivo dal principal autenticato
             val role = authentication.authorities
                 .firstOrNull()?.authority ?: "ROLE_USER"
+
+            val userId = userRepository.findByUsername(loginRequest.username)
+                .map { it.id ?: 0L }
+                .orElse(0L)
 
             val loginResponse = LoginResponse(
                 accessToken = token,
                 tokenType = "Bearer",
                 username = loginRequest.username,
-                role = role
+                role = role,
+                userId = userId
             )
 
             logger.debug("Login successful: username={}, role={}", loginRequest.username, role)

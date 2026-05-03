@@ -248,6 +248,7 @@ components:
         - tokenType
         - username
         - role
+        - userId
       properties:
         accessToken:
           type: string
@@ -265,6 +266,11 @@ components:
           type: string
           description: Ruolo dell'utente (ROLE_USER o ROLE_ADMIN)
           example: "ROLE_USER"
+        userId:
+          type: integer
+          format: int64
+          description: ID univoco dell'utente autenticato
+          example: 7
 
     TokenValidationResponse:
       type: object

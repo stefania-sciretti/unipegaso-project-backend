@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param tokenType Tipo di token (sempre \"Bearer\")
  * @param username Username dell'utente autenticato
  * @param role Ruolo dell'utente (ROLE_USER o ROLE_ADMIN)
+ * @param userId ID univoco dell'utente autenticato
  */
 
 
@@ -44,7 +45,11 @@ data class LoginResponse (
 
     /* Ruolo dell'utente (ROLE_USER o ROLE_ADMIN) */
     @field:JsonProperty("role")
-    val role: kotlin.String
+    val role: kotlin.String,
+
+    /* ID univoco dell'utente autenticato */
+    @field:JsonProperty("userId")
+    val userId: kotlin.Long
 
 )
 
