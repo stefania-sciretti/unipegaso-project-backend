@@ -136,7 +136,7 @@ components:
         appointmentId:
           type: integer
           format: int64
-          description: ID of the fitness appointment this report refers to
+          description: ID of the appointment this report refers to
         diagnosis:
           type: string
           minLength: 1
@@ -172,7 +172,7 @@ components:
           example: "Carlo Verdi"
         visitType:
           type: string
-          description: Service type of the linked fitness appointment
+          description: Service type of the linked appointment
           example: "PERSONAL_TRAINING"
         scheduledAt:
           type: string

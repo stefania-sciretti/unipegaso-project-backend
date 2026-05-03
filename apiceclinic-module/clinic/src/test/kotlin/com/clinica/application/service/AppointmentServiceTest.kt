@@ -8,6 +8,7 @@ import com.clinica.application.domain.Patient
 import com.clinica.application.domain.Specialist
 import com.clinica.doors.outbound.database.dao.AppointmentDao
 import com.clinica.doors.outbound.database.dao.PatientDao
+import com.clinica.doors.outbound.database.dao.ReportDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -29,6 +30,7 @@ class AppointmentServiceTest {
     @MockK private lateinit var appointmentDao: AppointmentDao
     @MockK private lateinit var patientDao: PatientDao
     @MockK private lateinit var specialistDao: SpecialistDao
+    @MockK private lateinit var reportDao: ReportDao
 
     @InjectMockKs
     private lateinit var service: AppointmentService
@@ -65,16 +67,19 @@ class AppointmentServiceTest {
     fun `findAll returns mapped appointments`() {
         every { appointmentDao.findAll(null, null, null) } returns
             listOf(buildAppointment(1L), buildAppointment(2L))
+        every { reportDao.existsByAppointmentId(any()) } returns false
 
         val result = service.findAll(null, null, null)
 
         assertEquals(2, result.size)
         assertEquals(1L, result[0].patient.id)
+        assertEquals(false, result[0].hasReport)
     }
 
     @Test
     fun `findAll filters by patientId`() {
         every { appointmentDao.findAll(1L, null, null) } returns listOf(buildAppointment())
+        every { reportDao.existsByAppointmentId(any()) } returns false
 
         val result = service.findAll(1L, null, null)
 
@@ -85,6 +90,7 @@ class AppointmentServiceTest {
     @Test
     fun `findAll parses status string to enum`() {
         every { appointmentDao.findAll(null, null, AppointmentStatusEnum.BOOKED) } returns listOf(buildAppointment())
+        every { reportDao.existsByAppointmentId(any()) } returns false
 
         val result = service.findAll(null, null, "BOOKED")
 
@@ -93,8 +99,19 @@ class AppointmentServiceTest {
     }
 
     @Test
+    fun `findAll sets hasReport true when report exists`() {
+        every { appointmentDao.findAll(null, null, null) } returns listOf(buildAppointment(1L))
+        every { reportDao.existsByAppointmentId(1L) } returns true
+
+        val result = service.findAll(null, null, null)
+
+        assertEquals(true, result[0].hasReport)
+    }
+
+    @Test
     fun `findById returns appointment when found`() {
         every { appointmentDao.findById(1L) } returns buildAppointment()
+        every { reportDao.existsByAppointmentId(1L) } returns false
 
         val result = service.findById(1L)
 
@@ -102,6 +119,17 @@ class AppointmentServiceTest {
         assertEquals(AppointmentStatusEnum.BOOKED, result.status)
         assertEquals("PERSONAL_TRAINING", result.serviceType)
         assertEquals("Rossi Mario", result.patient.fullName)
+        assertEquals(false, result.hasReport)
+    }
+
+    @Test
+    fun `findById sets hasReport true when report exists`() {
+        every { appointmentDao.findById(1L) } returns buildAppointment()
+        every { reportDao.existsByAppointmentId(1L) } returns true
+
+        val result = service.findById(1L)
+
+        assertEquals(true, result.hasReport)
     }
 
     @Test

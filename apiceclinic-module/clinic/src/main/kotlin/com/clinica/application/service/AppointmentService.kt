@@ -6,6 +6,7 @@ import com.clinica.application.domain.Appointment
 import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.doors.outbound.database.dao.AppointmentDao
 import com.clinica.doors.outbound.database.dao.PatientDao
+import com.clinica.doors.outbound.database.dao.ReportDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,17 +18,22 @@ class AppointmentService(
     private val appointmentDao: AppointmentDao,
     private val patientDao: PatientDao,
     private val specialistDao: SpecialistDao,
+    private val reportDao: ReportDao,
 ) {
 
     @Transactional(readOnly = true)
     fun findAll(patientId: Long?, specialistId: Long?, status: String?): List<Appointment> {
         val statusEnum = status?.let { AppointmentStatusEnum.parse(it) }
         return appointmentDao.findAll(patientId, specialistId, statusEnum)
+            .map { it.copy(hasReport = reportDao.existsByAppointmentId(it.id)) }
     }
 
     @Transactional(readOnly = true)
-    fun findById(id: Long): Appointment =
-        appointmentDao.findById(id) ?: throw NoSuchElementException("Appointment not found with id: $id")
+    fun findById(id: Long): Appointment {
+        val appointment = appointmentDao.findById(id)
+            ?: throw NoSuchElementException("Appointment not found with id: $id")
+        return appointment.copy(hasReport = reportDao.existsByAppointmentId(appointment.id))
+    }
 
     @Transactional
     fun create(request: AppointmentRequest): Appointment {

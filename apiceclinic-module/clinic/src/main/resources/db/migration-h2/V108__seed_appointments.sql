@@ -2,6 +2,7 @@
 
 -- Prerequisite check: fail loudly if required patients/specialists are missing
 -- Division by zero aborts the migration if either count is wrong
+-- H2 does not support DO $$ RAISE EXCEPTION $$; this is the equivalent pattern.
 SELECT 1 / CASE
     WHEN (SELECT COUNT(*) FROM patient WHERE email IN (
         'a.russo@gmail.com','r.esposito@libero.it','d.romano@yahoo.it','m.colombo@gmail.com',

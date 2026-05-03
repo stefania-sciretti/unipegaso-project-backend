@@ -15,5 +15,6 @@ data class Appointment(
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val areaId: Long? = null,
     val areaName: String? = null,
-    val updatedAt: LocalDateTime = LocalDateTime.now()
+    val updatedAt: LocalDateTime = LocalDateTime.now(),
+    val hasReport: Boolean = false
 )

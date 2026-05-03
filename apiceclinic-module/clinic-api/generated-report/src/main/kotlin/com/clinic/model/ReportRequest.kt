@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  * 
  *
- * @param appointmentId ID of the fitness appointment this report refers to
+ * @param appointmentId ID of the appointment this report refers to
  * @param diagnosis Clinical diagnosis
  * @param prescription Prescription or treatment plan
  * @param specialistNotes Additional notes from the specialist
@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class ReportRequest (
 
-    /* ID of the fitness appointment this report refers to */
+    /* ID of the appointment this report refers to */
     @field:JsonProperty("appointmentId")
     val appointmentId: kotlin.Long,
 

@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param appointmentId 
  * @param patientFullName Full name of the patient
  * @param specialistFullName Full name of the specialist
- * @param visitType Service type of the linked fitness appointment
+ * @param visitType Service type of the linked appointment
  * @param scheduledAt Date and time of the linked appointment
  * @param issuedDate Date the report was issued
  * @param diagnosis 
@@ -51,7 +51,7 @@ data class ReportResponse (
     @field:JsonProperty("specialistFullName")
     val specialistFullName: kotlin.String,
 
-    /* Service type of the linked fitness appointment */
+    /* Service type of the linked appointment */
     @field:JsonProperty("visitType")
     val visitType: kotlin.String,
 
