@@ -3,7 +3,7 @@ package com.clinica.doors.outbound.database.dao
 import com.clinica.application.domain.Report
 import com.clinica.doors.outbound.database.entities.ReportEntity
 import com.clinica.doors.outbound.database.mappers.toDomain
-import com.clinica.doors.outbound.database.repositories.FitnessAppointmentRepository
+import com.clinica.doors.outbound.database.repositories.AppointmentRepository
 import com.clinica.doors.outbound.database.repositories.ReportRepository
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 class ReportDao(
     private val reportRepository: ReportRepository,
-    private val fitnessAppointmentRepository: FitnessAppointmentRepository
+    private val appointmentRepository: AppointmentRepository
 ) {
 
     fun findAll(): List<Report> =
@@ -21,16 +21,15 @@ class ReportDao(
         reportRepository.findById(id).orElse(null)?.toDomain()
 
     fun findByAppointmentId(appointmentId: Long): Report? =
-        reportRepository.findByFitnessAppointmentEntityId(appointmentId)?.toDomain()
+        reportRepository.findByAppointmentEntityId(appointmentId)?.toDomain()
 
     @Transactional
     fun save(report: Report): Report {
-        val fitnessApptEntity = fitnessAppointmentRepository.findById(report.appointment.id)
-            .orElseThrow { IllegalArgumentException("Appointment not found: ${report.appointment.id}") }
-
         val entity = if (report.id == 0L) {
+            val appointmentEntity = appointmentRepository.findById(report.appointment.id)
+                .orElseThrow { IllegalArgumentException("Appointment not found: ${report.appointment.id}") }
             ReportEntity(
-                fitnessAppointmentEntity = fitnessApptEntity,
+                appointmentEntity = appointmentEntity,
                 issuedDate = report.issuedDate,
                 diagnosis = report.diagnosis,
                 prescription = report.prescription,
@@ -52,6 +51,5 @@ class ReportDao(
     }
 
     @Transactional
-    fun deleteById(id: Long) =
-        reportRepository.deleteById(id)
+    fun deleteById(id: Long) = reportRepository.deleteById(id)
 }

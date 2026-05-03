@@ -3,11 +3,10 @@ package com.clinica.application.service
 import com.clinic.model.ReportRequest
 import com.clinica.application.domain.Appointment
 import com.clinica.application.domain.AppointmentStatusEnum
-import com.clinica.application.domain.FitnessAppointment
 import com.clinica.application.domain.Patient
 import com.clinica.application.domain.Report
 import com.clinica.application.domain.Specialist
-import com.clinica.doors.outbound.database.dao.FitnessAppointmentDao
+import com.clinica.doors.outbound.database.dao.AppointmentDao
 import com.clinica.doors.outbound.database.dao.ReportDao
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -18,6 +17,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -25,7 +25,7 @@ import java.time.LocalDateTime
 class ReportServiceTest {
 
     @MockK private lateinit var reportDao: ReportDao
-    @MockK private lateinit var fitnessAppointmentDao: FitnessAppointmentDao
+    @MockK private lateinit var appointmentDao: AppointmentDao
 
     @InjectMockKs
     private lateinit var service: ReportService
@@ -40,22 +40,17 @@ class ReportServiceTest {
 
     private fun buildSpecialist(id: Long = 10L) = Specialist(
         id = id, firstName = "Anna", lastName = "Verdi",
-        role = "TRAINER", email = "anna@example.com"
+        role = "PERSONAL_TRAINER", email = "anna@example.com"
     )
 
-    private fun buildAppointment(id: Long = 5L) = Appointment(
-        id = id, patient = buildPatient(), specialist = buildSpecialist(),
-        scheduledAt = fixedTime, serviceType = "Personal Training",
-        status = AppointmentStatusEnum.COMPLETED, notes = null, updatedAt = fixedTime
-    )
-
-    private fun buildFitnessAppointment(
+    private fun buildAppointment(
         id: Long = 5L,
         status: AppointmentStatusEnum = AppointmentStatusEnum.COMPLETED
-    ) = FitnessAppointment(
+    ) = Appointment(
         id = id, patient = buildPatient(), specialist = buildSpecialist(),
-        scheduledAt = fixedTime, serviceType = "Personal Training",
-        status = status, notes = null, updatedAt = fixedTime
+        scheduledAt = fixedTime, serviceType = "PERSONAL_TRAINING",
+        status = status, notes = null,
+        price = BigDecimal.ZERO, createdAt = fixedTime, updatedAt = fixedTime
     )
 
     private fun buildReport(id: Long = 1L) = Report(
@@ -75,8 +70,6 @@ class ReportServiceTest {
         prescription = "Rest",
         specialistNotes = "Good progress"
     )
-
-    // ── findAll ────────────────────────────────────────────────────────────────
 
     @Test
     fun `findAll returns all reports`() {
@@ -98,8 +91,6 @@ class ReportServiceTest {
         verify { reportDao.findAll() }
     }
 
-    // ── findById ───────────────────────────────────────────────────────────────
-
     @Test
     fun `findById returns report when found`() {
         every { reportDao.findById(1L) } returns buildReport(1L)
@@ -119,8 +110,6 @@ class ReportServiceTest {
         assert(ex.message!!.contains("99"))
     }
 
-    // ── findByAppointmentId ────────────────────────────────────────────────────
-
     @Test
     fun `findByAppointmentId returns report when found`() {
         every { reportDao.findByAppointmentId(5L) } returns buildReport()
@@ -138,13 +127,11 @@ class ReportServiceTest {
         assert(ex.message!!.contains("99"))
     }
 
-    // ── create ─────────────────────────────────────────────────────────────────
-
     @Test
     fun `create saves and returns report when appointment is COMPLETED`() {
-        val fitnessAppt = buildFitnessAppointment(status = AppointmentStatusEnum.COMPLETED)
+        val appointment = buildAppointment(status = AppointmentStatusEnum.COMPLETED)
         val saved = buildReport(id = 10L)
-        every { fitnessAppointmentDao.findById(5L) } returns fitnessAppt
+        every { appointmentDao.findById(5L) } returns appointment
         every { reportDao.findByAppointmentId(5L) } returns null
         every { reportDao.save(any()) } returns saved
 
@@ -156,10 +143,10 @@ class ReportServiceTest {
     }
 
     @Test
-    fun `create maps FitnessAppointment fields to Appointment correctly`() {
-        val fitnessAppt = buildFitnessAppointment(id = 7L, status = AppointmentStatusEnum.COMPLETED)
+    fun `create passes correct appointment fields to report`() {
+        val appointment = buildAppointment(id = 7L, status = AppointmentStatusEnum.COMPLETED)
         val saved = buildReport()
-        every { fitnessAppointmentDao.findById(7L) } returns fitnessAppt
+        every { appointmentDao.findById(7L) } returns appointment
         every { reportDao.findByAppointmentId(7L) } returns null
         every { reportDao.save(any()) } returns saved
 
@@ -168,7 +155,7 @@ class ReportServiceTest {
         verify {
             reportDao.save(withArg { report ->
                 assertEquals(7L, report.appointment.id)
-                assertEquals("Personal Training", report.appointment.serviceType)
+                assertEquals("PERSONAL_TRAINING", report.appointment.serviceType)
                 assertEquals(1L, report.appointment.patient.id)
                 assertEquals(10L, report.appointment.specialist.id)
             })
@@ -177,7 +164,7 @@ class ReportServiceTest {
 
     @Test
     fun `create throws NoSuchElementException when appointment not found`() {
-        every { fitnessAppointmentDao.findById(99L) } returns null
+        every { appointmentDao.findById(99L) } returns null
 
         assertThrows<NoSuchElementException> { service.create(buildRequest(appointmentId = 99L)) }
         verify(exactly = 0) { reportDao.save(any()) }
@@ -185,8 +172,8 @@ class ReportServiceTest {
 
     @Test
     fun `create throws IllegalStateException when appointment is not COMPLETED`() {
-        val bookedAppt = buildFitnessAppointment(status = AppointmentStatusEnum.BOOKED)
-        every { fitnessAppointmentDao.findById(5L) } returns bookedAppt
+        val bookedAppt = buildAppointment(status = AppointmentStatusEnum.BOOKED)
+        every { appointmentDao.findById(5L) } returns bookedAppt
 
         val ex = assertThrows<IllegalStateException> { service.create(buildRequest()) }
         assert(ex.message!!.contains("COMPLETED"))
@@ -194,17 +181,15 @@ class ReportServiceTest {
     }
 
     @Test
-    fun `create throws IllegalStateException when report already exists for appointment`() {
-        val fitnessAppt = buildFitnessAppointment(status = AppointmentStatusEnum.COMPLETED)
-        every { fitnessAppointmentDao.findById(5L) } returns fitnessAppt
+    fun `create throws IllegalStateException when report already exists`() {
+        val appointment = buildAppointment(status = AppointmentStatusEnum.COMPLETED)
+        every { appointmentDao.findById(5L) } returns appointment
         every { reportDao.findByAppointmentId(5L) } returns buildReport()
 
         val ex = assertThrows<IllegalStateException> { service.create(buildRequest()) }
         assert(ex.message!!.contains("already exists"))
         verify(exactly = 0) { reportDao.save(any()) }
     }
-
-    // ── update ─────────────────────────────────────────────────────────────────
 
     @Test
     fun `update saves report with updated fields`() {

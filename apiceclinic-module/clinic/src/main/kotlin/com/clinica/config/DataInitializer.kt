@@ -301,21 +301,20 @@ class DataInitializer {
 
         // ── Referti ──────────────────────────────────────────────────────────
         if (reportRepository.count() == 0L) {
-            val completedFitness = fitnessAppointmentRepository.findAll()
-                .filter { it.status == AppointmentStatusEnum.COMPLETED }
+            val completedAppointments = appointmentRepository.findAll()
+                .filter { it.status == AppointmentStatusEnum.COMPLETED.name }
 
-            if (completedFitness.isNotEmpty()) {
-                reportRepository.saveAll(completedFitness.map { appt ->
+            if (completedAppointments.isNotEmpty()) {
+                reportRepository.saveAll(completedAppointments.map { appt ->
                     ReportEntity(
-                        id = 0L,
-                        fitnessAppointmentEntity = appt,
+                        appointmentEntity = appt,
                         issuedDate = appt.scheduledAt.toLocalDate(),
                         diagnosis = "Referto di controllo — visita del ${appt.scheduledAt.toLocalDate()}",
                         prescription = null,
                         specialistNotes = "Nessuna anomalia rilevante."
                     )
                 })
-                println("✓ ${completedFitness.size} referti creati")
+                println("✓ ${completedAppointments.size} referti creati")
             }
         }
 

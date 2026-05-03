@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ReportRepository : JpaRepository<ReportEntity, Long> {
-
-    fun findByFitnessAppointmentEntityId(appointmentId: Long): ReportEntity?
+    fun findByAppointmentEntityId(appointmentId: Long): ReportEntity?
 }

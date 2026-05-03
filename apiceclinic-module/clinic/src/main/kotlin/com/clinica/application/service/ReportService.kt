@@ -2,8 +2,7 @@ package com.clinica.application.service
 
 import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.application.domain.Report
-import com.clinica.application.mappers.toAppointment
-import com.clinica.doors.outbound.database.dao.FitnessAppointmentDao
+import com.clinica.doors.outbound.database.dao.AppointmentDao
 import com.clinica.doors.outbound.database.dao.ReportDao
 import com.clinic.model.ReportRequest
 import org.springframework.stereotype.Service
@@ -14,12 +13,11 @@ import java.time.LocalDateTime
 @Service
 class ReportService(
     private val reportDao: ReportDao,
-    private val fitnessAppointmentDao: FitnessAppointmentDao
+    private val appointmentDao: AppointmentDao
 ) {
 
     @Transactional(readOnly = true)
-    fun findAll(): List<Report> =
-        reportDao.findAll()
+    fun findAll(): List<Report> = reportDao.findAll()
 
     @Transactional(readOnly = true)
     fun findById(id: Long): Report =
@@ -32,10 +30,10 @@ class ReportService(
 
     @Transactional
     fun create(request: ReportRequest): Report {
-        val fitnessAppointment = fitnessAppointmentDao.findById(request.appointmentId)
+        val appointment = appointmentDao.findById(request.appointmentId)
             ?: throw NoSuchElementException("Appointment ${request.appointmentId} not found")
 
-        check(fitnessAppointment.status == AppointmentStatusEnum.COMPLETED) {
+        check(appointment.status == AppointmentStatusEnum.COMPLETED) {
             "Report can only be created for COMPLETED appointments"
         }
 
@@ -44,28 +42,30 @@ class ReportService(
         }
 
         val now = LocalDateTime.now()
-        val report = Report(
-            id = 0L,
-            appointment = fitnessAppointment.toAppointment(),
-            issuedDate = LocalDate.now(),
-            diagnosis = request.diagnosis,
-            prescription = request.prescription,
-            specialistNotes = request.specialistNotes,
-            createdAt = now,
-            updatedAt = now
+        return reportDao.save(
+            Report(
+                id = 0L,
+                appointment = appointment,
+                issuedDate = LocalDate.now(),
+                diagnosis = request.diagnosis,
+                prescription = request.prescription,
+                specialistNotes = request.specialistNotes,
+                createdAt = now,
+                updatedAt = now
+            )
         )
-        return reportDao.save(report)
     }
 
     @Transactional
     fun update(id: Long, request: ReportRequest): Report {
         val existing = reportDao.findById(id) ?: throw NoSuchElementException("Report $id not found")
-        val updated = existing.copy(
-            diagnosis = request.diagnosis,
-            prescription = request.prescription,
-            specialistNotes = request.specialistNotes,
-            updatedAt = LocalDateTime.now()
+        return reportDao.save(
+            existing.copy(
+                diagnosis = request.diagnosis,
+                prescription = request.prescription,
+                specialistNotes = request.specialistNotes,
+                updatedAt = LocalDateTime.now()
+            )
         )
-        return reportDao.save(updated)
     }
 }

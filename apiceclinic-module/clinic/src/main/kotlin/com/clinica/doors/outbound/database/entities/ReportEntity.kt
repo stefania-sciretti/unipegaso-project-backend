@@ -12,8 +12,8 @@ class ReportEntity(
     var id: Long = 0,
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "fitness_appointment_id", nullable = false, unique = true)
-    var fitnessAppointmentEntity: FitnessAppointmentEntity,
+    @JoinColumn(name = "appointment_id", nullable = false, unique = true)
+    val appointmentEntity: AppointmentEntity,
 
     @Column(name = "issued_date", nullable = false)
     var issuedDate: LocalDate = LocalDate.now(),
@@ -28,7 +28,7 @@ class ReportEntity(
     var specialistNotes: String? = null,
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    var createdAt: LocalDateTime = LocalDateTime.now(),
+    val createdAt: LocalDateTime = LocalDateTime.now(),
 
     @Column(name = "updated_at", nullable = false)
     var updatedAt: LocalDateTime = LocalDateTime.now(),
