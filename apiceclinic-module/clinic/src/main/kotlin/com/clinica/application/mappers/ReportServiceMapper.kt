@@ -1,6 +1,8 @@
 package com.clinica.application.mappers
 
 import com.clinic.model.ReportResponse
+import com.clinica.application.domain.Appointment
+import com.clinica.application.domain.FitnessAppointment
 import com.clinica.application.domain.Report
 import java.time.ZoneOffset
 
@@ -17,4 +19,16 @@ fun Report.toResponse(): ReportResponse =
         prescription = prescription,
         specialistNotes = specialistNotes,
         createdAt = createdAt.atOffset(ZoneOffset.UTC)
+    )
+
+fun FitnessAppointment.toAppointment(): Appointment =
+    Appointment(
+        id = id,
+        patient = patient,
+        specialist = specialist,
+        scheduledAt = scheduledAt,
+        visitType = serviceType,
+        status = status,
+        notes = notes,
+        updatedAt = updatedAt
     )

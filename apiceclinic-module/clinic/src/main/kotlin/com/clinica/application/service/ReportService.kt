@@ -1,8 +1,8 @@
 package com.clinica.application.service
 
-import com.clinica.application.domain.Appointment
 import com.clinica.application.domain.AppointmentStatusEnum
 import com.clinica.application.domain.Report
+import com.clinica.application.mappers.toAppointment
 import com.clinica.doors.outbound.database.dao.FitnessAppointmentDao
 import com.clinica.doors.outbound.database.dao.ReportDao
 import com.clinic.model.ReportRequest
@@ -23,12 +23,12 @@ class ReportService(
 
     @Transactional(readOnly = true)
     fun findById(id: Long): Report =
-        reportDao.findById(id).orThrow("Report $id not found")
+        reportDao.findById(id) ?: throw NoSuchElementException("Report $id not found")
 
     @Transactional(readOnly = true)
     fun findByAppointmentId(appointmentId: Long): Report =
         reportDao.findByAppointmentId(appointmentId)
-            .orThrow("Report for appointment $appointmentId not found")
+            ?: throw NoSuchElementException("Report for appointment $appointmentId not found")
 
     @Transactional
     fun create(request: ReportRequest): Report {
@@ -46,15 +46,7 @@ class ReportService(
         val now = LocalDateTime.now()
         val report = Report(
             id = 0L,
-            appointment = Appointment(
-                id = fitnessAppointment.id,
-                patient = fitnessAppointment.patient,
-                specialist = fitnessAppointment.specialist,
-                scheduledAt = fitnessAppointment.scheduledAt,
-                visitType = fitnessAppointment.serviceType,
-                status = fitnessAppointment.status,
-                notes = fitnessAppointment.notes
-            ),
+            appointment = fitnessAppointment.toAppointment(),
             issuedDate = LocalDate.now(),
             diagnosis = request.diagnosis,
             prescription = request.prescription,
@@ -67,7 +59,7 @@ class ReportService(
 
     @Transactional
     fun update(id: Long, request: ReportRequest): Report {
-        val existing = reportDao.findById(id).orThrow("Report $id not found")
+        val existing = reportDao.findById(id) ?: throw NoSuchElementException("Report $id not found")
         val updated = existing.copy(
             diagnosis = request.diagnosis,
             prescription = request.prescription,
