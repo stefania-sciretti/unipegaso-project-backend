@@ -30,3 +30,4 @@ fun computeClassification(context: GlycemiaContext, valueMgDl: Int): GlycemiaCla
             else             -> GlycemiaClassification.ELEVATA
         }
     }
+
