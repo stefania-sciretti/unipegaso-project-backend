@@ -22,3 +22,4 @@ Thumbs.db
 # --- AI agents ---
 .claude
 .github
+/docs
