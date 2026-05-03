@@ -12,11 +12,13 @@ UPDATE appointment SET service_type = visit_type;
 ALTER TABLE appointment ALTER COLUMN service_type SET NOT NULL;
 
 -- Step 3: Insert all fitness_appointment rows into appointment, tracking old IDs
-INSERT INTO appointment (patient_id, specialist_id, scheduled_at, service_type, status, notes, price, created_at, area_id, updated_at, _fitness_id)
+-- visit_type is still NOT NULL at this point (dropped in Step 5); populate it from fa.service_type
+INSERT INTO appointment (patient_id, specialist_id, scheduled_at, visit_type, service_type, status, notes, price, created_at, area_id, updated_at, _fitness_id)
 SELECT
     fa.patient_id,
     fa.trainer_id,
     fa.scheduled_at,
+    fa.service_type,
     fa.service_type,
     fa.status,
     fa.notes,
