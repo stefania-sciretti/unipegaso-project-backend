@@ -4,8 +4,8 @@ import com.clinica.doors.outbound.database.entities.PatientEntity
 import com.clinica.doors.outbound.database.entities.UserEntity
 import com.clinica.doors.outbound.database.repositories.PatientRepository
 import com.clinica.doors.outbound.database.repositories.UserRepository
-import com.clinica.dto.LoginRequest
-import com.clinica.dto.RegisterRequest
+import com.clinic.model.LoginRequest
+import com.clinic.model.RegisterRequest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

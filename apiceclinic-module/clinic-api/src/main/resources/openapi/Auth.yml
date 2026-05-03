@@ -1,0 +1,305 @@
+openapi: 3.0.0
+info:
+  title: Auth API
+  description: Endpoint per autenticazione e registrazione paziente
+  version: "1"
+servers:
+  - url: "http://localhost:8080"
+
+paths:
+
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Registra un nuovo paziente
+      description: >
+        Crea atomicamente un account utente (tabella users) con ruolo ROLE_USER
+        e il relativo profilo paziente (tabella patient).
+        Tutti i campi obbligatori devono essere presenti e univoci.
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+            example:
+              firstName: "Mario"
+              lastName: "Rossi"
+              fiscalCode: "RSSMRA85T10A562S"
+              birthDate: "1985-12-10"
+              email: "mario.rossi@example.com"
+              phone: "+39 333 1234567"
+              username: "mario.rossi"
+              password: "SecureP@ss123"
+      responses:
+        '201':
+          description: Registrazione completata con successo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterResponse"
+              example:
+                message: "Registrazione completata con successo"
+                success: true
+                username: "mario.rossi"
+                email: "mario.rossi@example.com"
+                patientId: 42
+        '400':
+          description: Dati non validi o già esistenti (username, email, codice fiscale duplicati)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthErrorResponse"
+              example:
+                message: "Username 'mario.rossi' già esistente"
+                success: false
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthErrorResponse"
+
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login utente
+      description: >
+        Effettua il login con username e password.
+        Restituisce un JWT Bearer token da usare nelle richieste successive
+        nell'header Authorization.
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+            example:
+              username: "mario.rossi"
+              password: "SecureP@ss123"
+      responses:
+        '200':
+          description: Login effettuato con successo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+              example:
+                accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYXJpby5yb3NzaSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdfQ.abc123"
+                tokenType: "Bearer"
+                username: "mario.rossi"
+                role: "ROLE_USER"
+        '401':
+          description: Credenziali non valide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthErrorResponse"
+              example:
+                message: "Credenziali non valide"
+                success: false
+
+  /api/auth/validate:
+    get:
+      tags:
+        - Authentication
+      summary: Valida un JWT token
+      description: Verifica se il token Bearer fornito è ancora valido.
+      operationId: validateToken
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: "Bearer <jwt_token>"
+          schema:
+            type: string
+            example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      responses:
+        '200':
+          description: Risultato della validazione
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenValidationResponse"
+
+components:
+  schemas:
+
+    RegisterRequest:
+      type: object
+      description: Dati necessari per registrare un nuovo paziente e creare il suo account
+      required:
+        - firstName
+        - lastName
+        - fiscalCode
+        - birthDate
+        - email
+        - username
+        - password
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Nome del paziente
+          example: "Mario"
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Cognome del paziente
+          example: "Rossi"
+        fiscalCode:
+          type: string
+          minLength: 16
+          maxLength: 16
+          pattern: '^[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]$'
+          description: Codice fiscale italiano (16 caratteri, solo maiuscole)
+          example: "RSSMRA85T10A562S"
+        birthDate:
+          type: string
+          format: date
+          description: Data di nascita (formato ISO 8601 yyyy-MM-dd)
+          example: "1985-12-10"
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          description: Indirizzo email (deve essere univoco)
+          example: "mario.rossi@example.com"
+        phone:
+          type: string
+          nullable: true
+          maxLength: 50
+          description: Numero di telefono (opzionale)
+          example: "+39 333 1234567"
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          description: Nome utente per l'accesso (deve essere univoco)
+          example: "mario.rossi"
+        password:
+          type: string
+          minLength: 8
+          format: password
+          description: Password per l'accesso (minimo 8 caratteri)
+          example: "SecureP@ss123"
+
+    RegisterResponse:
+      type: object
+      description: Risposta alla registrazione andata a buon fine
+      required:
+        - message
+        - success
+        - username
+        - email
+        - patientId
+      properties:
+        message:
+          type: string
+          description: Messaggio descrittivo dell'esito
+          example: "Registrazione completata con successo"
+        success:
+          type: boolean
+          description: Indica se la registrazione è avvenuta con successo
+          example: true
+        username:
+          type: string
+          description: Username dell'account creato
+          example: "mario.rossi"
+        email:
+          type: string
+          format: email
+          description: Email dell'account creato
+          example: "mario.rossi@example.com"
+        patientId:
+          type: integer
+          format: int64
+          description: ID del profilo paziente creato
+          example: 42
+
+    LoginRequest:
+      type: object
+      description: Credenziali di accesso
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: Nome utente
+          example: "mario.rossi"
+        password:
+          type: string
+          format: password
+          description: Password
+          example: "SecureP@ss123"
+
+    LoginResponse:
+      type: object
+      description: Risposta al login con JWT token
+      required:
+        - accessToken
+        - tokenType
+        - username
+        - role
+      properties:
+        accessToken:
+          type: string
+          description: JWT token da usare nelle richieste autenticate
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        tokenType:
+          type: string
+          description: Tipo di token (sempre "Bearer")
+          example: "Bearer"
+        username:
+          type: string
+          description: Username dell'utente autenticato
+          example: "mario.rossi"
+        role:
+          type: string
+          description: Ruolo dell'utente (ROLE_USER o ROLE_ADMIN)
+          example: "ROLE_USER"
+
+    TokenValidationResponse:
+      type: object
+      required:
+        - valid
+        - username
+        - message
+      properties:
+        valid:
+          type: boolean
+          description: true se il token è valido
+          example: true
+        username:
+          type: string
+          description: Username estratto dal token (vuoto se non valido)
+          example: "mario.rossi"
+        message:
+          type: string
+          description: Messaggio descrittivo
+          example: "Token valido"
+
+    AuthErrorResponse:
+      type: object
+      description: Risposta di errore generica per gli endpoint di autenticazione
+      properties:
+        message:
+          type: string
+          description: Descrizione dell'errore
+          example: "Username 'mario.rossi' già esistente"
+        success:
+          type: boolean
+          example: false
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

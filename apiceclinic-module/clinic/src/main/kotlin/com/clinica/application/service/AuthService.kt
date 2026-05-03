@@ -4,9 +4,9 @@ import com.clinica.doors.outbound.database.entities.PatientEntity
 import com.clinica.doors.outbound.database.entities.UserEntity
 import com.clinica.doors.outbound.database.repositories.PatientRepository
 import com.clinica.doors.outbound.database.repositories.UserRepository
-import com.clinica.dto.LoginRequest
-import com.clinica.dto.RegisterRequest
-import com.clinica.dto.RegisterResponse
+import com.clinic.model.LoginRequest
+import com.clinic.model.RegisterRequest
+import com.clinic.model.RegisterResponse
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

@@ -1,10 +1,11 @@
 package com.clinica.doors.inbound.routes.controller
 
 import com.clinica.application.service.AuthService
-import com.clinica.dto.LoginRequest
-import com.clinica.dto.LoginResponse
-import com.clinica.dto.RegisterRequest
-import com.clinica.dto.RegisterResponse
+import com.clinic.model.LoginRequest
+import com.clinic.model.LoginResponse
+import com.clinic.model.RegisterRequest
+import com.clinic.model.RegisterResponse
+import com.clinic.model.TokenValidationResponse
 import com.clinica.security.JwtTokenProvider
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -109,21 +110,17 @@ class AuthController {
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Risultato validazione token")
     ])
-    fun validateToken(@RequestHeader("Authorization") token: String): ResponseEntity<Map<String, Any>> {
-        val jwt = if (token.startsWith("Bearer ")) {
-            token.substring(7)
-        } else {
-            token
-        }
+    fun validateToken(@RequestHeader("Authorization") token: String): ResponseEntity<TokenValidationResponse> {
+        val jwt = if (token.startsWith("Bearer ")) token.substring(7) else token
 
         val isValid = jwtTokenProvider.validateToken(jwt)
         val username = if (isValid) jwtTokenProvider.getUsernameFromToken(jwt) else null
 
         return ResponseEntity.ok(
-            mapOf(
-                "valid" to isValid,
-                "username" to (username ?: ""),
-                "message" to if (isValid) "Token valido" else "Token non valido"
+            TokenValidationResponse(
+                valid = isValid,
+                username = username ?: "",
+                message = if (isValid) "Token valido" else "Token non valido"
             )
         )
     }
