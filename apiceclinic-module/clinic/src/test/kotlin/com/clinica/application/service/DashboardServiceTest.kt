@@ -8,6 +8,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(MockKExtension::class)
@@ -18,31 +19,69 @@ class DashboardServiceTest {
     @InjectMockKs
     private lateinit var service: DashboardService
 
-    @Test
-    fun `getDashboard returns stats from dao`() {
-        val stats = DashboardStatsResponse(
-            kpi = KpiStats(
-                revenueMonth = 160.0,
-                revenuePrevMonth = 0.0,
-                activePatients = 2L,
-                newPatients = 3L,
-                appointmentsMonth = 5L,
-                cancellationRate = 20.0,
-                agendaOccupancy = 60.0
-            ),
-            revenueByMonth = listOf(RevenueByMonth("2025-01", 160.0)),
-            appointmentsByMonth = listOf(AppointmentsByMonth("2025-01", 1L, 2L, 1L)),
-            revenueByArea = listOf(
-                RevenueByArea(AreaInfo(1L, "Alimentazione"), 200.0),
-                RevenueByArea(AreaInfo(2L, "Sport"), 150.0),
-                RevenueByArea(AreaInfo(3L, "Clinica"), 300.0)
-            )
+    private fun buildStats(revenueMonth: Double = 160.0) = DashboardStatsResponse(
+        kpi = KpiStats(
+            revenueMonth = revenueMonth,
+            revenuePrevMonth = 0.0,
+            activePatients = 2L,
+            newPatients = 3L,
+            appointmentsMonth = 5L,
+            cancellationRate = 20.0,
+            agendaOccupancy = 60.0
+        ),
+        revenueByMonth = listOf(RevenueByMonth("2025-01", revenueMonth)),
+        appointmentsByMonth = listOf(AppointmentsByMonth("2025-01", 1L, 2L, 1L)),
+        revenueByArea = listOf(
+            RevenueByArea(AreaInfo(1L, "Alimentazione"), 200.0),
+            RevenueByArea(AreaInfo(2L, "Sport"), 150.0),
+            RevenueByArea(AreaInfo(3L, "Clinica"), 300.0)
         )
-        every { dashboardDao.getDashboardStats() } returns stats
+    )
+
+    @Test
+    fun `getDashboard with default period 6m calls dao with 6 months`() {
+        val stats = buildStats()
+        every { dashboardDao.getDashboardStats(6) } returns stats
 
         val result = service.getDashboard()
 
         assertEquals(stats, result)
+    }
+
+    @Test
+    fun `getDashboard with period 1m calls dao with 1 month`() {
+        val stats = buildStats()
+        every { dashboardDao.getDashboardStats(1) } returns stats
+
+        val result = service.getDashboard("1m")
+
+        assertEquals(stats, result)
+    }
+
+    @Test
+    fun `getDashboard with period 3m calls dao with 3 months`() {
+        val stats = buildStats()
+        every { dashboardDao.getDashboardStats(3) } returns stats
+
+        val result = service.getDashboard("3m")
+
+        assertEquals(stats, result)
+    }
+
+    @Test
+    fun `getDashboard with period 1y calls dao with 12 months`() {
+        val stats = buildStats()
+        every { dashboardDao.getDashboardStats(12) } returns stats
+
+        val result = service.getDashboard("1y")
+
+        assertEquals(stats, result)
+    }
+
+    @Test
+    fun `getDashboard throws IllegalArgumentException for invalid period`() {
+        val ex = assertThrows<IllegalArgumentException> { service.getDashboard("invalid") }
+        assert(ex.message!!.contains("invalid"))
     }
 
     @Test
@@ -53,7 +92,7 @@ class DashboardServiceTest {
             appointmentsByMonth = emptyList(),
             revenueByArea = emptyList()
         )
-        every { dashboardDao.getDashboardStats() } returns stats
+        every { dashboardDao.getDashboardStats(6) } returns stats
 
         val result = service.getDashboard()
 
