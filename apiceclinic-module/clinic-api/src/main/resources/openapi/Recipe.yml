@@ -129,6 +129,7 @@ components:
       properties:
         title:
           type: string
+          minLength: 1
           description: Recipe title
         description:
           type: string

@@ -1,7 +1,7 @@
 package com.clinica.doors.inbound.routes.controller
 
 import com.clinica.application.service.GlycemiaMeasurementService
-import com.clinica.dto.GlycemiaMeasurementRequest
+import com.clinic.model.GlycemiaMeasurementRequest
 import com.clinic.model.GlycemiaClassificationRulesResponse
 import com.clinic.model.GlycemiaContextRules
 import com.clinic.model.GlycemiaThreshold

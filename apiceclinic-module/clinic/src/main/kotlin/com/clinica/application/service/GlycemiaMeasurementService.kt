@@ -7,7 +7,7 @@ import com.clinica.application.mappers.toResponse
 import com.clinica.doors.outbound.database.dao.GlycemiaMeasurementDao
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
-import com.clinica.dto.GlycemiaMeasurementRequest
+import com.clinic.model.GlycemiaMeasurementRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -37,13 +37,13 @@ class GlycemiaMeasurementService(
         val specialist = specialistDao.findById(request.specialistId)
             .orThrow("Specialist not found with id: ${request.specialistId}")
 
-        val context = parseContext(request.context)
+        val context = GlycemiaContext.valueOf(request.context.value)
         val now = LocalDateTime.now()
 
         val measurement = GlycemiaMeasurement(
             patient = patient,
             specialist = specialist,
-            measuredAt = request.measuredAt,
+            measuredAt = request.measuredAt.toLocalDateTime(),
             valueMgDl = request.valueMgDl,
             context = context,
             notes = request.notes,
@@ -64,12 +64,12 @@ class GlycemiaMeasurementService(
         val specialist = specialistDao.findById(request.specialistId)
             .orThrow("Specialist not found with id: ${request.specialistId}")
 
-        val context = parseContext(request.context)
+        val context = GlycemiaContext.valueOf(request.context.value)
 
         val updated = existing.copy(
             patient = patient,
             specialist = specialist,
-            measuredAt = request.measuredAt,
+            measuredAt = request.measuredAt.toLocalDateTime(),
             valueMgDl = request.valueMgDl,
             context = context,
             notes = request.notes,
@@ -84,9 +84,5 @@ class GlycemiaMeasurementService(
             .orThrow("Glycemia measurement not found with id: $id")
         glycemiaMeasurementDao.deleteById(id)
     }
-
-    private fun parseContext(value: String): GlycemiaContext =
-        runCatching { GlycemiaContext.valueOf(value) }
-            .getOrElse { throw IllegalArgumentException("Invalid context: '$value'. Valid values: ${GlycemiaContext.entries.joinToString()}") }
 
 }

@@ -1,7 +1,7 @@
 package com.clinica.doors.inbound.routes.controller
 
 import com.clinica.application.service.DietPlanService
-import com.clinica.dto.DietPlanRequest
+import com.clinic.model.DietPlanRequest
 import com.clinic.model.DietPlanResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse

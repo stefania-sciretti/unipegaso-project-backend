@@ -1,7 +1,7 @@
 package com.clinica.doors.inbound.routes.controller
 
 import com.clinica.application.service.SpecialistService
-import com.clinica.dto.SpecialistRequest
+import com.clinic.model.SpecialistRequest
 import com.clinic.model.SpecialistResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter

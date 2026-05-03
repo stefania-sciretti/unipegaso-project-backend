@@ -2,7 +2,7 @@ package com.clinica.application.service
 
 import com.clinica.application.domain.Patient
 import com.clinica.doors.outbound.database.dao.PatientDao
-import com.clinica.dto.PatientRequest
+import com.clinic.model.PatientRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime

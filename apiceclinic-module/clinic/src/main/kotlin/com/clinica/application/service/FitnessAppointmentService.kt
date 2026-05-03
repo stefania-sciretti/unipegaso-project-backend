@@ -7,8 +7,8 @@ import com.clinica.application.mappers.toResponse
 import com.clinica.doors.outbound.database.dao.FitnessAppointmentDao
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
-import com.clinica.dto.FitnessAppointmentRequest
-import com.clinica.dto.FitnessAppointmentStatusRequest
+import com.clinic.model.FitnessAppointmentRequest
+import com.clinic.model.FitnessAppointmentStatusRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -39,7 +39,7 @@ class FitnessAppointmentService(
             id = 0L,
             patient = patient,
             specialist = specialist,
-            scheduledAt = request.scheduledAt,
+            scheduledAt = request.scheduledAt.toLocalDateTime(),
             serviceType = request.serviceType,
             status = AppointmentStatusEnum.BOOKED,
             notes = request.notes,

@@ -144,6 +144,7 @@ components:
           description: ID of the assigned specialist
         title:
           type: string
+          minLength: 1
           maxLength: 255
         description:
           type: string
@@ -152,10 +153,12 @@ components:
           type: integer
           nullable: true
           minimum: 1
+          maximum: 52
         sessionsPerWeek:
           type: integer
           nullable: true
           minimum: 1
+          maximum: 7
         active:
           type: boolean
           default: true

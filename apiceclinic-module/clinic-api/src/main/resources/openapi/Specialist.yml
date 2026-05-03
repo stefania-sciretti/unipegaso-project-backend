@@ -136,12 +136,15 @@ components:
       properties:
         firstName:
           type: string
+          minLength: 1
           example: "Maria"
         lastName:
           type: string
+          minLength: 1
           example: "Rossi"
         role:
           type: string
+          minLength: 1
           example: "NUTRITIONIST"
         bio:
           type: string
@@ -149,6 +152,7 @@ components:
           example: "Nutritionist with 10 years of experience"
         email:
           type: string
+          minLength: 1
           format: email
           example: "maria.rossi@apiceclinic.it"
 

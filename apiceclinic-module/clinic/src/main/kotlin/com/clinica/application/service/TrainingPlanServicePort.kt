@@ -1,6 +1,6 @@
 package com.clinica.application.service
 
-import com.clinica.dto.TrainingPlanRequest
+import com.clinic.model.TrainingPlanRequest
 import com.clinic.model.TrainingPlanResponse
 
 interface TrainingPlanServicePort {

@@ -6,7 +6,7 @@ import com.clinica.application.mappers.toResponse
 import com.clinica.doors.outbound.database.dao.DietPlanDao
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
-import com.clinica.dto.DietPlanRequest
+import com.clinic.model.DietPlanRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -45,7 +45,7 @@ class DietPlanService(
             description = request.description,
             calories = request.calories,
             durationWeeks = request.durationWeeks,
-            active = request.active,
+            active = request.active ?: true,
             createdAt = now,
             updatedAt = now
         )
@@ -71,7 +71,7 @@ class DietPlanService(
             description = request.description,
             calories = request.calories,
             durationWeeks = request.durationWeeks,
-            active = request.active,
+            active = request.active ?: true,
             updatedAt = LocalDateTime.now()
         )
 

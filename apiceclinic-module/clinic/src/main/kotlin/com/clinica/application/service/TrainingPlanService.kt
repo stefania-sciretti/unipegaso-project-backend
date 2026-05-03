@@ -6,7 +6,7 @@ import com.clinica.application.mappers.toResponse
 import com.clinica.doors.outbound.database.dao.PatientDao
 import com.clinica.doors.outbound.database.dao.SpecialistDao
 import com.clinica.doors.outbound.database.dao.TrainingPlanDao
-import com.clinica.dto.TrainingPlanRequest
+import com.clinic.model.TrainingPlanRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -39,7 +39,7 @@ class TrainingPlanService(
             description = request.description,
             weeks = request.weeks,
             sessionsPerWeek = request.sessionsPerWeek,
-            active = request.active
+            active = request.active ?: true
         )
         return trainingPlanDao.save(plan).toResponse()
     }
@@ -60,7 +60,7 @@ class TrainingPlanService(
             description = request.description,
             weeks = request.weeks,
             sessionsPerWeek = request.sessionsPerWeek,
-            active = request.active
+            active = request.active ?: true
         )
         return trainingPlanDao.save(updated).toResponse()
     }

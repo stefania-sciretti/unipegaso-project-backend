@@ -139,6 +139,7 @@ components:
           description: ID of the fitness appointment this report refers to
         diagnosis:
           type: string
+          minLength: 1
           description: Clinical diagnosis
         prescription:
           type: string

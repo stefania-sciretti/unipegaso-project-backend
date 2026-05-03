@@ -143,6 +143,7 @@ components:
           description: ID of the specialist (nutritionist) assigning the plan
         title:
           type: string
+          minLength: 1
           description: Title of the diet plan
         description:
           type: string
